@@ -1,6 +1,6 @@
 ---
 title: "Activités"
-order: 1
+order: 3
 in_menu: false
 ---
 L’association cherche à œuvrer en collaboration avec des organismes publics, des organisations privées et des individus.
