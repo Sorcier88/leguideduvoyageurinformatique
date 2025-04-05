@@ -28,8 +28,4 @@ Pour partager un lien vers un document, suivez ces étapes :
 - Sélectionnez le rôle que vous souhaitez attribuer aux utilisateurs qui accèdent au document via le lien : lecteur, commentateur ou éditeur.
 - Cliquez sur Copier le lien, et collez le où vous voulez le partager : e-mail, réseaux sociaux, site web, etc.
 
-J’espère que cet article vous a été utile. Si vous avez des questions ou des commentaires, n’hésitez pas à me les faire savoir. 😊 
-
----
-
-Si vous avez toujours des questions n’hésitez pas à m’envoyer un mail à [guidevoyageurinformatique@sorcier.mozmail.com](mailto:guidevoyageurinformatique@sorcier.mozmail.com)
+J’espère que cet article vous a été utile. Si vous avez des questions ou des commentaires, n’hésitez pas à me les faire savoir. 😊
