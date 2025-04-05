@@ -9,12 +9,12 @@ Si vous souhaitez partager un document avec des personnes précises, vous pouvez
 
 Pour partager un document avec des personnes spécifiques, suivez ces étapes :
 
-- Ouvrez le document que vous souhaitez partager sur Google Docs ou Google Drive. 
-- Cliquez sur le bouton Partager en haut à droite de la fenêtre.
-- Saisissez l’adresse e-mail des personnes avec qui vous souhaitez partager le document. Vous pouvez également choisir des destinataires suggérés par Google, en fonction de vos contacts ou de vos collaborations récentes.
-- Sélectionnez le rôle que vous souhaitez attribuer à chaque personne : lecteur, commentateur ou éditeur.
-- Vous pouvez également ajouter un message personnalisé pour accompagner votre invitation.
-- Cliquez sur Envoyer ou Partager. Les personnes invitées recevront un e-mail avec un lien pour accéder au document.
+-   Ouvrez le document que vous souhaitez partager sur Google Docs ou Google Drive. 
+-   Cliquez sur le bouton Partager en haut à droite de la fenêtre.
+-   Saisissez l’adresse e-mail des personnes avec qui vous souhaitez partager le document. Vous pouvez également choisir des destinataires suggérés par Google, en fonction de vos contacts ou de vos collaborations récentes.
+-   Sélectionnez le rôle que vous souhaitez attribuer à chaque personne : lecteur, commentateur ou éditeur.
+-   Vous pouvez également ajouter un message personnalisé pour accompagner votre invitation.
+-   Cliquez sur Envoyer ou Partager. Les personnes invitées recevront un e-mail avec un lien pour accéder au document.
 
 ## Partager un lien vers un document
 
@@ -22,10 +22,10 @@ Si vous souhaitez partager un document avec un large public, sans avoir à envoy
 
 Pour partager un lien vers un document, suivez ces étapes :
 
-- Ouvrez le document que vous souhaitez partager sur Google Docs ou Google Drive.
-- Cliquez sur le bouton Partager en haut à droite de la fenêtre.
-- Sous Accès général, cliquez sur la flèche vers le bas, et choisissez l’option qui vous convient : Toute personne disposant du lien ou Limité (c-à-d limité à certaines personnes spécifiques définie comme précédemment).
-- Sélectionnez le rôle que vous souhaitez attribuer aux utilisateurs qui accèdent au document via le lien : lecteur, commentateur ou éditeur.
-- Cliquez sur Copier le lien, et collez le où vous voulez le partager : e-mail, réseaux sociaux, site web, etc.
+-   Ouvrez le document que vous souhaitez partager sur Google Docs ou Google Drive.
+-   Cliquez sur le bouton Partager en haut à droite de la fenêtre.
+-   Sous Accès général, cliquez sur la flèche vers le bas, et choisissez l’option qui vous convient : Toute personne disposant du lien ou Limité (c-à-d limité à certaines personnes spécifiques définie comme précédemment).
+-   Sélectionnez le rôle que vous souhaitez attribuer aux utilisateurs qui accèdent au document via le lien : lecteur, commentateur ou éditeur.
+-   Cliquez sur Copier le lien, et collez le où vous voulez le partager : e-mail, réseaux sociaux, site web, etc.
 
 J’espère que cet article vous a été utile. Si vous avez des questions ou des commentaires, n’hésitez pas à me les faire savoir. 😊
