@@ -1,5 +1,5 @@
 ---
-title: "Partager un Google Docs (*etc*…)"
+title: "Partager un Google Docs (etc…)"
 ---
 Google Docs est un service de traitement de texte en ligne qui permet de créer, modifier et partager des documents avec d’autres personnes. Il offre de nombreuses fonctionnalités de collaboration, comme la possibilité de commenter, de suggérer des modifications, ou de discuter en temps réel avec les collaborateurs. Mais comment partager correctement un document Google Docs, en respectant les droits d’accès et la confidentialité des données ? Voici quelques conseils pour bien utiliser les options de partage de Google Docs.
 
