@@ -1,8 +1,6 @@
 ---
 title: "Open Video Downloader - Télécharger une vidéo YouTube"
 ---
-# Open Video Downloader - Télécharger une vidéo YouTube
-
 # Introduction
 
 Une demande assez courante que je reçois, c’est “Tu sais comment on télécharge une vidéo sur YouTube ?”
@@ -34,13 +32,12 @@ Le seul hic, c’est que le logiciel est uniquement en anglais
 
 Parfois, une image vaut mieux que mille mots (même si cet article ne fait sûrement pas mille mots). 
 
-![Petit GIF qui montre la démarche](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/958d0dc1-34e7-4e3e-a980-4d8940dfabde/ezgif.com-gif-maker.webp)
-
-Petit GIF qui montre la démarche
+![Petit GIF qui montre la démarche](https://github.com/jely2002/youtube-dl-gui/raw/master/ytdlgui_demo.gif)
+_Petit GIF qui montre la démarche_
 
 Bon après, quelques étapes écrites ça fait pas de mal. 
 
-- Tu récupères l’URL de ta vidéo. Ça ressemble un peu à ça : https://www.youtube.com/watch?v=dQw4w9WgXcQ.
+- Tu récupères l’URL de ta vidéo. Ça ressemble un peu à ça : [https://www.youtube.com/watch?v=dQw4w9WgXcQ](https://www.youtube.com/watch?v=dQw4w9WgXcQ).
 - Soit le lien apparaîtra automatiquement dans la barre supérieure ou alors il suffit de coller le lien.
 - Clique sur le petit +, pour rajouter l’audio/vidéo à la liste d’attente.
 - En bas, le petit dossier permet de sélectionner l’endroit où tu veux stocker la vidéo ou l’audio que tu veux télécharger.
