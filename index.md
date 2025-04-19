@@ -13,7 +13,7 @@ in_menu: true
 ## 📖 Les thèmes abordés
 Il y aura différents thèmes proposés à travers ce guide tel que l’explication de différents jargons informatique (open source, transcodage, GPU, CPU, …), des logiciels super utiles sur Windows, Mac, iOS et Android, des sites supers, *etc*…
 
-
+<a href="{{ '/blog.html' | relative_url }}" class="bouton"> Vers les articles </a>
 
 ## 🛠 **Organisation de ce guide**
 Ce guide est comme vous pouvez le voir sur un site propre. Tout cela permettra que ça soit harmonisée et disponible pour longtemps, je l'espère. 
