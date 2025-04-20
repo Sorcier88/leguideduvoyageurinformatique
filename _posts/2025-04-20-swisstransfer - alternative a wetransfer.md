@@ -15,7 +15,7 @@ SwissTransfer se distingue de WeTransfer sur plusieurs points :
 
 L’utilisation de SwissTransfer est très simple, et ne nécessite aucune inscription. Voici les étapes à suivre : 
 
-- Rendez-vous sur le site [**SwissTransfer**](https://www.swisstransfer.com/). 
+- Rendez-vous sur le site [**SwissTransfer.com**](https://www.swisstransfer.com/). 
 - Après avoir accepté les conditions d’utilisation, cliquez sur le bouton “+” et sélectionnez les fichiers que vous souhaitez envoyer. Vous pouvez également glisser-déposer vos fichiers directement sur la page. 
 - Si vous le souhaitez, vous pouvez ajouter un mot de passe pour protéger vos fichiers. Pour cela, cliquez sur “Paramètres avancés” puis, “Protéger par un mot de passe”, et saisissez le mot de passe de votre choix.
 - Cliquez sur le bouton “Transférer”. Le transfert de vos fichiers commence, et vous pouvez suivre la progression sur la page. 
