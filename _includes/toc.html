@@ -12,19 +12,28 @@ window.addEventListener('load', function() {
   
   if (mainContent) {
     // Récupère tous les titres dans le contenu principal
-    const headers = mainContent.querySelectorAll('h2, h3, h4');
+    const headers = mainContent.querySelectorAll('h1, h2, h3, h4');
     
     if (headers.length === 0) {
       document.querySelector('.table-of-contents').style.display = 'none';
     } else {
+      // Ignorer le premier h1 (titre de l'article)
+      let firstH1Skipped = false;
+      
       headers.forEach(function(header) {
+        // Ignorer le premier h1
+        if (header.tagName.toLowerCase() === 'h1' && !firstH1Skipped) {
+          firstH1Skipped = true;
+          return;
+        }
+        
         // Ignore les titres "Table des matières" et "Menu"
         if (header.textContent.trim() === "Table des matières" || 
             header.textContent.trim() === "Menu") {
           return; // Saute ce titre
         }
         
-        // Vérifie si le titre est dans le footer (même si c'est probablement déjà filtré)
+        // Vérifie si le titre est dans le footer
         if (header.closest('footer')) {
           return; // Ignore les titres dans le footer
         }
