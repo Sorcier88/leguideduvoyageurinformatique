@@ -1,7 +1,24 @@
 ---
 title: "Open Video Downloader - Télécharger une vidéo YouTube"
 ---
-{% include toc.html %}
+<div class="table-of-contents">
+  <h2>Table des matières</h2>
+  <ul>
+    {% assign headers = content | split: '<h' %}
+    {% for header in headers %}
+      {% if header contains '</h' %}
+        {% assign headerLevel = header | first %}
+        {% if headerLevel == '2' or headerLevel == '3' or headerLevel == '4' %}
+          {% assign headerText = header | split: '>' | last | split: '</h' | first | strip_html | strip %}
+          {% assign headerID = headerText | downcase | replace: ' ', '-' | replace: '.', '' | replace: ',', '' | replace: ':', '' | replace: ';', '' | replace: '/', '' %}
+          <li class="toc-level-{{ headerLevel }}">
+            <a href="#{{ headerID }}">{{ headerText }}</a>
+          </li>
+        {% endif %}
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
 
 # Introduction
 
