@@ -1,3 +1,22 @@
 :root {
     --couleur-primaire : #0E6270;
 }
+
+.table-of-contents {
+    background: #f8f8f8;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+  }
+  .table-of-contents h2 {
+    margin-top: 0;
+  }
+  .toc-level-2 {
+    margin-left: 0;
+  }
+  .toc-level-3 {
+    margin-left: 20px;
+  }
+  .toc-level-4 {
+    margin-left: 40px;
+  }
