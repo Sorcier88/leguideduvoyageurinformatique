@@ -3,22 +3,58 @@ title: "Open Video Downloader - Télécharger une vidéo YouTube"
 ---
 <div class="table-of-contents">
   <h2>Table des matières</h2>
-  <ul>
-    {% assign headers = content | split: '<h' %}
-    {% for header in headers %}
-      {% if header contains '</h' %}
-        {% assign headerLevel = header | first %}
-        {% if headerLevel == '2' or headerLevel == '3' or headerLevel == '4' %}
-          {% assign headerText = header | split: '>' | last | split: '</h' | first | strip_html | strip %}
-          {% assign headerID = headerText | downcase | replace: ' ', '-' | replace: '.', '' | replace: ',', '' | replace: ':', '' | replace: ';', '' | replace: '/', '' %}
-          <li class="toc-level-{{ headerLevel }}">
-            <a href="#{{ headerID }}">{{ headerText }}</a>
-          </li>
-        {% endif %}
-      {% endif %}
-    {% endfor %}
+  <ul id="toc-list">
+    <!-- Le JavaScript remplira cette liste -->
   </ul>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Sélectionne l'élément où la table des matières sera ajoutée
+  const tocList = document.getElementById('toc-list');
+  
+  // Sélectionne le contenu de l'article (à adapter selon votre structure)
+  const articleContent = document.querySelector('.article-content') || document.querySelector('article') || document.querySelector('.content');
+  
+  if (articleContent && tocList) {
+    // Trouve tous les titres h2, h3, h4
+    const headers = articleContent.querySelectorAll('h2, h3, h4');
+    
+    // Si aucun titre n'est trouvé, cache la table des matières
+    if (headers.length === 0) {
+      document.querySelector('.table-of-contents').style.display = 'none';
+      return;
+    }
+    
+    // Pour chaque titre trouvé
+    headers.forEach(function(header) {
+      // Crée un ID unique si le titre n'en a pas déjà un
+      if (!header.id) {
+        const headerId = header.textContent
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        header.id = headerId;
+      }
+      
+      // Crée un élément de liste pour la table des matières
+      const listItem = document.createElement('li');
+      listItem.className = 'toc-level-' + header.tagName.charAt(1);
+      
+      // Crée un lien vers le titre
+      const link = document.createElement('a');
+      link.href = '#' + header.id;
+      link.textContent = header.textContent;
+      
+      // Ajoute le lien à l'élément de liste
+      listItem.appendChild(link);
+      
+      // Ajoute l'élément de liste à la table des matières
+      tocList.appendChild(listItem);
+    });
+  }
+});
+</script>
 
 # Introduction
 
