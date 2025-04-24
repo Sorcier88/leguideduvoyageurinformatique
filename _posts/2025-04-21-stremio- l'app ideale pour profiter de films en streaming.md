@@ -1,18 +1,18 @@
 ---
 title: "Stremio: L'App idéale pour profiter de films en streaming"
 ---
-# À la découverte de Stremio
+{% include toc.html %}
 
 Imaginez un seul endroit où vous pouvez accéder à tous vos films et séries préférés, sans avoir à jongler entre différentes plateformes. C'est exactement ce que propose Stremio ! C'est comme une bibliothèque de streaming qui rassemble tout ce que vous aimez, pour une expérience pratique et sans tracas. 
 
-# L'installation en quelques étapes simples
+## L'installation en quelques étapes simples
 
 1. L'installation de Stremio est un jeu d'enfant. Suivez ces étapes pour y parvenir :
 Téléchargez Stremio : Rendez-vous sur le site officiel de Stremio ([www.stremio.com](http://stremio.com)) et choisissez la version correspondant à votre système d'exploitation ([Windows](https://www.strem.io/download?platform=windows&four=true), [macOS](https://www.strem.io/download?platform=mac&four=true), Linux, [Android](https://play.google.com/store/apps/details?id=com.stremio.one), [iOS](https://www.notion.so/Fiche-8-Faites-vous-plaisir-b6428869d9704e0f8914f9218e786465?pvs=21)). Cliquez sur "Télécharger" et suivez les instructions.
 2. Installez Stremio : Ouvrez le fichier téléchargé et suivez les instructions à l'écran pour l'installation. Pas besoin d'être un expert en informatique pour cela ! 
 3. Lancez Stremio : Après l'installation, double-cliquez sur l'icône de Stremio pour le lancer. Vous serez rapidement prêt à découvrir un monde de divertissement.
 
-# Personnalisez Stremio avec des addons
+## Personnalisez Stremio avec des addons
 
 Une fois Stremio installé, c'est le moment d'ajouter des addons pour enrichir votre expérience. Les addons sont comme des extensions qui vous permettent d'accéder à davantage de contenu. Voici comment les installer : 
 
@@ -20,7 +20,7 @@ Une fois Stremio installé, c'est le moment d'ajouter des addons pour enrichir v
 2. Explorez les Addons : Parcourez les addons disponibles et cliquez sur l'icône d'un addon pour l'installer. C'est un peu comme ajouter des fonctionnalités à votre téléphone. 
 3. Profitez du Nouveau Contenu : Après l'installation de l'addon, revenez à l'écran d'accueil et découvrez le contenu supplémentaire qu'il a apporté. 
 
-## Liste des addons de mon Stremio
+### Liste des addons de mon Stremio
 
 * Addons officiels Stremio (à installer si pas déjà fait)
     - [Cinemata](https://app.strem.io/shell-v4.4/#/addons/community/all?addon=https%3A%2F%2Fv3-cinemeta.strem.io%2Fmanifest.json)
@@ -58,7 +58,7 @@ Une fois Stremio installé, c'est le moment d'ajouter des addons pour enrichir v
     - [CyberFlix Catalog](https://app.strem.io/shell-v4.4/#/addons/community/all?addon=https%3A%2F%2F82d7ae415a21-llama-catalog.baby-beamup.club%2Fc%2Fcatalogs%3Dpremieres.movie%2Cpremieres.series%2Ctrending.movie%2Ctrending.series%2Cnetflix.popular_movies.movie%2Cnetflix.popular_series.series%2Cnetflix.new_movies.movie%2Cnetflix.new_series.series%2Cdisney_plus.popular_movies.movie%2Cdisney_plus.popular_series.series%2Cdisney_plus.new_movies.movie%2Cdisney_plus.new_series.series%2Chbo_max.popular_movies.movie%2Chbo_max.popular_series.series%2Chbo_max.new_movies.movie%2Chbo_max.new_series.series%2Camazon_prime.popular_movies.movie%2Camazon_prime.popular_series.series%2Camazon_prime.new_movies.movie%2Camazon_prime.new_series.series%2Cawards.oscar_winners.any%2Cawards.emmy_winners.any%2Cawards.golden_globe_winners.any%2Ckids.popular_movies.movie%2Ckids.popular_series.series%2Canime.trending_movies.movie%2Canime.trending_series.series%2Canime.winter_season.series%2Canime.spring_season.series%2Canime.summer_season.series%2Canime.fall_season.series%2Ccanal%2B.movie%2Ccanal%2B.series%2Fmanifest.json) (peut être configuré pour correspondre à ses besoins)
     - [Pimp My Streamio](https://github.com/sungshon/PimpMyStremio/releases) (télécharger l’exécutable correspondant à votre système d’exploitation)
 
-# Conseils pour une expérience optimale
+## Conseils pour une expérience optimale
 
 - Gardez Stremio à jour : Assurez-vous de mettre régulièrement à jour Stremio et vos addons pour bénéficier des dernières améliorations.
 - Téléchargez pour une lecture sans interruption : Si votre connexion Internet est instable ou que peut de personne regarde le même streaming en même temps (Peer to peer), envisagez de télécharger les vidéos pour les regarder sans interruption. Il faut installer l’addon [Stremio Downloader](https://app.strem.io/shell-v4.4/#/addons/community/all?addon=http%3A%2F%2F127.0.0.1%3A8189%2Faddon-zgQALy06AZ_nqIm0T_vvg%2Fmanifest.json).
