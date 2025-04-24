@@ -1,13 +1,12 @@
 ---
 title: "Les backups"
 ---
-### **Pourquoi et comment faire des backups de ses données ?**
+{% include toc.html %}
 
 Dans un monde où nos données numériques sont précieuses (photos, documents, fichiers professionnels), la perte de ces informations peut être catastrophique. Un simple problème technique, une erreur humaine ou une cyberattaque peut entraîner une perte irrémédiable. C'est pourquoi **faire des backups (sauvegardes)** est essentiel.
 
----
 
-## **Pourquoi faire des backups ?**
+## Pourquoi faire des backups ?
 
 Les backups permettent de protéger vos données contre plusieurs risques :
 
@@ -23,13 +22,12 @@ Les backups permettent de protéger vos données contre plusieurs risques :
 
 Une bonne stratégie de sauvegarde garantit que vous pourrez **récupérer vos données en cas de problème**.
 
----
 
-## **Les différents types de backups**
+## Les différents types de backups
 
 Il existe plusieurs méthodes pour sauvegarder ses fichiers, chacune ayant ses avantages et inconvénients.
 
-### **1. Sauvegarde locale (physique)**
+### 1. Sauvegarde locale (physique)
 
 Elle consiste à stocker ses fichiers sur un support physique, comme :
 
@@ -43,9 +41,9 @@ Elle consiste à stocker ses fichiers sur un support physique, comme :
 
 ⚠️ **Inconvénient** : Risque de perte, vol ou panne du support de stockage.
 
----
 
-### **2. Sauvegarde en ligne (Cloud)**
+
+### 2. Sauvegarde en ligne (Cloud)
 
 Les services de stockage en ligne permettent de conserver une copie de ses fichiers à distance :
 
@@ -59,9 +57,8 @@ Les services de stockage en ligne permettent de conserver une copie de ses fichi
 
 ⚠️ **Inconvénient** : Dépendance à internet et aux fournisseurs de service.
 
----
 
-### **3. Sauvegarde hybride (local + cloud)**
+### 3. Sauvegarde hybride (local + cloud)
 
 La méthode la plus efficace est de combiner **une sauvegarde locale et une sauvegarde en ligne**.
 
@@ -73,9 +70,8 @@ Exemple :
 
 💡 **Avantage** : Protection maximale en cas de sinistre ou de panne.
 
----
 
-## **Quelle est la meilleure stratégie de sauvegarde ?**
+## Quelle est la meilleure stratégie de sauvegarde ?
 
 Une règle souvent recommandée est la **règle du 3-2-1** :
 
@@ -87,9 +83,8 @@ Une règle souvent recommandée est la **règle du 3-2-1** :
 
 Cela garantit qu’en cas de problème, une copie de vos fichiers sera toujours disponible.
 
----
 
-## **Automatiser ses backups : un gain de temps et de sécurité**
+## Automatiser ses backups : un gain de temps et de sécurité
 
 Plutôt que de sauvegarder manuellement vos fichiers, il existe des logiciels qui automatisent le processus :
 
@@ -101,9 +96,8 @@ Plutôt que de sauvegarder manuellement vos fichiers, il existe des logiciels qu
 
 💡 **Conseil** : Programmez une sauvegarde automatique au moins une fois par semaine !
 
----
 
-## **Conclusion**
+## Conclusion
 
 Faire des backups est une **habitude essentielle** pour protéger ses données personnelles et professionnelles. Avec une stratégie efficace (local + cloud + automatisation), vous réduisez les risques de perte définitive.
 
