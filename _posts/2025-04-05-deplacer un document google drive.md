@@ -1,6 +1,8 @@
 ---
 title: "Déplacer un document Google Drive"
 ---
+{% include toc.html %}
+
 Google Drive est un service de stockage en ligne qui vous permet de sauvegarder, synchroniser et partager vos fichiers avec d’autres personnes. Vous pouvez utiliser Google Drive pour organiser vos fichiers dans des dossiers, et les déplacer selon vos besoins. Dans cet article, nous allons vous montrer comment déplacer un document Google Drive dans votre propre Drive et dans un dossier partagé.
 
 ## Pourquoi déplacer un document Google Drive ?
