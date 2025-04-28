@@ -45,7 +45,7 @@ JuriPDF est une extension qui permet de télécharger facilement les PDF sur **S
 
 ## 🛠️ Installation temporaire (méthode complexe)
 
-🚀 **Idéal pour tester rapidement l'extension**
+🚀 **Idéal pour tester rapidement l'extension sans risque**
 
 💡 **⚠️ Elle doit être rechargée après chaque redémarrage de Firefox.**
 
