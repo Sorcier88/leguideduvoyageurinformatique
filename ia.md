@@ -1,7 +1,7 @@
 ---
 title: "IA"
 order: 6
-in_menu: true
+in_menu: false
 ---
 ![IA]({% link images/ia.png %}) <h2>Notice sur l'utilisation de l'intelligence artificielle</h2>
 <p>Certains articles de ce blog sont partiellement ou totalement rédigés avec l’aide d’outils d’intelligence artificielle, principalement pour gagner du temps, enrichir le contenu ou clarifier certains points.</p>
