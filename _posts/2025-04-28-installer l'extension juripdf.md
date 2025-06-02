@@ -2,6 +2,7 @@
 title: "Installer l'extension JuriPDF"
 ---
 {% include toc.html %} 
+{% include ia.html %} 
 
 JuriPDF est une extension qui permet de télécharger facilement les PDF sur **Stradalex** et **Lexnow**, avec un nommage automatique des fichiers pour une meilleure organisation.
 
