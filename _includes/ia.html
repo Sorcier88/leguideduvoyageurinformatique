@@ -14,26 +14,33 @@
   line-height: 1.4;
 }
 
-.notice-ia img {
-  width: 1.2em;
-  height: 1.2em;
+.notice-ia .ia-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4em;
+  height: 1.4em;
   margin-right: 6px;
-  object-fit: contain;
-  display: inline-block;
 }
 
-.notice-ia span {
+.notice-ia .ia-icon img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.notice-ia span.text {
   display: inline-block;
-  vertical-align: middle;
 }
 
 .notice-ia:hover {
   color: #000;
-  text-decoration: none !important;
 }
 </style>
 
-<a href="https://sorcier88.github.io/leguideduvoyageurinformatique/ia.html" class="notice-ia">
-  <img src="https://sorcier88.github.io/leguideduvoyageurinformatique/images/ia.png" alt="Icône IA">
-  Article rédigé avec l'aide de l'IA
+<a href="https://sorcier88.github.io/leguideduvoyageurinformatique/ia.html" class="notice-ia" target="_blank" rel="noopener noreferrer">
+    <span class="ia-icon">
+      <img src="https://sorcier88.github.io/leguideduvoyageurinformatique/images/ia.png" alt="Icône IA">
+     </span>
+  <span class="text">Article rédigé avec l'aide de l'IA</span>
 </a>
