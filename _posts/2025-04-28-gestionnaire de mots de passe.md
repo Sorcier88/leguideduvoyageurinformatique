@@ -1,6 +1,7 @@
 ---
 title: "Gestionnaire de mots de passe"
 ---
+{% include ia.html %} 
 Vous avez du mal à vous souvenir de tous vos mots de passe ? Vous utilisez le même mot de passe pour tous vos comptes en ligne ? Vous craignez que vos données personnelles soient piratées ou volées ? Si vous répondez oui à l’une de ces questions, vous devriez envisager d’utiliser un gestionnaire de mots de passe.
 
 ## Qu’est-ce qu’un gestionnaire de mots de passe ?
