@@ -1,6 +1,8 @@
 ---
 title: "Open Source"
 ---
+{% include ia.html %} 
+
 ## Qu'est-ce que cela signifie ?
 
 Imaginez que vous fabriquiez un gâteau délicieux et que vous décidiez de partager la recette avec le monde entier. L'Open Source, c'est un peu comme ça, mais pour les logiciels ! Lorsqu'un logiciel est Open Source, cela signifie que le code informatique utilisé pour le créer est accessible à tous. N'importe qui peut le consulter, le modifier et même le distribuer. C'est comme une recette de gâteau que tout le monde peut améliorer et partager. 
