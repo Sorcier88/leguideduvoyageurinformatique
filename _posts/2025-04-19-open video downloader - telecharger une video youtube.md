@@ -2,7 +2,7 @@
 title: "Open Video Downloader - Télécharger une vidéo YouTube"
 ---
 {% include toc.html %}
-
+{% include ia.html %} 
 
 Une demande assez courante que je reçois, c’est “Tu sais comment on télécharge une vidéo sur YouTube ?”
 
