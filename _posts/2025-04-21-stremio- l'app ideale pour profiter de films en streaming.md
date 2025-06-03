@@ -2,6 +2,7 @@
 title: "Stremio: L'App idéale pour profiter de films en streaming"
 ---
 {% include toc.html %}
+{% include ia.html %} 
 
 Imaginez un seul endroit où vous pouvez accéder à tous vos films et séries préférés, sans avoir à jongler entre différentes plateformes. C'est exactement ce que propose Stremio ! C'est comme une bibliothèque de streaming qui rassemble tout ce que vous aimez, pour une expérience pratique et sans tracas. 
 
