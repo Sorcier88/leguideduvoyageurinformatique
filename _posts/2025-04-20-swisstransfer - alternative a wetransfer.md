@@ -2,6 +2,7 @@
 title: "Swisstransfer - Alternative à WeTransfer"
 ---
 {% include toc.html %}
+{% include ia.html %} 
 
 Vous avez besoin de partager des fichiers volumineux en ligne, mais vous ne savez pas quel service utiliser ? Vous connaissez peut-être WeTransfer, l’un des sites les plus populaires du secteur, qui permet d’envoyer jusqu’à 2 Go de données gratuitement, sans inscription. Mais saviez-vous qu’il existe une alternative européenne, **plus respectueuse de votre vie privée et plus généreuse en termes de capacité de stockage** ? Il s’agit de [**SwissTransfer**](https://www.swisstransfer.com/), un service d’hébergement de fichiers basé en Suisse, qui vous offre la possibilité de transférer jusqu’à 50 Go de données gratuitement, avec une durée de conservation de 30 jours, et une protection par mot de passe. Dans cet article, nous allons vous présenter les principaux avantages de SwissTransfer par rapport à WeTransfer, et vous expliquer comment l’utiliser facilement.
 
