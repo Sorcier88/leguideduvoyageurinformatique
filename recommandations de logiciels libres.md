@@ -10,6 +10,24 @@ in_menu: true
 Marre de te ruiner en abonnements ou de te faire espionner par des applis douteuses ? Respire un coup, t’es au bon endroit. Ici, je te partage mes trouvailles : des logiciels libres, gratuits, souvent open source, et toujours pleins de super-pouvoirs. Que tu sois power-user, bidouilleur·se du dimanche ou juste en quête d’un bon outil, tu vas trouver ton bonheur. 🚀💡
 Installe, teste, kiffe. Et surtout, partage autour de toi ! 
 
+# Magasin d'application (Android) 
+
+
+  <article class="framalibre-notice">
+    <div>
+      <img src="https://framalibre.org/images/logo/F-Droid.png">
+    </div>
+    <div>
+      <h2>F-Droid</h2>
+      <p>F-Droid est une banque d'applications libres pour Android</p>
+      <div>
+        <a href="https://framalibre.org/notices/f-droid.html">Vers la notice Framalibre</a>
+        <a href="https://f-droid.org/repository/browse/?fdfilter=f-droid&amp;fdid=org.fdroid.fdroid">Vers le site</a>
+      </div>
+    </div>
+  </article>
+
+
 # Podcast 
 
   <article class="framalibre-notice">
