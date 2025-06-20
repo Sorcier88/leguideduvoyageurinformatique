@@ -89,7 +89,7 @@ Installe, teste, kiffe. Et surtout, partage autour de toi !
     </div>
   </article>
 
-<article class="framalibre-notice">
+<article class="framalibre-notice favori">
   <div>
     <img src="https://f-droid.org/repo/org.polymorphicshade.tubular/en-US/icon_dLI67gtj-J3IxbgK5GZQAKkBCOQ7j1yxVLk5Zzaxw0s=.png" alt="Logo Tubular">
   </div>
