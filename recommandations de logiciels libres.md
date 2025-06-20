@@ -91,7 +91,7 @@ Installe, teste, kiffe. Et surtout, partage autour de toi !
 
 <article class="framalibre-notice favori">
   <div>
-    <img src="https://github.com/polymorphicshade/Tubular/blob/master/assets/tubular/icon_app.svg" alt="Logo Tubular">
+    <img src="https://raw.githubusercontent.com/polymorphicshade/Tubular/refs/heads/master/assets/tubular/icon_app.svg" alt="Logo Tubular">
   </div>
   <div>
     <h2>Tubular</h2>
