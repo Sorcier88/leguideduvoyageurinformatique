@@ -1,3 +1,5 @@
+<!-- Fichier à sauvegarder comme "article-cover.html" dans votre dossier includes -->
+
 <style>
 /* Bloc image + titre */
 .article-cover {
@@ -58,9 +60,18 @@ article h1:first-child {
 </style>
 
 <div class="article-cover">
-  <h1>{{ include.titre | default: page.title }}</h1>
+  <h1>TEST TITRE FIXE</h1>
 </div>
 
+<!-- Version de debug - à supprimer après test -->
+<div style="background: red; color: white; padding: 10px; margin: 10px 0;">
+  DEBUG: 
+  <br>include.titre = "{{ include.titre }}"
+  <br>page.title = "{{ page.title }}"
+  <br>site.title = "{{ site.title }}"
+</div>
+
+<!-- SUPPRIMÉ TEMPORAIREMENT POUR DEBUG
 <script>
 // Supprime uniquement le titre automatique de Scribouilli, pas celui de la cover
 document.addEventListener('DOMContentLoaded', function() {
@@ -74,3 +85,4 @@ document.addEventListener('DOMContentLoaded', function() {
   }, 100);
 });
 </script>
+-->
