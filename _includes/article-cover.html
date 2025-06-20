@@ -1,3 +1,5 @@
+<!-- Fichier à sauvegarder comme "article-cover.html" dans votre dossier includes -->
+
 <style>
 /* Bloc image + titre */
 .article-cover {
@@ -32,15 +34,55 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
-/* Masquer le titre automatique de Scribouilli */
+/* Masquer le titre automatique de Scribouilli - Version renforcée */
+h1:first-of-type,
 .entry-title,
 h1.entry-title,
 .post-title,
-h1.post-title {
+h1.post-title,
+.article-title,
+h1.article-title,
+.page-title,
+h1.page-title,
+header h1,
+.header h1,
+.content h1:first-child,
+.main h1:first-child,
+article h1:first-child {
   display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 </style>
 
 <div class="article-cover">
   <h1>{{ include.titre | default: page.title }}</h1>
 </div>
+
+<script>
+// Force la suppression du titre automatique après chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+  // Attendre un peu pour laisser Scribouilli se charger
+  setTimeout(function() {
+    // Chercher tous les h1 qui pourraient être le titre automatique
+    const titles = document.querySelectorAll('h1');
+    const coverTitle = document.querySelector('.article-cover h1');
+    
+    titles.forEach(function(title) {
+      // Si ce n'est pas notre titre custom, on le masque
+      if (title !== coverTitle) {
+        title.style.display = 'none';
+        title.style.visibility = 'hidden';
+        title.style.opacity = '0';
+        title.style.height = '0';
+        title.style.margin = '0';
+        title.style.padding = '0';
+      }
+    });
+  }, 100);
+});
+</script>
