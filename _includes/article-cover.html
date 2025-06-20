@@ -1,5 +1,3 @@
-<!-- Fichier à sauvegarder comme "article-cover.html" dans votre dossier includes -->
-
 <style>
 /* Bloc image + titre */
 .article-cover {
@@ -64,25 +62,14 @@ article h1:first-child {
 </div>
 
 <script>
-// Supprime uniquement le titre automatique de Scribouilli (le premier h1)
+// Supprime uniquement le titre automatique de Scribouilli, pas celui de la cover
 document.addEventListener('DOMContentLoaded', function() {
   setTimeout(function() {
-    const coverTitle = document.querySelector('.article-cover h1');
-    const allTitles = document.querySelectorAll('h1');
+    // Trouve le premier h1 qui N'EST PAS dans .article-cover
+    const autoTitle = document.querySelector('h1:not(.article-cover h1):not(.article-cover *)');
     
-    // Parcourir les h1 et supprimer seulement le premier qui n'est pas notre cover
-    for (let i = 0; i < allTitles.length; i++) {
-      const title = allTitles[i];
-      
-      // Si c'est le premier h1 ET que ce n'est pas notre titre de cover
-      if (title !== coverTitle) {
-        // Vérifier si c'est vraiment le titre automatique (avant notre cover dans le DOM)
-        const coverDiv = document.querySelector('.article-cover');
-        if (coverDiv && title.compareDocumentPosition(coverDiv) & Node.DOCUMENT_POSITION_FOLLOWING) {
-          title.style.display = 'none';
-          break; // On s'arrête après avoir supprimé le premier
-        }
-      }
+    if (autoTitle) {
+      autoTitle.style.display = 'none';
     }
   }, 100);
 });
