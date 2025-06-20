@@ -71,3 +71,34 @@ Installe, teste, kiffe. Et surtout, partage autour de toi !
     </div>
   </div>
 </article> 
+
+# 🎬 Alternative à YouTube
+
+
+  <article class="framalibre-notice">
+    <div>
+      <img src="https://framalibre.org/images/logo/NewPipe.png">
+    </div>
+    <div>
+      <h2>NewPipe</h2>
+      <p>Client multimédia YouTube, PeerTube, SoundCloud &amp; MediaCCC libre pour Android. Attention c'est disponible sur F-Droid</p>
+      <div>
+        <a href="https://framalibre.org/notices/newpipe.html">Vers la notice Framalibre</a>
+        <a href="https://newpipe.net">Vers le site</a>
+      </div>
+    </div>
+  </article>
+
+<article class="framalibre-notice">
+  <div>
+    <img src="https://f-droid.org/repo/org.polymorphicshade.tubular/en-US/icon_dLI67gtj-J3IxbgK5GZQAKkBCOQ7j1yxVLk5Zzaxw0s=.png" alt="Logo Tubular">
+  </div>
+  <div>
+    <h2>Tubular</h2>
+    <p>Une alternative libre à YouTube sur Android, avec <strong>SponsorBlock</strong> pour zapper les pubs et segments sponsorisés, et <strong>Return YouTube Dislike</strong> intégré pour retrouver les dislikes. Léger, rapide et sans suivi.</p>
+    <div>
+      <a href="https://f-droid.org/fr/packages/org.polymorphicshade.tubular/">Disponible sur F-Droid</a>
+      <a href="https://github.com/PolymorphicShade/Tubular">Code source (GitHub)</a>
+    </div>
+  </div>
+</article> 
