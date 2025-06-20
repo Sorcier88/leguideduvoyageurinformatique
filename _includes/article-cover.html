@@ -1,0 +1,46 @@
+<style>
+/* Bloc image + titre */
+.article-cover {
+  position: relative;
+  background-image: url('{{ include.image }}');
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.article-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* effet sombre */
+  border-radius: 12px;
+}
+
+.article-cover h1 {
+  position: relative;
+  color: white;
+  font-size: 2.5rem;
+  margin: 0;
+  padding: 0 1rem;
+  z-index: 1;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Masquer le titre automatique de Scribouilli */
+.entry-title,
+h1.entry-title,
+.post-title,
+h1.post-title {
+  display: none !important;
+}
+</style>
+
+<div class="article-cover">
+  <h1>{{ include.titre | default: page.title }}</h1>
+</div>
