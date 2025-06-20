@@ -10,7 +10,7 @@ in_menu: true
 Marre de te ruiner en abonnements ou de te faire espionner par des applis douteuses ? Respire un coup, t’es au bon endroit. Ici, je te partage mes trouvailles : des logiciels libres, gratuits, souvent open source, et toujours pleins de super-pouvoirs. Que tu sois power-user, bidouilleur·se du dimanche ou juste en quête d’un bon outil, tu vas trouver ton bonheur. 🚀💡
 Installe, teste, kiffe. Et surtout, partage autour de toi ! 
 
-# Magasin d'application (Android) 
+# 📲 Magasin d'application (Android) 
 
 
   <article class="framalibre-notice">
@@ -28,7 +28,7 @@ Installe, teste, kiffe. Et surtout, partage autour de toi !
   </article>
 
 
-# Podcast 
+# 🎧 Podcast 
 
   <article class="framalibre-notice">
     <div>
