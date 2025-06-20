@@ -64,25 +64,26 @@ article h1:first-child {
 </div>
 
 <script>
-// Force la suppression du titre automatique après chargement de la page
+// Supprime uniquement le titre automatique de Scribouilli (le premier h1)
 document.addEventListener('DOMContentLoaded', function() {
-  // Attendre un peu pour laisser Scribouilli se charger
   setTimeout(function() {
-    // Chercher tous les h1 qui pourraient être le titre automatique
-    const titles = document.querySelectorAll('h1');
     const coverTitle = document.querySelector('.article-cover h1');
+    const allTitles = document.querySelectorAll('h1');
     
-    titles.forEach(function(title) {
-      // Si ce n'est pas notre titre custom, on le masque
+    // Parcourir les h1 et supprimer seulement le premier qui n'est pas notre cover
+    for (let i = 0; i < allTitles.length; i++) {
+      const title = allTitles[i];
+      
+      // Si c'est le premier h1 ET que ce n'est pas notre titre de cover
       if (title !== coverTitle) {
-        title.style.display = 'none';
-        title.style.visibility = 'hidden';
-        title.style.opacity = '0';
-        title.style.height = '0';
-        title.style.margin = '0';
-        title.style.padding = '0';
+        // Vérifier si c'est vraiment le titre automatique (avant notre cover dans le DOM)
+        const coverDiv = document.querySelector('.article-cover');
+        if (coverDiv && title.compareDocumentPosition(coverDiv) & Node.DOCUMENT_POSITION_FOLLOWING) {
+          title.style.display = 'none';
+          break; // On s'arrête après avoir supprimé le premier
+        }
       }
-    });
+    }
   }, 100);
 });
 </script>
