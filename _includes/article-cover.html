@@ -1,5 +1,3 @@
-<!-- Fichier à sauvegarder comme "article-cover.html" dans votre dossier includes -->
-
 <style>
 /* Bloc image + titre */
 .article-cover {
@@ -79,28 +77,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }, 100);
 });
-</script>
-
-<!-- Version de debug - à supprimer après test -->
-<div style="background: red; color: white; padding: 10px; margin: 10px 0;">
-  DEBUG: 
-  <br>include.titre = "{{ include.titre }}"
-  <br>page.title = "{{ page.title }}"
-  <br>site.title = "{{ site.title }}"
-</div>
-
-<!-- SUPPRIMÉ TEMPORAIREMENT POUR DEBUG
-<script>
-// Supprime uniquement le titre automatique de Scribouilli, pas celui de la cover
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
-    // Trouve le premier h1 qui N'EST PAS dans .article-cover
-    const autoTitle = document.querySelector('h1:not(.article-cover h1):not(.article-cover *)');
-    
-    if (autoTitle) {
-      autoTitle.style.display = 'none';
-    }
-  }, 100);
-});
-</script>
--->
+</script> 
