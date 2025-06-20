@@ -104,7 +104,7 @@
 }
 
 .favori::before {
-  content: "💙 Coup de cœur";
+  content: "⭐ Favori";
   position: absolute;
   top: -10px;
   right: -10px;
