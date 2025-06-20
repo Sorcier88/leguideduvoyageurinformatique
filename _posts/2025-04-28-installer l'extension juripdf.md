@@ -1,7 +1,7 @@
 ---
 title: "Installer l'extension JuriPDF"
 ---
-{% include article-cover.html image="https://unsplash.com/photos/Gr3PSwN9kzk/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8MzR8fGJpYmxpb3RoJUMzJUE4cXVlc3xmcnwwfDB8fHwxNzUwNDYxNzYyfDA&force=true" %} 
+{% include article-cover.html image="https://unsplash.com/photos/NIJuEQw0RKg/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Nnx8YmlibGlvdGglQzMlQThxdWVzfGZyfDB8MHx8fDE3NTA0NjE3NjF8MA&force=true" %} 
 {% include toc.html %} 
 {% include ia.html %} 
 
