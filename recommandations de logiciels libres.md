@@ -13,7 +13,7 @@ Installe, teste, kiffe. Et surtout, partage autour de toi !
 # 📲 Magasin d'application (Android) 
 
 
-  <article class="framalibre-notice">
+  <article class="framalibre-notice favori">
     <div>
       <img src="https://framalibre.org/images/logo/F-Droid.png">
     </div>
