@@ -3,7 +3,48 @@ title: "Recommandations de logiciels libres"
 order: 2
 in_menu: true
 ---
-<img src="https://unsplash.com/photos/6O6BZerihQw/download?ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzUwNDMyNzgzfA&force=true" alt="Image de couverture" style="width:100%; height:auto; border-radius:10px; margin-bottom:1em;">
+<style>
+/* Bloc image + titre */
+.article-cover {
+  position: relative;
+  background-image: url('https://unsplash.com/photos/6O6BZerihQw/download?ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzUwNDMyNzgzfA&force=true');
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.article-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* effet sombre */
+  border-radius: 12px;
+}
+
+.article-cover h1 {
+  position: relative;
+  color: white;
+  font-size: 2.5rem;
+  margin: 0;
+  padding: 0 1rem;
+  z-index: 1;
+}
+
+/* Masquer le vrai titre */
+h1.entry-title {
+  display: none;
+}
+</style>
+
+<div class="article-cover">
+  <h1>Recommandations de logiciels libres</h1>
+</div>
 
 
 {% include toc.html %}
