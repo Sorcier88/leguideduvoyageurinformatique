@@ -3,7 +3,7 @@ title: "Recommandations de logiciels libres"
 order: 2
 in_menu: true
 ---
-{% include article-cover.html image="https://unsplash.com/photos/6O6BZerihQw/download?ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzUwNDMyNzgzfA&force=true" %}
+{% include article-cover.html image="https://unsplash.com/photos/jfVCnapgD5M/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8N3x8bGFjJTIwZGUlMjBtb250YWduZXxmcnwwfHx8fDE3NTA0NjI3Nzd8MA&force=true" %}
 
 {% include toc.html %}
 {% include ia.html %} 
