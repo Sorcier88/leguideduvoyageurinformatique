@@ -6,11 +6,11 @@ in_menu: true
 {% include toc.html %}
 {% include ia.html %} 
 
-## 🧙‍♂️ Le coffre aux trésors du logiciel libre 
+# 🧙‍♂️ Le coffre aux trésors du logiciel libre 
 Marre de te ruiner en abonnements ou de te faire espionner par des applis douteuses ? Respire un coup, t’es au bon endroit. Ici, je te partage mes trouvailles : des logiciels libres, gratuits, souvent open source, et toujours pleins de super-pouvoirs. Que tu sois power-user, bidouilleur·se du dimanche ou juste en quête d’un bon outil, tu vas trouver ton bonheur. 🚀💡
 Installe, teste, kiffe. Et surtout, partage autour de toi ! 
 
-## Podcast 
+# Podcast 
 
   <article class="framalibre-notice">
     <div>
@@ -49,7 +49,7 @@ Installe, teste, kiffe. Et surtout, partage autour de toi !
     <p>Un convertisseur de podcasts Radio-Canada Ohdio vers des flux RSS standards. Pratique pour écouter tes émissions dans Apple Podcasts, AntennaPod ou n’importe quelle appli de balados.</p>
     <div>
       <a href="https://ohdieux.ligature.ca/">Vers le site</a>
-      <a href="https://codeberg.org/ligature/ohdieux">Code source (Codeberg)</a>
+      <a href="https://github.com/keotl/ohdieux">Code source (GitHub)</a>
     </div>
   </div>
 </article> 
