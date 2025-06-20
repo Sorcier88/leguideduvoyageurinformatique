@@ -3,6 +3,9 @@ title: "Recommandations de logiciels libres"
 order: 2
 in_menu: true
 ---
+<img src="https://unsplash.com/photos/6O6BZerihQw/download?ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzUwNDMyNzgzfA&force=true" alt="Image de couverture" style="width:100%; height:auto; border-radius:10px; margin-bottom:1em;">
+
+
 {% include toc.html %}
 {% include ia.html %} 
 
