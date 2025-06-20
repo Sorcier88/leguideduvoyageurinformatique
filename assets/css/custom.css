@@ -97,7 +97,7 @@
 }
 
 .favori {
-  border: 2px solid #007BFF;
+  border: 2px solid var(--couleur-primaire);
   border-radius: 8px;
   position: relative;
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
@@ -108,19 +108,11 @@
   position: absolute;
   top: -10px;
   right: -10px;
-  background: #007BFF;
+  background: var(--couleur-primaire);
   color: white;
   font-size: 0.75em;
   padding: 3px 8px;
   border-radius: 12px;
   font-weight: bold;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-
-.article-cover h1 {
-  background: red !important; /* pour voir si l'élément existe */
-  color: yellow !important;
-  font-size: 50px !important;
-  z-index: 999 !important;
 }
