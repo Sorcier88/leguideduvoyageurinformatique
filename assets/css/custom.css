@@ -2,7 +2,6 @@
     --couleur-primaire : #0E6270;
 }
 
-
   .table-of-contents {
     background: #f8f8f8;
     padding: 15px;
@@ -39,8 +38,8 @@
 .framalibre-notice {
   display: flex;
   background-color: white;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0.25rem;
+  border: 1px solid rgba(0, 0, 0, 0.125); 
+  border-radius: 12px;
 }
 
 .framalibre-notice:not(:last-child) {
