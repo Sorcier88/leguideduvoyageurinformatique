@@ -97,7 +97,7 @@
 }
 
 .favori {
-  border: 2px solid var(--couleur-primaire);
+  border: 3px solid var(--couleur-primaire);
   border-radius: 8px;
   position: relative;
   box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
