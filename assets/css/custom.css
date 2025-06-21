@@ -111,7 +111,7 @@
   background: var(--couleur-primaire);
   color: white;
   font-size: 0.75em;
-  padding: 4px 10px;
+  padding: 4px 10px 3px 8px;
   border-radius: 12px;
   font-weight: bold;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
