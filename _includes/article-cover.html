@@ -36,25 +36,29 @@
   line-height: 1.2;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  hyphens: auto;
+  hyphens: none;
   text-align: center;
+  white-space: normal;
 }
 
 /* Responsive pour mobile */
 @media (max-width: 768px) {
   .article-cover .custom-title {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     padding: 0 0.5rem;
-    line-height: 1.1;
+    line-height: 1.3;
   }
 }
 
 @media (max-width: 480px) {
   .article-cover .custom-title {
-    font-size: 1.4rem;
+    font-size: 2rem;
     padding: 0 0.5rem;
+    line-height: 1.4;
   }
-}/* Masquer le titre automatique de Scribouilli - Version renforcée */
+}
+
+/* Masquer le titre automatique de Scribouilli - Version renforcée */
 h1:first-of-type,
 .entry-title,
 h1.entry-title,
