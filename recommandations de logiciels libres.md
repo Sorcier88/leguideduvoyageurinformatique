@@ -12,6 +12,52 @@ in_menu: true
 Marre de te ruiner en abonnements ou de te faire espionner par des applis douteuses ? Respire un coup, t’es au bon endroit. Ici, je te partage mes trouvailles : des logiciels libres, gratuits, souvent open source, et toujours pleins de super-pouvoirs. Que tu sois power-user, bidouilleur·se du dimanche ou juste en quête d’un bon outil, tu vas trouver ton bonheur. 🚀💡
 Installe, teste, kiffe. Et surtout, partage autour de toi ! 
 
+# 🧩 Extensions
+
+  <article class="framalibre-notice favori">
+    <div>
+      <img src="https://framalibre.org/images/logo/uBlock%20Origin.png">
+    </div>
+    <div>
+      <h2>uBlock Origin</h2>
+      <p>Une extension vous laissant le choix de bloquer, ou non, les publicités des sites web que vous rencontrez.</p>
+      <div>
+        <a href="https://framalibre.org/notices/ublock-origin.html">Vers la notice Framalibre</a>
+        <a href="https://github.com/gorhill/uBlock">Vers le site</a>
+      </div>
+    </div>
+  </article>
+
+<article class="framalibre-notice favori">
+    <div>
+      <img src="https://github.com/Sorcier88/JuriPDF/blob/main/icon.png?raw=true">
+    </div>
+    <div>
+      <h2>JuriPDF</h2>
+      <p>Une extension  qui permet de télécharger facilement les PDF sur Stradalex et Lexnow, avec un nommage automatique des fichiers pour une meilleure organisation.</p>
+      <div>
+        <a href="https://sorcier88.github.io/leguideduvoyageurinformatique/2025/04/28/installer-l'extension-juripdf.html">Vers l'article de blog</a>
+        <a href="https://github.com/Sorcier88/JuriPDF">Code source (GitHub)</a>
+      </div>
+    </div>
+  </article>
+
+
+  <article class="framalibre-notice">
+    <div>
+      <img src="https://framalibre.org/images/logo/SponsorBlock.png">
+    </div>
+    <div>
+      <h2>SponsorBlock</h2>
+      <p>SponsorBlock est une extension et une API pour sauter des segments de sponsor dans des vidéos YouTube.</p>
+      <div>
+        <a href="https://framalibre.org/notices/sponsorblock.html">Vers la notice Framalibre</a>
+        <a href="https://sponsor.ajay.app/">Vers le site</a>
+      </div>
+    </div>
+  </article>
+
+
 # 📲 Magasin d'application (Android) 
 
 
