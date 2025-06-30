@@ -3,12 +3,7 @@ title: "Analyseur de Statistiques AntennaPod"
 order: 7
 in_menu: true
 ---
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyseur AntennaPod</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+<style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8; /* Light blue-gray background */
@@ -315,7 +310,6 @@ in_menu: true
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <!-- html2canvas for image export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
 <body class="bg-gray-100 p-6">
     <div class="container">
         <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">
@@ -1751,5 +1745,4 @@ in_menu: true
 
     <!-- sql.js library for client-side SQLite processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
-</body>
-</html> 
+</body> 
