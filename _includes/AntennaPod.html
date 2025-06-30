@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +17,7 @@
         /* All other CSS styles are now directly on class names, assuming they are unique enough
            or that the host page's CSS won't heavily conflict.
            This simplifies selectors and might resolve rendering issues. */
-        .container {
+        #antennapod-analyzer-app-container .container { /* Re-scoped the container class */
             max-width: 1200px; /* Wider container for bento layout */
             margin: 40px auto;
             padding: 20px;
@@ -32,17 +30,17 @@
         }
         /* Grid for main sections if needed, or keep as flow */
         @media (min-width: 768px) {
-            .main-content-grid {
+            #antennapod-analyzer-app-container .main-content-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
                 gap: 20px;
             }
-            .full-width-card {
+            #antennapod-analyzer-app-container .full-width-card {
                 grid-column: 1 / -1; /* Spans all columns */
             }
         }
 
-        .card {
+        #antennapod-analyzer-app-container .card {
             background-color: #ffffff; /* White background for cards */
             border-radius: 12px; /* Consistent rounded corners */
             padding: 25px;
@@ -50,11 +48,11 @@
             border: 1px solid #e2e8f0; /* Light border */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-        .card:hover {
+        #antennapod-analyzer-app-container .card:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
-        .file-input-wrapper {
+        #antennapod-analyzer-app-container .file-input-wrapper {
             position: relative;
             overflow: hidden;
             display: inline-block;
@@ -65,11 +63,11 @@
             transition: all 0.3s ease;
             background-color: #e6f2f3; /* Very light blue-green background */
         }
-        .file-input-wrapper:hover, .file-input-wrapper.dragover {
+        #antennapod-analyzer-app-container .file-input-wrapper:hover, #antennapod-analyzer-app-container .file-input-wrapper.dragover {
             border-color: #0e6270;
             background-color: #d8e9eb;
         }
-        .button {
+        #antennapod-analyzer-app-container .button {
             background-color: #0e6270; /* Primary blue-green */
             color: white;
             padding: 12px 25px;
@@ -79,22 +77,22 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             font-weight: 600;
         }
-        .button:hover {
+        #antennapod-analyzer-app-container .button:hover {
             background-color: #0a4c57; /* Darker blue-green */
             transform: translateY(-1px);
         }
-        .chart-container {
+        #antennapod-analyzer-app-container .chart-container {
             position: relative;
             height: 300px;
             width: 100%;
             margin-top: 20px;
             min-height: 300px; /* Base minimum height */
         }
-        #podcastEpisodeCountChart-container {
+        #antennapod-analyzer-app-container #podcastEpisodeCountChart-container {
             min-height: auto;
         }
 
-        .loading-overlay {
+        #antennapod-analyzer-app-container .loading-overlay {
             position: absolute;
             top: 0;
             left: 0;
@@ -107,7 +105,7 @@
             border-radius: 16px;
             z-index: 10;
         }
-        .spinner {
+        #antennapod-analyzer-app-container .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-left-color: #0e6270;
             border-radius: 50%;
@@ -118,7 +116,7 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        .message-box {
+        #antennapod-analyzer-app-container .message-box {
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 8px;
@@ -126,22 +124,22 @@
             display: none;
             text-align: center;
         }
-        .message-box.success {
+        #antennapod-analyzer-app-container .message-box.success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        .message-box.error {
+        #antennapod-analyzer-app-container .message-box.error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        .message-box.info {
+        #antennapod-analyzer-app-container .message-box.info {
             background-color: #e6f2f3;
             color: #0e6270;
             border: 1px solid #60a3ac;
         }
-        textarea {
+        #antennapod-analyzer-app-container textarea {
             width: 100%;
             height: 150px;
             padding: 15px;
@@ -152,13 +150,13 @@
             color: #2d3748;
             font-size: 0.95rem;
         }
-        .podcast-item {
+        #antennapod-analyzer-app-container .podcast-item {
             display: flex;
             align-items: center;
             margin-bottom: 8px;
             padding: 5px 0;
         }
-        .podcast-item img {
+        #antennapod-analyzer-app-container .podcast-item img {
             width: 40px;
             height: 40px;
             border-radius: 6px;
@@ -166,7 +164,7 @@
             object-fit: cover;
             flex-shrink: 0;
         }
-        #wrappedContent {
+        #antennapod-analyzer-app-container #wrappedContent {
             padding: 25px;
             background-color: #e2e8f0;
             border-radius: 12px;
@@ -176,26 +174,26 @@
             font-family: 'Inter', sans-serif;
             color: #2d3748;
         }
-        #wrappedContent h3 {
+        #antennapod-analyzer-app-container #wrappedContent h3 {
             color: #083e45;
             font-size: 1.6rem;
             margin-bottom: 15px;
             font-weight: 700;
         }
-        #wrappedContent p {
+        #antennapod-analyzer-app-container #wrappedContent p {
             color: #4a5568;
             font-size: 1.05rem;
             line-height: 1.6;
             margin-bottom: 12px;
         }
-        #wrappedContent .wrapped-list {
+        #antennapod-analyzer-app-container #wrappedContent .wrapped-list {
             list-style: none;
             padding: 0;
             text-align: left;
             max-width: 90%;
             margin: 0 auto 20px auto;
         }
-        #wrappedContent .wrapped-list li {
+        #antennapod-analyzer-app-container #wrappedContent .wrapped-list li {
             background-color: #ffffff;
             padding: 10px 15px;
             border-radius: 8px;
@@ -205,22 +203,22 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             font-size: 0.95rem;
         }
-        #wrappedContent .wrapped-list li .icon {
+        #antennapod-analyzer-app-container #wrappedContent .wrapped-list li .icon {
             margin-right: 10px;
             font-size: 1.3em;
             color: #0e6270;
         }
-        .export-buttons {
+        #antennapod-analyzer-app-container .export-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
             margin-top: 20px;
         }
-        .podcast-search-container {
+        #antennapod-analyzer-app-container .podcast-search-container {
             position: relative;
             width: 100%;
         }
-        .podcast-suggestions {
+        #antennapod-analyzer-app-container .podcast-suggestions {
             position: absolute;
             top: 100%;
             left: 0;
@@ -233,15 +231,15 @@
             z-index: 10;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
         }
-        .podcast-suggestion-item {
+        #antennapod-analyzer-app-container .podcast-suggestion-item {
             padding: 10px 15px;
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
-        .podcast-suggestion-item:hover {
+        #antennapod-analyzer-app-container .podcast-suggestion-item:hover {
             background-color: #f0f4f8;
         }
-        .search-clear-button {
+        #antennapod-analyzer-app-container .search-clear-button {
             background-color: #e53e3e;
             color: white;
             padding: 10px 15px;
@@ -251,10 +249,10 @@
             margin-left: 10px;
             font-weight: 600;
         }
-        .search-clear-button:hover {
+        #antennapod-analyzer-app-container .search-clear-button:hover {
             background-color: #c53030;
         }
-        .filter-section {
+        #antennapod-analyzer-app-container .filter-section {
             background-color: #f0f4f8;
             border-radius: 16px;
             padding: 25px;
@@ -262,26 +260,26 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             border: 1px solid #e2e8f0;
         }
-        .filter-section h2 {
+        #antennapod-analyzer-app-container .filter-section h2 {
             font-size: 1.5rem;
             font-weight: 700;
             color: #083e45;
             margin-bottom: 20px;
             text-align: center;
         }
-        .filter-group {
+        #antennapod-analyzer-app-container .filter-group {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
         }
-        .filter-group label {
+        #antennapod-analyzer-app-container .filter-group label {
             flex-shrink: 0;
             margin-right: 15px;
             font-weight: 600;
             color: #4a5568;
             width: 150px;
         }
-        .filter-group select, .filter-group input[type="text"] {
+        #antennapod-analyzer-app-container .filter-group select, #antennapod-analyzer-app-container .filter-group input[type="text"] {
             flex-grow: 1;
             padding: 10px 15px;
             border: 1px solid #cbd5e0;
@@ -290,19 +288,19 @@
             color: #2d3748;
             font-size: 1rem;
         }
-        .chart-period-info {
+        #antennapod-analyzer-app-container .chart-period-info {
             text-align: center;
             font-size: 0.9rem;
             color: #0e6270;
             margin-bottom: 10px;
             font-weight: 500;
         }
-        #topPodcastsTimeListFull, #monthlyPodcastListFull, #podcastStatsListFull {
+        #antennapod-analyzer-app-container #topPodcastsTimeListFull, #antennapod-analyzer-app-container #monthlyPodcastListFull, #antennapod-analyzer-app-container #podcastStatsListFull {
             max-height: 300px;
             overflow-y: hidden;
             transition: max-height 0.5s ease-out;
         }
-        #topPodcastsTimeListFull.expanded, #monthlyPodcastListFull.expanded, #podcastStatsListFull.expanded {
+        #antennapod-analyzer-app-container #topPodcastsTimeListFull.expanded, #antennapod-analyzer-app-container #monthlyPodcastListFull.expanded, #antennapod-analyzer-app-container #podcastStatsListFull.expanded {
             max-height: 1000px;
             overflow-y: auto;
         }
@@ -1863,4 +1861,3 @@
     <!-- html2canvas for image export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
-</html>
