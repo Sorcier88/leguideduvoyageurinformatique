@@ -1,5 +1,5 @@
 ---
-title: "Analyseur de Statistiques AntennaPod"
+title: "Statistiques AntennaPod"
 order: 7
 in_menu: true
 ---
