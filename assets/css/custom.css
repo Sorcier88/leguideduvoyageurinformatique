@@ -2,8 +2,8 @@
     --couleur-primaire : #0E6270; 
 }
 
-.main { 
-    max-width: 100%;
+main {
+    max-width: 100% !important;
 }
 
  .h1 { 
