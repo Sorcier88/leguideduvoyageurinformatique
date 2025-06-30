@@ -247,11 +247,17 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
-            margin-left: 10px;
+            margin-left: 0; /* Changed for mobile */
+            margin-top: 10px; /* Added for mobile */
             font-weight: 600;
+            width: 100%; /* Full width on mobile */
         }
-        #antennapod-analyzer-app-container .search-clear-button:hover {
-            background-color: #c53030;
+        @media (min-width: 768px) {
+            #antennapod-analyzer-app-container .search-clear-button {
+                margin-top: 0; /* Reset for desktop */
+                margin-left: 10px; /* Reset for desktop */
+                width: auto; /* Auto width on desktop */
+            }
         }
         #antennapod-analyzer-app-container .filter-section {
             background-color: #f0f4f8;
@@ -270,18 +276,34 @@
         }
         #antennapod-analyzer-app-container .filter-group {
             display: flex;
-            align-items: center;
+            flex-direction: column; /* Stack vertically on mobile */
+            align-items: flex-start; /* Align items to start on mobile */
             margin-bottom: 15px;
+        }
+        @media (min-width: 768px) {
+            #antennapod-analyzer-app-container .filter-group {
+                flex-direction: row; /* Back to row on larger screens */
+                align-items: center; /* Center items on larger screens */
+            }
         }
         #antennapod-analyzer-app-container .filter-group label {
             flex-shrink: 0;
-            margin-right: 15px;
+            margin-right: 0; /* Remove right margin on mobile */
+            margin-bottom: 8px; /* Add bottom margin on mobile */
             font-weight: 600;
             color: #4a5568;
-            width: 150px;
+            width: auto; /* Allow label to take auto width on mobile */
+        }
+        @media (min-width: 768px) {
+            #antennapod-analyzer-app-container .filter-group label {
+                margin-right: 15px; /* Restore right margin on larger screens */
+                margin-bottom: 0; /* Remove bottom margin on larger screens */
+                width: 150px; /* Restore fixed width on larger screens */
+            }
         }
         #antennapod-analyzer-app-container .filter-group select, #antennapod-analyzer-app-container .filter-group input[type="text"] {
             flex-grow: 1;
+            width: 100%; /* Make them take full width on mobile */
             padding: 10px 15px;
             border: 1px solid #cbd5e0;
             border-radius: 8px;
@@ -316,12 +338,24 @@
             <div id="messageBox" class="message-box"></div>
 
             <div class="card mb-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">Uploader votre base de données AntennaPod (.db)</h2>
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Uploader votre sauvegarde AntennaPod</h2>
                 <p class="text-gray-600 mb-4">
-                    Veuillez sélectionner le fichier \`AntennaPod.db\` de votre installation AntennaPod.
-                    Vous pouvez généralement le trouver dans le dossier de données de l'application sur votre appareil Android.
-                    <br><br>
-                    <span class="text-sm text-red-500">Note: Les images de couverture des podcasts seront affichées si elles sont accessibles. Si une image ne peut pas être chargée, une image de remplacement générique sera utilisée.</span>
+                    <ol class="list-decimal ml-5 mb-4">
+                        <li><strong>Créer une sauvegarde dans AntennaPod</strong>
+                            <ul class="list-disc ml-5 mt-2">
+                                <li>Ouvrez AntennaPod et touchez l’icône ☰ (menu hamburger) en haut à gauche.</li>
+                                <li>Allez dans Préférences.</li>
+                                <li>Sélectionnez Importation / Exportation.</li>
+                                <li>Touchez Exporter la base de données pour générer votre fichier de sauvegarde (AntennaPod.db).</li>
+                                <li>Choisissez le dossier de destination sur votre appareil (stockage interne ou carte SD).</li>
+                            </ul>
+                        </li>
+                        <li class="mt-4"><strong>Importer votre sauvegarde dans la web app</strong>
+                            <p class="mt-2">Veuillez sélectionner le fichier de sauvegarde AntennaPod (AntennaPod.db) que vous venez d’exporter.</p>
+                            <p>Vous le trouverez dans le dossier que vous avez choisi à l’étape précédente.</p>
+                        </li>
+                    </ol>
+                    <span class="text-sm text-red-500">Remarque : Les couvertures de vos podcasts seront affichées si elles sont accessibles en ligne. En cas d’échec de chargement, une illustration générique de remplacement sera utilisée.</span>
                 </p>
                 <div id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white hover:border-blue-400 transition-colors duration-200">
                     <label for="db-file-input" class="cursor-pointer">
