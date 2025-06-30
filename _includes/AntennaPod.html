@@ -187,14 +187,14 @@
             line-height: 1.6;
             margin-bottom: 12px;
         }
-        #antennapod-analyzer-app-container #wrappedContent .wrapped-list {
+        #antennapod-analyzer-app-container .wrapped-list {
             list-style: none;
             padding: 0;
             text-align: left;
             max-width: 90%;
             margin: 0 auto 20px auto;
         }
-        #antennapod-analyzer-app-container #wrappedContent .wrapped-list li {
+        #antennapod-analyzer-app-container .wrapped-list li {
             background-color: #ffffff;
             padding: 10px 15px;
             border-radius: 8px;
@@ -204,7 +204,7 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             font-size: 0.95rem;
         }
-        #antennapod-analyzer-app-container #wrappedContent .wrapped-list li .icon {
+        #antennapod-analyzer-app-container .wrapped-list li .icon {
             margin-right: 10px;
             font-size: 1.3em;
             color: #0e6270;
@@ -237,7 +237,8 @@
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
-        #antennapod-analyzer-app-container .podcast-suggestion-item:hover {
+        #antennapod-analyzer-app-container .podcast-suggestion-item:hover,
+        #antennapod-analyzer-app-container .podcast-suggestion-item.highlighted { /* Added highlighted class */
             background-color: #f0f4f8;
         }
         #antennapod-analyzer-app-container .search-clear-button {
@@ -301,7 +302,7 @@
                 width: 150px; /* Restore fixed width on larger screens */
             }
         }
-        #antennapod-analyzer-app-container .filter-group select, #antennapod-analyzer-app-container .filter-group input[type="text"] {
+        #antennapod-analyzer-app-container .filter-group select, #antennapod-analyzer-app-container .filter-group input[type="text"], #antennapod-analyzer-app-container .filter-group input[type="date"] {
             flex-grow: 1;
             width: 100%; /* Make them take full width on mobile */
             padding: 10px 15px;
@@ -377,13 +378,15 @@
                 <div class="card full-width-card filter-section">
                     <h2>Filtres de Données</h2>
                     <div class="filter-group">
-                        <label for="monthFilter">Sélectionnez un mois:</label>
-                        <select id="monthFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            <option value="">Toutes les données</option>
-                        </select>
+                        <label for="startDateFilter">Date de début&nbsp;:</label>
+                        <input type="date" id="startDateFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                     <div class="filter-group">
-                        <label for="podcastSearchInput">Rechercher un podcast:</label>
+                        <label for="endDateFilter">Date de fin&nbsp;:</label>
+                        <input type="date" id="endDateFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                    <div class="filter-group">
+                        <label for="podcastSearchInput">Rechercher un podcast&nbsp;:</label>
                         <div class="podcast-search-container">
                             <input type="text" id="podcastSearchInput" placeholder="Tapez le nom du podcast..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             <div id="podcastSuggestions" class="podcast-suggestions hidden"></div>
@@ -391,19 +394,26 @@
                         <button id="clearPodcastSelection" class="search-clear-button">Effacer</button>
                         <input type="hidden" id="selectedPodcastHiddenInput"> <!-- To store the actual selected podcast title -->
                     </div>
+                    <div class="filter-group">
+                        <label for="tagFilter">Sélectionnez un tag&nbsp;:</label>
+                        <select id="tagFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Tous les tags</option>
+                            <option value="Sans Tag">Sans Tag</option>
+                        </select>
+                    </div>
                     <div class="filter-group mt-4">
-                        <label for="podcastDisplayLimitInput">Nombre de podcasts à afficher :</label>
+                        <label for="podcastDisplayLimitInput">Nombre de podcasts à afficher&nbsp;:</label>
                         <input type="number" id="podcastDisplayLimitInput" value="10" min="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                     </div>
                 </div>
 
                 <div class="card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Vue d'ensemble</h3>
-                    <p><strong>🎧 Temps total d'écoute :</strong> <span id="totalListeningTime">0 heures</span></p>
-                    <p><strong>📻 Épisodes écoutés :</strong> <span id="episodesListened">0</span></p>
-                    <p><strong>✅ Épisodes terminés (>90%) :</strong> <span id="episodesCompleted">0 (0%)</span></p>
-                    <p><strong>⏱️ Durée moyenne par écoute :</strong> <span id="avgListenDuration">0 minutes</span></p>
-                    <p><strong>📊 Progression moyenne :</strong> <span id="avgProgress">0%</span></p>
+                    <p><strong>🎧 Temps total d'écoute&nbsp;:</strong> <span id="totalListeningTime">0 heures</span></p>
+                    <p><strong>📻 Épisodes écoutés&nbsp;:</strong> <span id="episodesListened">0</span></p>
+                    <p><strong>✅ Épisodes terminés (>90%)&nbsp;:</strong> <span id="episodesCompleted">0 (0%)</span></p>
+                    <p><strong>⏱️ Durée moyenne par écoute&nbsp;:</strong> <span id="avgListenDuration">0 minutes</span></p>
+                    <p><strong>📊 Progression moyenne&nbsp;:</strong> <span id="avgProgress">0%</span></p>
                 </div>
 
                 <div class="card">
@@ -416,7 +426,7 @@
                 </div>
 
                 <div class="card full-width-card">
-                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Écoutes par mois</h3>
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Écoutes par période</h3>
                     <p id="monthlyChartPeriodInfo" class="chart-period-info"></p>
                     <div class="chart-container">
                         <canvas id="monthlyChart"></canvas>
@@ -440,23 +450,39 @@
                     </div>
                 </div>
 
+                <!-- New Tag Distribution Chart -->
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Distribution du temps d'écoute par Tag</h3>
+                    <p class="text-sm text-gray-600 mb-2" id="tagInfoNote">
+                        Note : Les tags sont extraits du nom de la catégorie. L'application suppose qu'un tag commence par une majuscule et ne contient que des lettres (ex: "ScienceFiction" est interprété comme "Science" et "Fiction"). Les podcasts sans tags sont regroupés sous la catégorie "Sans Tag".
+                    </p>
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" id="showSansTagCheckbox" checked class="mr-2">
+                        <label for="showSansTagCheckbox" class="text-gray-700">Afficher 'Sans Tag'</label>
+                    </div>
+                    <p id="tagTimeDistributionChartPeriodInfo" class="chart-period-info"></p>
+                    <div class="chart-container">
+                        <canvas id="tagTimeDistributionChart"></canvas>
+                    </div>
+                </div>
+
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Statistiques par Podcast</h3>
                     <p id="podcastEpisodeCountChartPeriodInfo" class="chart-period-info"></p>
                     
                     <!-- Separated list and chart for Podcast Stats -->
                     <h4 class="font-medium text-gray-700 mt-4 mb-2">Top Podcasts par épisodes écoutés (Liste)</h4>
-                    <ul id="podcastStatsListShort" class="ml-5"></ul>
+                    <ul id="podcastStatsListShort" class="list-disc ml-5"></ul>
                     <div id="podcastStatsListFull" class="hidden">
-                        <ul id="podcastStatsListAll" class="ml-5"></ul>
+                        <ul id="podcastStatsListAll" class="list-disc ml-5"></ul>
                     </div>
                     <button id="togglePodcastStats" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
 
                     <h4 class="font-medium text-gray-700 mt-6 mb-2">Top Podcasts par épisodes écoutés (Graphique)</h4>
                     <div id="selectedPodcastStats" class="mt-4 hidden">
-                        <h4 class="font-medium text-gray-700 mb-2">Détails pour : <span id="selectedPodcastTitleDisplay" class="font-semibold"></span></h4>
-                        <p><strong>🎧 Temps d'écoute sur la période :</strong> <span id="selectedPodcastTime">0 heures</span></p>
-                        <p><strong>📻 Épisodes écoutés sur la période :</strong> <span id="selectedPodcastEpisodes">0</span></p>
+                        <h4 class="font-medium text-gray-700 mb-2">Détails pour&nbsp;: <span id="selectedPodcastTitleDisplay" class="font-semibold"></span></h4>
+                        <p><strong>🎧 Temps d'écoute sur la période&nbsp;:</strong> <span id="selectedPodcastTime">0 heures</span></p>
+                        <p><strong>📻 Épisodes écoutés sur la période&nbsp;:</strong> <span id="selectedPodcastEpisodes">0</span></p>
                     </div>
                     <div id="podcastEpisodeCountChart-container" class="chart-container">
                         <canvas id="podcastEpisodeCountChart"></canvas>
@@ -520,10 +546,11 @@
         let firebaseConfig;
 
         // Variables pour les graphiques Chart.js
-        let monthlyChartInstance, podcastEpisodeCountChartInstance, hourlyChartInstance, dailyChartInstance, podcastTimeDistributionChartInstance;
+        let monthlyChartInstance, podcastEpisodeCountChartInstance, hourlyChartInstance, dailyChartInstance, podcastTimeDistributionChartInstance, tagTimeDistributionChartInstance;
         let globalDfHistory = null; // Stocke les données de l'historique global
         let allPodcastsTitles = []; // Global to store unique podcast titles for search suggestions
         let podcastDisplayLimit = 10; // Default display limit for top podcasts
+        let podcastSearchSelectedIndex = -1; // For keyboard navigation in podcast search suggestions
 
 
         // --- Firebase Initialization and Authentication ---
@@ -587,7 +614,10 @@
         const topPodcastsTimeListAll = document.getElementById('topPodcastsTimeListAll');
         const toggleTopPodcastsButton = document.getElementById('toggleTopPodcasts');
 
-        const monthFilter = document.getElementById('monthFilter');
+        const startDateFilter = document.getElementById('startDateFilter'); // New start date filter
+        const endDateFilter = document.getElementById('endDateFilter');   // New end date filter
+        const tagFilter = document.getElementById('tagFilter'); // New tag filter element
+        const showSansTagCheckbox = document.getElementById('showSansTagCheckbox'); // New checkbox for 'Sans Tag'
         const monthlyPodcastDetail = document.getElementById('monthlyPodcastDetail');
         const monthlyPodcastDetailTitle = document.getElementById('monthlyPodcastDetailTitle');
         const monthlyPodcastListShort = document.getElementById('monthlyPodcastListShort'); // New for monthly drawer
@@ -617,6 +647,7 @@
         // Chart Period Info Elements
         const monthlyChartPeriodInfo = document.getElementById('monthlyChartPeriodInfo');
         const podcastTimeDistributionChartPeriodInfo = document.getElementById('podcastTimeDistributionChartPeriodInfo');
+        const tagTimeDistributionChartPeriodInfo = document.getElementById('tagTimeDistributionChartPeriodInfo'); // New for tags chart
         const podcastEpisodeCountChartPeriodInfo = document.getElementById('podcastEpisodeCountChartPeriodInfo');
         const hourlyChartPeriodInfo = document.getElementById('hourlyChartPeriodInfo');
         const dailyChartPeriodInfo = document.getElementById('dailyChartPeriodInfo');
@@ -638,12 +669,13 @@
         const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
         const podcastEpisodeCountCtx = document.getElementById('podcastEpisodeCountChart').getContext('2d');
         const podcastTimeDistributionCtx = document.getElementById('podcastTimeDistributionChart').getContext('2d');
+        const tagTimeDistributionCtx = document.getElementById('tagTimeDistributionChart').getContext('2d'); // New context for tags chart
         const hourlyCtx = document.getElementById('hourlyChart').getContext('2d');
         const dailyCtx = document.getElementById('dailyChart').getContext('2d');
 
         // --- Utility Functions ---
 
-        // Fonction pour afficher des messages
+        // Function to display messages
         function showMessage(type, message) {
             messageBox.className = `message-box ${type}`;
             messageBox.textContent = message;
@@ -653,13 +685,71 @@
             }, 5000); // Hide after 5 seconds
         }
 
-        // Conversion des millisecondes en heures, minutes, secondes
+        // Function to convert milliseconds to hours, minutes, seconds
         function msToHMS(ms) {
             const totalSeconds = Math.floor(ms / 1000);
             const hours = Math.floor(totalSeconds / 3600);
             const minutes = Math.floor((totalSeconds % 3600) / 60);
             const seconds = totalSeconds % 60;
             return { hours, minutes, seconds };
+        }
+
+        /**
+         * Attempts to fix common encoding issues (e.g., UTF-8 interpreted as Latin-1).
+         * This specifically targets the "Ã©" pattern for "é".
+         * @param {string} text The text string to fix.
+         * @returns {string} The fixed string, or the original if fixing failed.
+         */
+        function fixEncoding(text) {
+            if (typeof text !== 'string' || text === null) return text;
+
+            let fixedText = text;
+            // console.log("fixEncoding - Original:", text); // Debugging: original input
+
+            // Attempt 1: Decode URI components, which can fix some UTF-8 misinterpreted as Latin-1
+            try {
+                const tempFixed = decodeURIComponent(escape(text));
+                if (tempFixed !== text) {
+                    fixedText = tempFixed;
+                    // console.log(`fixEncoding - After decodeURIComponent: "${fixedText}"`); // Debugging
+                }
+            } catch (e) {
+                console.warn("decodeURIComponent failed for:", text, e);
+            }
+
+            // Attempt 2: Direct replacements for common mojibake patterns
+            // These are common patterns when UTF-8 bytes are read as ISO-8859-1 or Windows-1252
+            fixedText = fixedText
+                .replace(/Ã©/g, 'é')
+                .replace(/Ã¨/g, 'è')
+                .replace(/Ã /g, 'à')
+                .replace(/Ãª/g, 'ê')
+                .replace(/Ã®/g, 'î')
+                .replace(/Ã´/g, 'ô')
+                .replace(/Ã¹/g, 'ù')
+                .replace(/Ã§/g, 'ç')
+                .replace(/Ã€/g, 'À')
+                .replace(/Ãˆ/g, 'È')
+                .replace(/ÃŠ/g, 'Ê')
+                .replace(/ÃŒ/g, 'Ì')
+                .replace(/Ã”/g, 'Ô')
+                .replace(/Ã™/g, 'Ù')
+                .replace(/Ã‡/g, 'Ç')
+                .replace(/Ã«/g, 'ë') // e tréma
+                .replace(/Ã¯/g, 'ï') // i tréma
+                .replace(/Ã¼/g, 'ü') // u tréma
+                .replace(/Ã¶/g, 'ö') // o tréma
+                .replace(/Ã¤/g, 'ä') // a tréma
+                .replace(/â€™/g, '’') // apostrophe curly
+                .replace(/â€œ/g, '“') // left double quote
+                .replace(/â€/g, '”') // right double quote
+                .replace(/â€¦/g, '…') // ellipsis
+                .replace(/â€“/g, '–') // en dash
+                .replace(/â€”/g, '—') // em dash
+                .replace(/â€¢/g, '•'); // bullet
+
+            // console.log("fixEncoding - Final:", fixedText); // Debugging: final output
+            return fixedText;
         }
 
         // --- Event Listeners ---
@@ -800,6 +890,7 @@
             const chartsToExport = [
                 { id: 'monthlyChart', name: 'Ecoutes_Mensuelles' },
                 { id: 'podcastTimeDistributionChart', name: 'Distribution_Temps_Ecoute_Podcast' },
+                { id: 'tagTimeDistributionChart', name: 'Distribution_Temps_Ecoute_Tag' }, // Added for tags chart
                 { id: 'podcastEpisodeCountChart', name: 'Episodes_Ecoutes_Podcast' },
                 { id: 'hourlyChart', name: 'Habitudes_Ecoute_Heure' },
                 { id: 'dailyChart', name: 'Habitudes_Ecoute_Jour' }
@@ -864,17 +955,64 @@
         });
 
 
-        monthFilter.addEventListener('change', updateCharts);
+        startDateFilter.addEventListener('change', updateCharts); // New event listener
+        endDateFilter.addEventListener('change', updateCharts);   // New event listener
+        tagFilter.addEventListener('change', updateCharts); // New event listener for tag filter
+        showSansTagCheckbox.addEventListener('change', updateCharts); // New event listener for 'Sans Tag' checkbox
         
         // Podcast search input event listeners
         podcastSearchInput.addEventListener('input', filterPodcastSuggestions);
-        podcastSearchInput.addEventListener('focus', filterPodcastSuggestions); // Show suggestions on focus
+        podcastSearchInput.addEventListener('focus', () => {
+            // Show all suggestions when input is focused and empty
+            if (podcastSearchInput.value.length === 0) {
+                filterPodcastSuggestions(); // This will now show all if search term is empty
+            }
+            podcastSuggestions.classList.remove('hidden');
+        });
         podcastSearchInput.addEventListener('blur', () => {
              // Hide suggestions after a short delay to allow click events on suggestions to fire
             setTimeout(() => {
                 podcastSuggestions.classList.add('hidden');
             }, 100);
         });
+
+        // Keyboard navigation for podcast search suggestions
+        podcastSearchInput.addEventListener('keydown', (event) => {
+            const suggestions = Array.from(podcastSuggestions.children);
+            if (suggestions.length === 0) return;
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault(); // Prevent cursor movement in input
+                podcastSearchSelectedIndex = (podcastSearchSelectedIndex + 1) % suggestions.length;
+                highlightSuggestion(suggestions);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault(); // Prevent cursor movement in input
+                podcastSearchSelectedIndex = (podcastSearchSelectedIndex - 1 + suggestions.length) % suggestions.length;
+                highlightSuggestion(suggestions);
+            } else if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent form submission
+                if (podcastSearchSelectedIndex !== -1) {
+                    const selectedPodcast = suggestions[podcastSearchSelectedIndex].textContent;
+                    podcastSearchInput.value = selectedPodcast;
+                    selectedPodcastHiddenInput.value = selectedPodcast;
+                    podcastSuggestions.classList.add('hidden');
+                    podcastSearchSelectedIndex = -1; // Reset index
+                    updateCharts();
+                }
+            }
+        });
+
+        function highlightSuggestion(suggestions) {
+            suggestions.forEach((item, index) => {
+                if (index === podcastSearchSelectedIndex) {
+                    item.classList.add('highlighted');
+                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // Scroll to highlighted item smoothly
+                } else {
+                    item.classList.remove('highlighted');
+                }
+            });
+        }
+
 
         clearPodcastSelectionButton.addEventListener('click', () => {
             podcastSearchInput.value = '';
@@ -1048,22 +1186,26 @@
 
         // --- Filtering and Charting Functions ---
         function populateFilters(data) {
-            // Populate Month Filter
-            const months = new Set();
+            // Populate Tag Filter
+            const tags = new Set();
             data.forEach(item => {
-                if (item.last_played_time > 0) {
-                    const date = new Date(item.last_played_time);
-                    months.add(date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0'));
+                let tagsRaw = item.tags_column;
+                if (tagsRaw && tagsRaw.trim() !== '' && tagsRaw.trim() !== '#root') {
+                    // Using \p{L} for any letter, and \p{Lu} for any uppercase letter, with 'u' flag for Unicode
+                    const extractedTags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
+                    extractedTags.forEach(tag => tags.add(tag));
                 }
             });
-            const sortedMonths = Array.from(months).sort().reverse(); // Sort descending
-            monthFilter.innerHTML = '<option value="">Toutes les données</option>';
-            sortedMonths.forEach(month => {
+            const sortedTags = Array.from(tags).sort();
+            tagFilter.innerHTML = '<option value="">Tous les tags</option>';
+            tagFilter.innerHTML += '<option value="Sans Tag">Sans Tag</option>'; // Add "Sans Tag" option
+            sortedTags.forEach(tag => {
                 const option = document.createElement('option');
-                option.value = month;
-                option.textContent = month;
-                monthFilter.appendChild(option);
+                option.value = tag;
+                option.textContent = tag;
+                tagFilter.appendChild(option);
             });
+
 
             // Populate allPodcastsTitles for search suggestions
             const podcasts = new Set();
@@ -1078,15 +1220,16 @@
         function filterPodcastSuggestions() {
             const searchTerm = podcastSearchInput.value.toLowerCase();
             podcastSuggestions.innerHTML = '';
-            
-            if (searchTerm.length === 0) {
-                podcastSuggestions.classList.add('hidden');
-                return;
-            }
+            podcastSearchSelectedIndex = -1; // Reset highlight index
 
-            const filtered = allPodcastsTitles.filter(podcast =>
-                podcast.toLowerCase().includes(searchTerm)
-            );
+            let filtered;
+            if (searchTerm.length === 0) {
+                filtered = allPodcastsTitles; // Show all if search term is empty
+            } else {
+                filtered = allPodcastsTitles.filter(podcast =>
+                    podcast.toLowerCase().includes(searchTerm)
+                );
+            }
 
             if (filtered.length > 0) {
                 podcastSuggestions.classList.remove('hidden');
@@ -1094,10 +1237,12 @@
                     const div = document.createElement('div');
                     div.textContent = podcast;
                     div.className = 'podcast-suggestion-item';
-                    div.addEventListener('click', () => {
+                    div.addEventListener('mousedown', (event) => { // Use mousedown to prevent blur before click
+                        event.preventDefault(); // Prevent input from losing focus immediately
                         podcastSearchInput.value = podcast;
                         selectedPodcastHiddenInput.value = podcast; // Store the exact selected value
                         podcastSuggestions.classList.add('hidden');
+                        podcastSearchSelectedIndex = -1; // Reset index after selection
                         updateCharts(); // Trigger chart update with exact podcast match
                     });
                     podcastSuggestions.appendChild(div);
@@ -1111,16 +1256,18 @@
             if (!globalDfHistory) return;
 
             let filteredData = globalDfHistory;
-            const selectedMonth = monthFilter.value;
+            const startDateTime = startDateFilter.value ? new Date(startDateFilter.value).getTime() : 0; // Convert to timestamp
+            const endDateTime = endDateFilter.value ? new Date(endDateFilter.value).setHours(23, 59, 59, 999) : Infinity; // End of day
             const selectedPodcast = selectedPodcastHiddenInput.value; // Use the value from the hidden input
+            const selectedTag = tagFilter.value; // Get selected tag
+            const showSansTag = showSansTagCheckbox.checked; // Get state of 'Sans Tag' checkbox
 
-            // Apply month filter
-            if (selectedMonth) {
+            // Apply date range filter
+            if (startDateTime || endDateTime !== Infinity) {
                 filteredData = filteredData.filter(item => {
                     if (item.last_played_time > 0) {
-                        const date = new Date(item.last_played_time);
-                        const itemMonth = date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0');
-                        return itemMonth === selectedMonth;
+                        const itemTime = item.last_played_time;
+                        return itemTime >= startDateTime && itemTime <= endDateTime;
                     }
                     return false;
                 });
@@ -1139,32 +1286,58 @@
                 selectedPodcastStatsDiv.classList.add('hidden');
             }
 
+            // Apply tag filter
+            if (selectedTag) {
+                filteredData = filteredData.filter(item => {
+                    let tagsRaw = item.tags_column;
+                    if (!tagsRaw || tagsRaw.trim() === '' || tagsRaw.trim() === '#root') {
+                        return selectedTag === 'Sans Tag'; // Match 'Sans Tag' if no tags
+                    }
+                    tagsRaw = tagsRaw.replace('#root', '').trim();
+                    const tags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
+                    if (selectedTag === 'Sans Tag') {
+                        return tags.length === 0; // If 'Sans Tag' selected, return true if no tags found
+                    }
+                    return tags.includes(selectedTag); // Check if item has the selected tag
+                });
+            }
+
             const processedFilteredData = processRawData(filteredData);
 
             // Update monthly podcast list (uses topPodcastsByTime from the processedFilteredData)
-            updateMonthlyPodcastList(selectedMonth, processedFilteredData.topPodcastsByTime);
+            updateMonthlyPodcastList(startDateTime || endDateTime !== Infinity ? 'filtered' : 'all', processedFilteredData.topPodcastsByTime);
 
             // Update Podcast Stats List (by episode count)
             updatePodcastStatsList(processedFilteredData.topPodcastsByEpisodeCount);
 
             // Redraw charts
-            drawCharts(processedFilteredData, selectedMonth, selectedPodcast);
+            drawCharts(processedFilteredData, startDateTime, endDateTime, selectedPodcast, showSansTag); // Pass showSansTag
 
             // Generate Wrapped Report for the filtered period
-            generateWrappedReport(processedFilteredData, selectedMonth);
+            generateWrappedReport(processedFilteredData, startDateTime, endDateTime);
         }
 
-        function updateMonthlyPodcastList(selectedMonth, topPodcastsForPeriod) {
+        function updateMonthlyPodcastList(periodType, topPodcastsForPeriod) {
             monthlyPodcastListShort.innerHTML = '';
             monthlyPodcastListAll.innerHTML = '';
             
-            if (selectedMonth) {
-                monthlyPodcastDetailTitle.textContent = `Top Podcasts pour ${selectedMonth}`;
+            if (periodType === 'filtered') { // If a specific date range is applied
+                const start = startDateFilter.value;
+                const end = endDateFilter.value;
+                let titleText = 'Top Podcasts pour la période';
+                if (start && end) {
+                    titleText += ` du ${start} au ${end}`;
+                } else if (start) {
+                    titleText += ` à partir du ${start}`;
+                } else if (end) {
+                    titleText += ` jusqu'au ${end}`;
+                }
+                monthlyPodcastDetailTitle.textContent = titleText;
                 monthlyPodcastDetail.classList.remove('hidden'); // Ensure the monthly detail card is visible
 
                 if (topPodcastsForPeriod.length === 0) {
                     const li = document.createElement('li');
-                    li.textContent = "Aucun podcast écouté ce mois.";
+                    li.textContent = "Aucun podcast écouté sur cette période.";
                     monthlyPodcastListShort.appendChild(li);
                     toggleMonthlyPodcastsButton.classList.add('hidden');
                     monthlyPodcastListFull.classList.add('hidden');
@@ -1296,55 +1469,68 @@
         }
 
 
-        function drawCharts(stats, selectedMonth, selectedPodcast) {
+        function drawCharts(stats, startDateTime, endDateTime, selectedPodcast, showSansTag) {
             // Destroy existing chart instances to avoid memory leaks and conflicts
             if (monthlyChartInstance) monthlyChartInstance.destroy();
             if (podcastEpisodeCountChartInstance) podcastEpisodeCountChartInstance.destroy();
             if (hourlyChartInstance) hourlyChartInstance.destroy();
             if (dailyChartInstance) dailyChartInstance.destroy();
             if (podcastTimeDistributionChartInstance) podcastTimeDistributionChartInstance.destroy();
+            if (tagTimeDistributionChartInstance) tagTimeDistributionChartInstance.destroy(); // Destroy tags chart
 
             // Determine period info text
-            const periodInfoText = selectedPodcast 
-                ? `Données pour "${selectedPodcast}" ${selectedMonth ? `en ${selectedMonth}` : 'pour toutes les périodes'}`
-                : (selectedMonth ? `Données pour le mois de ${selectedMonth}` : 'Données pour toutes les périodes');
+            let periodInfoText;
+            if (selectedPodcast) {
+                periodInfoText = `Données pour "${selectedPodcast}" `;
+            } else {
+                periodInfoText = `Données `;
+            }
+
+            if (startDateTime && endDateTime !== Infinity) {
+                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
+                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
+                periodInfoText += `du ${startDate} au ${endDate}`;
+            } else if (startDateTime) {
+                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
+                periodInfoText += `à partir du ${startDate}`;
+            } else if (endDateTime !== Infinity) {
+                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
+                periodInfoText += `jusqu'au ${endDate}`;
+            } else {
+                periodInfoText += `pour toutes les périodes`;
+            }
 
             // Update chart period info
             monthlyChartPeriodInfo.textContent = periodInfoText;
             podcastTimeDistributionChartPeriodInfo.textContent = periodInfoText;
+            tagTimeDistributionChartPeriodInfo.textContent = periodInfoText; // Update for tags chart
             podcastEpisodeCountChartPeriodInfo.textContent = periodInfoText;
             hourlyChartPeriodInfo.textContent = periodInfoText;
             dailyChartPeriodInfo.textContent = periodInfoText;
 
 
-            // Monthly Chart (Time instead of Count)
+            // Monthly/Daily Chart (Time instead of Count)
             let monthlyChartLabels;
             let monthlyChartValues;
             let monthlyChartTitle;
 
-            if (selectedMonth) {
-                // If a month is selected, show daily listening time for that month
-                const dailyListeningTimeForMonth = {};
+            if (startDateTime || endDateTime !== Infinity) {
+                // If a period is selected, show daily listening time for that period
+                const dailyListeningTimeForPeriod = {};
                 stats.allHistoryData.forEach(item => {
                     if (item.last_played_time > 0) {
                         const date = new Date(item.last_played_time);
                         const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                        dailyListeningTimeForMonth[dateKey] = (dailyListeningTimeForMonth[dateKey] || 0) + (item.played_duration || 0);
+                        dailyListeningTimeForPeriod[dateKey] = (dailyListeningTimeForPeriod[dateKey] || 0) + (item.played_duration || 0);
                     }
                 });
 
-                // Sort by date and fill missing days with 0
-                const [year, month] = selectedMonth.split('-');
-                const daysInMonth = new Date(year, month, 0).getDate();
-                const sortedDailyData = [];
-                for (let i = 1; i <= daysInMonth; i++) {
-                    const dateKey = `${year}-${month}-${String(i).padStart(2, '0')}`;
-                    sortedDailyData.push([dateKey, dailyListeningTimeForMonth[dateKey] || 0]);
-                }
+                // Sort by date and fill missing days with 0 within the range
+                const sortedDailyData = Object.entries(dailyListeningTimeForPeriod).sort(([dateA], [dateB]) => dateA.localeCompare(dateB));
 
-                monthlyChartLabels = sortedDailyData.map(([date]) => date.substring(8)); // Just day for label
+                monthlyChartLabels = sortedDailyData.map(([date]) => date);
                 monthlyChartValues = sortedDailyData.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
-                monthlyChartTitle = `Temps d'écoute quotidien pour ${selectedMonth} (heures)`;
+                monthlyChartTitle = `Temps d'écoute quotidien sur la période (heures)`;
 
             } else {
                 // Otherwise, show monthly total listening time for all time
@@ -1563,6 +1749,127 @@
                 }
             });
 
+            // New: Tag Time Distribution Chart (Doughnut Chart)
+            const tagTimeDistributionData = {};
+            stats.allHistoryData.forEach(item => {
+                let tagsRaw = item.tags_column; // Use the correct column name from SQL query
+                
+                // If tagsRaw is null, empty, or only contains whitespace/root, assign 'Sans Tag'
+                if (!tagsRaw || tagsRaw.trim() === '' || tagsRaw.trim() === '#root') {
+                    tagTimeDistributionData['Sans Tag'] = (tagTimeDistributionData['Sans Tag'] || 0) + (item.played_duration || 0);
+                    return; // Skip further tag processing for this item
+                }
+
+                tagsRaw = tagsRaw.replace('#root', '').trim(); // Remove #root and trim whitespace
+                
+                // Regex to find sequences starting with an uppercase letter followed by any letters
+                // This will split "ScienceFiction" into ["Science", "Fiction"]
+                // Using \p{L} for any letter, and \p{Lu} for any uppercase letter, with 'u' flag for Unicode
+                const tags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
+                
+                if (tags.length === 0) { // If no valid tags found after regex, also put in 'Sans Tag'
+                    tagTimeDistributionData['Sans Tag'] = (tagTimeDistributionData['Sans Tag'] || 0) + (item.played_duration || 0);
+                    return;
+                }
+
+                tags.forEach(tag => {
+                    if (tag) { // Ensure tag is not empty after regex match
+                        tagTimeDistributionData[tag] = (tagTimeDistributionData[tag] || 0) + (item.played_duration || 0);
+                    }
+                });
+            });
+
+            const sortedTagTimeDistribution = Object.entries(tagTimeDistributionData)
+                .sort(([, a], [, b]) => b - a)
+                .filter(([, duration]) => duration > 0); // Filter out tags with 0 duration
+
+            const tagDistributionLabels = [];
+            const tagDistributionValues = [];
+            let otherTagHours = 0;
+            const displayLimitForTagDoughnut = podcastDisplayLimit; // Use same limit for consistency
+
+            for (let i = 0; i < sortedTagTimeDistribution.length; i++) {
+                const [tag, durationMs] = sortedTagTimeDistribution[i];
+                const hours = durationMs / (1000 * 3600);
+                if (tag === 'Sans Tag' && !showSansTag) { // Skip 'Sans Tag' if checkbox is unchecked
+                    continue;
+                }
+                if (i < displayLimitForTagDoughnut) {
+                    tagDistributionLabels.push(tag);
+                    tagDistributionValues.push(hours);
+                } else {
+                    otherTagHours += hours;
+                }
+            }
+
+            if (otherTagHours > 0) {
+                tagDistributionLabels.push('Autres Tags');
+                tagDistributionValues.push(otherTagHours);
+            }
+
+            // Reusing backgroundColors, can add more if needed
+            tagTimeDistributionChartInstance = new Chart(tagTimeDistributionCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: tagDistributionLabels,
+                    datasets: [{
+                        data: tagDistributionValues,
+                        backgroundColor: backgroundColors.slice(0, tagDistributionLabels.length),
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                boxWidth: 20,
+                                font: {
+                                    size: 12
+                                },
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        return data.labels.map((label, i) => {
+                                            const meta = chart.getDatasetMeta(0);
+                                            const style = (meta.data[i] && meta.data[i].options) ? meta.data[i].options : {};
+                                            const fillStyle = style.backgroundColor || '#cccccc';
+                                            const strokeStyle = style.borderColor || '#cccccc';
+
+                                            const value = data.datasets[0].data[i];
+                                            return {
+                                                text: `${label}: ${value.toFixed(1)}h`,
+                                                fillStyle: fillStyle,
+                                                strokeStyle: strokeStyle,
+                                                lineWidth: style.borderWidth || 1,
+                                                hidden: isNaN(data.datasets[0].data[i]) || (meta.data[i] ? meta.data[i].hidden : false),
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    return `${label}: ${value.toFixed(1)} heures`;
+                                }
+                            }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribution du Temps d\'Écoute par Tag (en heures)'
+                        }
+                    }
+                }
+            });
+
 
             // Hourly Chart
             const hourlyListeningTimeMap = {};
@@ -1634,9 +1941,23 @@
         }
 
         // --- Spotify Wrapped inspired report generation ---
-        function generateWrappedReport(stats, selectedMonth) {
+        function generateWrappedReport(stats, startDateTime, endDateTime) {
             const totalHours = stats.totalListeningTimeHours.toFixed(1);
-            const periodText = selectedMonth ? `pour le mois de ${selectedMonth}` : `cette année`;
+            let periodText;
+            if (startDateTime && endDateTime !== Infinity) {
+                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
+                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
+                periodText = `du ${startDate} au ${endDate}`;
+            } else if (startDateTime) {
+                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
+                periodText = `à partir du ${startDate}`;
+            } else if (endDateTime !== Infinity) {
+                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
+                periodText = `jusqu'au ${endDate}`;
+            } else {
+                periodText = `cette année`; // Default if no dates selected
+            }
+
             const top5Podcasts = stats.topPodcastsByTime.slice(0, 5); // Get top 5 from filtered data
 
             let message = `🎉 Mon Bilan AntennaPod ${periodText} !\n\n`;
@@ -1693,7 +2014,7 @@
                 const db = new SQL.Database(uint8Array);
 
                 // Replicate the SQL query from the Python script
-                // Added f.image_url to the query
+                // Added f.image_url and f.tags to the query
                 const query = `
                     SELECT
                         fm.id as media_id,
@@ -1707,7 +2028,8 @@
                         fi.feed as feed_id,
                         f.title as podcast_title,
                         f.author,
-                        f.image_url as podcast_image_url -- Re-added image_url
+                        f.image_url as podcast_image_url,
+                        f.tags as tags_column -- Added tags column
                     FROM FeedMedia fm
                     JOIN FeedItems fi ON fm.feeditem = fi.id
                     JOIN Feeds f ON fi.feed = f.id
@@ -1733,6 +2055,18 @@
                     columns.forEach((col, index) => {
                         rowObject[col] = row[index];
                     });
+                    // Apply encoding fix to relevant string columns
+                    if (rowObject.podcast_title) {
+                        rowObject.podcast_title = fixEncoding(rowObject.podcast_title);
+                    }
+                    if (rowObject.episode_title) {
+                        rowObject.episode_title = fixEncoding(rowObject.episode_title);
+                    }
+                    if (rowObject.tags_column) {
+                        // console.log("Raw tags_column before fixEncoding:", rowObject.tags_column); // Debugging log
+                        rowObject.tags_column = fixEncoding(rowObject.tags_column);
+                        // console.log("Fixed tags_column after fixEncoding:", rowObject.tags_column); // Debugging log
+                    }
                     return rowObject;
                 });
 
@@ -1763,6 +2097,7 @@
                     monthlyListening: [],
                     hourlyListening: [],
                     dailyListening: [],
+                    tagsListening: [], // New for tags
                     allHistoryData: [] // Return the filtered data as allHistoryData
                 };
             }
@@ -1869,6 +2204,40 @@
             });
             const dailyListening = Array.from(dailyListeningMap.entries()).map(([day, durationMs]) => ({ day, count: durationMs / (1000 * 3600) })); // Convert to hours
 
+            // New: Tags Listening
+            const timeByTag = {};
+            listenedEpisodes.forEach(item => {
+                let tagsRaw = item.tags_column; // Use the correct column name from SQL query
+                
+                // If tagsRaw is null, empty, or only contains whitespace/root, assign 'Sans Tag'
+                if (!tagsRaw || tagsRaw.trim() === '' || tagsRaw.trim() === '#root') {
+                    timeByTag['Sans Tag'] = (timeByTag['Sans Tag'] || 0) + (item.played_duration || 0);
+                    return; // Skip further tag processing for this item
+                }
+
+                tagsRaw = tagsRaw.replace('#root', '').trim(); // Remove #root and trim whitespace
+                
+                // Regex to find sequences starting with an uppercase letter followed by any letters
+                // This will split "ScienceFiction" into ["Science", "Fiction"]
+                // Using \p{L} for any letter, and \p{Lu} for any uppercase letter, with 'u' flag for Unicode
+                const tags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
+                
+                if (tags.length === 0) { // If no valid tags found after regex, also put in 'Sans Tag'
+                    timeByTag['Sans Tag'] = (timeByTag['Sans Tag'] || 0) + (item.played_duration || 0);
+                    return;
+                }
+
+                tags.forEach(tag => {
+                    if (tag) { // Ensure tag is not empty after regex match
+                        timeByTag[tag] = (timeByTag[tag] || 0) + (item.played_duration || 0);
+                    }
+                });
+            });
+
+            const tagsListening = Object.entries(timeByTag)
+                .sort(([, a], [, b]) => b - a)
+                .filter(([, duration]) => duration > 0); // Filter out tags with 0 duration
+
 
             return {
                 totalListeningTimeHours: totalHours,
@@ -1883,6 +2252,7 @@
                 monthlyListening: monthlyListening, // Now contains hours
                 hourlyListening: hourlyListening,
                 dailyListening: dailyListening,
+                tagsListening: tagsListening, // New for tags
                 allHistoryData: listenedEpisodes // Return the filtered data as allHistoryData
             };
         }
