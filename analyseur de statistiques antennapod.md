@@ -3,7 +3,12 @@ title: "Analyseur de Statistiques AntennaPod"
 order: 7
 in_menu: true
 ---
-<style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyseur AntennaPod</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8; /* Light blue-gray background */
@@ -310,6 +315,7 @@ in_menu: true
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <!-- html2canvas for image export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
 <body class="bg-gray-100 p-6">
     <div class="container">
         <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">
@@ -437,14 +443,14 @@ in_menu: true
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <p id="hourlyChartPeriodInfo" class="chart-period-info"></p>
-                        <h4 class="font-medium text-gray-700 mb-2">Écoutes par heure de la journée</h4>
+                        <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par heure de la journée</h4>
                         <div class="chart-container">
                             <canvas id="hourlyChart"></canvas>
                         </div>
                     </div>
                     <div>
                         <p id="dailyChartPeriodInfo" class="chart-period-info"></p>
-                        <h4 class="font-medium text-gray-700 mb-2">Écoutes par jour de la semaine</h4>
+                        <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par jour de la semaine</h4>
                         <div class="chart-container">
                             <canvas id="dailyChart"></canvas>
                         </div>
@@ -1457,14 +1463,24 @@ in_menu: true
 
 
             // Hourly Chart
-            const hourlyLabels = stats.hourlyListening.map(item => `${item.hour}h`);
-            const hourlyValues = stats.hourlyListening.map(item => item.count);
+            const hourlyListeningTimeMap = {};
+            for (let i = 0; i < 24; i++) hourlyListeningTimeMap[i] = 0; // Initialize all hours with 0 duration
+            stats.allHistoryData.forEach(item => {
+                if (item.last_played_time > 0 && item.played_duration > 0) {
+                    const date = new Date(item.last_played_time);
+                    const hour = date.getHours();
+                    hourlyListeningTimeMap[hour] = (hourlyListeningTimeMap[hour] || 0) + (item.played_duration || 0);
+                }
+            });
+            const hourlyLabels = Object.keys(hourlyListeningTimeMap).map(hour => `${hour}h`);
+            const hourlyValues = Object.values(hourlyListeningTimeMap).map(ms => ms / (1000 * 3600)); // Convert ms to hours
+
             hourlyChartInstance = new Chart(hourlyCtx, {
                 type: 'bar',
                 data: {
                     labels: hourlyLabels,
                     datasets: [{
-                        label: 'Nombre d\'écoutes',
+                        label: 'Heures écoutées',
                         data: hourlyValues,
                         backgroundColor: '#f6ad55',
                     }]
@@ -1473,26 +1489,41 @@ in_menu: true
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Nombre d\'écoutes' } }
+                        y: { beginAtZero: true, title: { display: true, text: 'Heures' } }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Temps d\'écoute par heure de la journée'
+                        }
                     }
                 }
             });
 
             // Daily Chart (Starts Monday)
             const dayNames = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; // Order starts Monday
-            const tempDailyDataMap = new Map(); // Temporary map for easy lookup
-            stats.dailyListening.forEach(item => {
-                tempDailyDataMap.set(item.day, item.count);
-            });
+            const dailyListeningTimeMap = new Map(); // Changed to Map to store time
+            // Initialize map with 0 for all days in the desired order
+            dayNames.forEach(day => dailyListeningTimeMap.set(day, 0)); // Use set()
 
-            const dailyValues = dayNames.map(day => tempDailyDataMap.get(day) || 0); // Get counts in correct order
+            stats.allHistoryData.forEach(item => {
+                if (item.last_played_time > 0 && item.played_duration > 0) {
+                    const date = new Date(item.last_played_time);
+                    let dayOfWeekIndex = date.getDay(); // 0 (Sunday) to 6 (Saturday)
+                    // Adjust index to start from Monday (1 becomes 0, 0 becomes 6)
+                    dayOfWeekIndex = (dayOfWeekIndex === 0) ? 6 : dayOfWeekIndex - 1;
+                    const dayOfWeekName = dayNames[dayOfWeekIndex]; // Use dayNames array
+                    dailyListeningTimeMap.set(dayOfWeekName, (dailyListeningTimeMap.get(dayOfWeekName) || 0) + (item.played_duration || 0)); // Sum durations
+                }
+            });
+            const dailyValues = dayNames.map(day => (dailyListeningTimeMap.get(day) || 0) / (1000 * 3600)); // Get counts in correct order and convert to hours
 
             dailyChartInstance = new Chart(dailyCtx, {
                 type: 'bar',
                 data: {
                     labels: dayNames, // Use the ordered day names
                     datasets: [{
-                        label: 'Nombre d\'écoutes',
+                        label: 'Heures écoutées',
                         data: dailyValues,
                         backgroundColor: '#fc8181',
                     }]
@@ -1501,7 +1532,13 @@ in_menu: true
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Nombre d\'écoutes' } }
+                        y: { beginAtZero: true, title: { display: true, text: 'Heures' } }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Temps d\'écoute par jour de la semaine'
+                        }
                     }
                 }
             });
@@ -1693,36 +1730,37 @@ in_menu: true
                 .map(([month, ms]) => ({ month, count: ms / (1000 * 3600) })); // Convert ms to hours for 'count'
 
 
-            // Hourly Listening
+            // Hourly Listening (now calculates time)
             const hourlyListeningMap = {};
             for (let i = 0; i < 24; i++) hourlyListeningMap[i] = 0; // Initialize all hours
             listenedEpisodes.forEach(item => {
-                if (item.last_played_time > 0) {
+                if (item.last_played_time > 0 && item.played_duration > 0) {
                     const date = new Date(item.last_played_time);
                     const hour = date.getHours();
-                    hourlyListeningMap[hour] = (hourlyListeningMap[hour] || 0) + 1;
+                    hourlyListeningMap[hour] = (hourlyListeningMap[hour] || 0) + (item.played_duration || 0); // Sum played duration
                 }
             });
-            const hourlyListening = Object.entries(hourlyListeningMap).map(([hour, count]) => ({ hour: parseInt(hour), count })).sort((a, b) => a.hour - b.hour);
+            const hourlyListening = Object.entries(hourlyListeningMap).map(([hour, durationMs]) => ({ hour: parseInt(hour), count: durationMs / (1000 * 3600) })).sort((a, b) => a.hour - b.hour); // Convert to hours
 
-            // Daily Listening (Monday as first day)
+
+            // Daily Listening (Monday as first day) (now calculates time)
             // Note: getDay() returns 0 for Sunday, 1 for Monday... 6 for Saturday
             const dayNamesOrdered = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-            const dailyListeningMap = new Map(); // Changed to Map
+            const dailyListeningMap = new Map(); 
             // Initialize map with 0 for all days in the desired order
-            dayNamesOrdered.forEach(day => dailyListeningMap.set(day, 0)); // Use set()
+            dayNamesOrdered.forEach(day => dailyListeningMap.set(day, 0)); 
 
             listenedEpisodes.forEach(item => {
-                if (item.last_played_time > 0) {
+                if (item.last_played_time > 0 && item.played_duration > 0) {
                     const date = new Date(item.last_played_time);
                     let dayOfWeekIndex = date.getDay(); // 0 (Sunday) to 6 (Saturday)
                     // Adjust index to start from Monday (1 becomes 0, 0 becomes 6)
                     dayOfWeekIndex = (dayOfWeekIndex === 0) ? 6 : dayOfWeekIndex - 1;
                     const dayOfWeekName = dayNamesOrdered[dayOfWeekIndex]; // Use dayNamesOrdered array
-                    dailyListeningMap.set(dayOfWeekName, (dailyListeningMap.get(dayOfWeekName) || 0) + 1); // Use set() and get()
+                    dailyListeningMap.set(dayOfWeekName, (dailyListeningMap.get(dayOfWeekName) || 0) + (item.played_duration || 0)); // Sum played duration
                 }
             });
-            const dailyListening = Array.from(dailyListeningMap.entries()).map(([day, count]) => ({ day, count }));
+            const dailyListening = Array.from(dailyListeningMap.entries()).map(([day, durationMs]) => ({ day, count: durationMs / (1000 * 3600) })); // Convert to hours
 
 
             return {
