@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analyseur AntennaPod</title>
+    <!-- Tailwind CSS is loaded globally -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- sql.js library for client-side SQLite processing - Moved to head for earlier loading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <style>
-        body {
+        /* Base styles for the app container */
+        #antennapod-analyzer-app-container {
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8; /* Light blue-gray background */
             color: #2d3748; /* Darker text */
+            padding: 6px; /* Added padding to ensure it doesn't touch the edges of the host page */
         }
+        /* All other CSS styles are now directly on class names, assuming they are unique enough
+           or that the host page's CSS won't heavily conflict.
+           This simplifies selectors and might resolve rendering issues. */
         .container {
             max-width: 1200px; /* Wider container for bento layout */
             margin: 40px auto;
@@ -80,13 +88,10 @@
             height: 300px;
             width: 100%;
             margin-top: 20px;
-            /* Ensure enough height for labels on horizontal bar charts */
             min-height: 300px; /* Base minimum height */
         }
-        /* Adjust chart container height dynamically for horizontal bar chart */
         #podcastEpisodeCountChart-container {
-            min-height: auto; /* Remove fixed min-height */
-            /* This will be dynamically set in JS based on number of labels */
+            min-height: auto;
         }
 
         .loading-overlay {
@@ -113,10 +118,9 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        /* Message Box */
         .message-box {
             padding: 15px;
-            margin-bottom: 20px; /* Adjusted margin */
+            margin-bottom: 20px;
             border-radius: 8px;
             font-weight: bold;
             display: none;
@@ -133,47 +137,47 @@
             border: 1px solid #f5c6cb;
         }
         .message-box.info {
-            background-color: #e6f2f3; /* Lightest shade of new color */
-            color: #0e6270; /* Base color */
-            border: 1px solid #60a3ac; /* Lighter shade of new color */
+            background-color: #e6f2f3;
+            color: #0e6270;
+            border: 1px solid #60a3ac;
         }
         textarea {
             width: 100%;
             height: 150px;
-            padding: 15px; /* More padding */
+            padding: 15px;
             border-radius: 8px;
-            border: 1px solid #cbd5e0; /* Lighter border */
+            border: 1px solid #cbd5e0;
             resize: vertical;
-            background-color: #edf2f7; /* Light gray background */
+            background-color: #edf2f7;
             color: #2d3748;
             font-size: 0.95rem;
         }
         .podcast-item {
             display: flex;
             align-items: center;
-            margin-bottom: 8px; /* Slightly less margin */
+            margin-bottom: 8px;
             padding: 5px 0;
         }
         .podcast-item img {
-            width: 40px; /* Slightly smaller images */
+            width: 40px;
             height: 40px;
             border-radius: 6px;
             margin-right: 12px;
             object-fit: cover;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0;
         }
         #wrappedContent {
             padding: 25px;
-            background-color: #e2e8f0; /* Soft background for wrapped */
+            background-color: #e2e8f0;
             border-radius: 12px;
             margin-top: 15px;
             position: relative;
             text-align: center;
-            font-family: 'Inter', sans-serif; /* Ensure font is applied for capture */
+            font-family: 'Inter', sans-serif;
             color: #2d3748;
         }
         #wrappedContent h3 {
-            color: #083e45; /* A darker shade of new color */
+            color: #083e45;
             font-size: 1.6rem;
             margin-bottom: 15px;
             font-weight: 700;
@@ -188,11 +192,11 @@
             list-style: none;
             padding: 0;
             text-align: left;
-            max-width: 90%; /* Wider list */
+            max-width: 90%;
             margin: 0 auto 20px auto;
         }
         #wrappedContent .wrapped-list li {
-            background-color: #ffffff; /* White background for list items */
+            background-color: #ffffff;
             padding: 10px 15px;
             border-radius: 8px;
             margin-bottom: 8px;
@@ -204,15 +208,14 @@
         #wrappedContent .wrapped-list li .icon {
             margin-right: 10px;
             font-size: 1.3em;
-            color: #0e6270; /* New primary color */
+            color: #0e6270;
         }
         .export-buttons {
             display: flex;
-            gap: 15px; /* More space */
-            justify-content: center; /* Center buttons */
+            gap: 15px;
+            justify-content: center;
             margin-top: 20px;
         }
-        /* Podcast search input with suggestions */
         .podcast-search-container {
             position: relative;
             width: 100%;
@@ -236,12 +239,12 @@
             transition: background-color 0.2s ease;
         }
         .podcast-suggestion-item:hover {
-            background-color: #f0f4f8; /* Lighter hover */
+            background-color: #f0f4f8;
         }
         .search-clear-button {
             background-color: #e53e3e;
             color: white;
-            padding: 10px 15px; /* Consistent padding */
+            padding: 10px 15px;
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -252,7 +255,7 @@
             background-color: #c53030;
         }
         .filter-section {
-            background-color: #f0f4f8; /* Light background for filter section */
+            background-color: #f0f4f8;
             border-radius: 16px;
             padding: 25px;
             margin-bottom: 20px;
@@ -262,7 +265,7 @@
         .filter-section h2 {
             font-size: 1.5rem;
             font-weight: 700;
-            color: #083e45; /* Darker shade of new color */
+            color: #083e45;
             margin-bottom: 20px;
             text-align: center;
         }
@@ -276,7 +279,7 @@
             margin-right: 15px;
             font-weight: 600;
             color: #4a5568;
-            width: 150px; /* Fixed width for labels */
+            width: 150px;
         }
         .filter-group select, .filter-group input[type="text"] {
             flex-grow: 1;
@@ -290,189 +293,182 @@
         .chart-period-info {
             text-align: center;
             font-size: 0.9rem;
-            color: #0e6270; /* New primary color */
+            color: #0e6270;
             margin-bottom: 10px;
             font-weight: 500;
         }
         #topPodcastsTimeListFull, #monthlyPodcastListFull, #podcastStatsListFull {
-            max-height: 300px; /* Initial height for scrollable content */
-            overflow-y: hidden; /* Hidden by default */
+            max-height: 300px;
+            overflow-y: hidden;
             transition: max-height 0.5s ease-out;
         }
         #topPodcastsTimeListFull.expanded, #monthlyPodcastListFull.expanded, #podcastStatsListFull.expanded {
-            max-height: 1000px; /* Arbitrarily large value to show all */
+            max-height: 1000px;
             overflow-y: auto;
         }
     </style>
-    <!-- Chart.js for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- JSZip for creating zip files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <!-- FileSaver.js for saving files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <!-- html2canvas for image export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-</head>
-<body class="bg-gray-100 p-6">
-    <div class="container">
-        <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">
-            🎧 Analyseur de Statistiques AntennaPod
-        </h1>
 
-        <div id="messageBox" class="message-box"></div>
+    <div id="antennapod-analyzer-app-container">
+        <div class="container">
+            <h1 class="text-3xl font-bold text-center mb-6 text-gray-800">
+                🎧 Analyseur de Statistiques AntennaPod
+            </h1>
 
-        <div class="card mb-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-700">1. Uploader votre base de données AntennaPod (.db)</h2>
-            <p class="text-gray-600 mb-4">
-                Veuillez sélectionner le fichier `AntennaPod.db` de votre installation AntennaPod.
-                Vous pouvez généralement le trouver dans le dossier de données de l'application sur votre appareil Android.
-                <br><br>
-                <span class="text-sm text-red-500">Note: Les images de couverture des podcasts sont souvent stockées localement sur votre appareil et ne peuvent pas être affichées directement dans cette application web pour des raisons de sécurité. Des images de remplacement génériques seront utilisées si l'URL de l'image n'est pas accessible.</span>
-            </p>
-            <div id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white hover:border-blue-400 transition-colors duration-200">
-                <label for="db-file-input" class="cursor-pointer">
-                    <div class="flex flex-col items-center">
-                        <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                        <span class="text-lg text-gray-700 font-medium">Déposez votre fichier ici ou cliquez pour uploader</span>
-                        <span id="fileName" class="text-sm text-gray-500 mt-1">Aucun fichier sélectionné</span>
-                    </div>
-                </label>
-                <input type="file" id="db-file-input" accept=".db" class="hidden" />
-            </div>
-            <button id="analyzeButton" class="button w-full mt-6 flex items-center justify-center" disabled>
-                <span id="analyzeButtonText">Analyser les statistiques</span>
-                <div id="loadingSpinner" class="spinner ml-3 hidden"></div>
-            </button>
-        </div>
+            <div id="messageBox" class="message-box"></div>
 
-        <div id="statsSection" class="hidden main-content-grid">
-            <div class="card full-width-card filter-section">
-                <h2>Filtres de Données</h2>
-                <div class="filter-group">
-                    <label for="monthFilter">Sélectionnez un mois:</label>
-                    <select id="monthFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <option value="">Toutes les données</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="podcastSearchInput">Rechercher un podcast:</label>
-                    <div class="podcast-search-container">
-                        <input type="text" id="podcastSearchInput" placeholder="Tapez le nom du podcast..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                        <div id="podcastSuggestions" class="podcast-suggestions hidden"></div>
-                    </div>
-                    <button id="clearPodcastSelection" class="search-clear-button">Effacer</button>
-                    <input type="hidden" id="selectedPodcastHiddenInput"> <!-- To store the actual selected podcast title -->
-                </div>
-                <div class="filter-group mt-4">
-                    <label for="podcastDisplayLimitInput">Nombre de podcasts à afficher :</label>
-                    <input type="number" id="podcastDisplayLimitInput" value="10" min="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Vue d'ensemble</h3>
-                <p><strong>🎧 Temps total d'écoute :</strong> <span id="totalListeningTime">0 heures</span></p>
-                <p><strong>📻 Épisodes écoutés :</strong> <span id="episodesListened">0</span></p>
-                <p><strong>✅ Épisodes terminés (>90%) :</strong> <span id="episodesCompleted">0 (0%)</span></p>
-                <p><strong>⏱️ Durée moyenne par écoute :</strong> <span id="avgListenDuration">0 minutes</span></p>
-                <p><strong>📊 Progression moyenne :</strong> <span id="avgProgress">0%</span></p>
-            </div>
-
-            <div class="card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Top Podcasts par temps d'écoute (global)</h3>
-                <ul id="topPodcastsTimeListShort" class="list-disc ml-5"></ul>
-                <div id="topPodcastsTimeListFull" class="hidden">
-                    <ul id="topPodcastsTimeListAll" class="list-disc ml-5"></ul>
-                </div>
-                <button id="toggleTopPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
-            </div>
-
-            <div class="card full-width-card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Écoutes par mois</h3>
-                <p id="monthlyChartPeriodInfo" class="chart-period-info"></p>
-                <div class="chart-container">
-                    <canvas id="monthlyChart"></canvas>
-                </div>
-            </div>
-
-            <div id="monthlyPodcastDetail" class="card hidden">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700" id="monthlyPodcastDetailTitle"></h3>
-                <ul id="monthlyPodcastListShort" class="ml-5"></ul>
-                <div id="monthlyPodcastListFull" class="hidden">
-                    <ul id="monthlyPodcastListAll" class="ml-5"></ul>
-                </div>
-                <button id="toggleMonthlyPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
-            </div>
-
-            <div class="card full-width-card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Distribution du temps d'écoute par Podcast</h3>
-                <p id="podcastTimeDistributionChartPeriodInfo" class="chart-period-info"></p>
-                <div class="chart-container">
-                    <canvas id="podcastTimeDistributionChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card full-width-card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Statistiques par Podcast</h3>
-                <p id="podcastEpisodeCountChartPeriodInfo" class="chart-period-info"></p>
-                
-                <!-- Separated list and chart for Podcast Stats -->
-                <h4 class="font-medium text-gray-700 mt-4 mb-2">Top Podcasts par épisodes écoutés (Liste)</h4>
-                <ul id="podcastStatsListShort" class="ml-5"></ul>
-                <div id="podcastStatsListFull" class="hidden">
-                    <ul id="podcastStatsListAll" class="ml-5"></ul>
-                </div>
-                <button id="togglePodcastStats" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
-
-                <h4 class="font-medium text-gray-700 mt-6 mb-2">Top Podcasts par épisodes écoutés (Graphique)</h4>
-                <div id="selectedPodcastStats" class="mt-4 hidden">
-                    <h4 class="font-medium text-gray-700 mb-2">Détails pour : <span id="selectedPodcastTitleDisplay" class="font-semibold"></span></h4>
-                    <p><strong>🎧 Temps d'écoute sur la période :</strong> <span id="selectedPodcastTime">0 heures</span></p>
-                    <p><strong>📻 Épisodes écoutés sur la période :</strong> <span id="selectedPodcastEpisodes">0</span></p>
-                </div>
-                <div id="podcastEpisodeCountChart-container" class="chart-container">
-                    <canvas id="podcastEpisodeCountChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card full-width-card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Habitudes d'écoute</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <p id="hourlyChartPeriodInfo" class="chart-period-info"></p>
-                        <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par heure de la journée</h4>
-                        <div class="chart-container">
-                            <canvas id="hourlyChart"></canvas>
-                        </div>
-                    </div>
-                    <div>
-                        <p id="dailyChartPeriodInfo" class="chart-period-info"></p>
-                        <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par jour de la semaine</h4>
-                        <div class="chart-container">
-                            <canvas id="dailyChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card full-width-card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Export pour Réseaux Sociaux (Inspiré de Spotify Wrapped)</h3>
-                <div id="wrappedContent">
-                    <p id="wrappedPeriodInfo" class="text-sm text-gray-600 mb-2"></p>
-                    <div id="wrappedTextContent" class="text-gray-800 bg-gray-50 p-4 rounded-lg text-left whitespace-pre-wrap"></div>
-                </div>
-                <div class="export-buttons">
-                    <button id="copyWrapped" class="button">Copier le texte Wrapped</button>
-                    <button id="exportWrappedImage" class="button">Exporter l'image Wrapped</button>
-                </div>
-            </div>
-
-            <div class="card full-width-card">
-                <h3 class="text-lg font-semibold mb-2 text-gray-700">Exporter tous les graphiques</h3>
+            <div class="card mb-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">1. Uploader votre base de données AntennaPod (.db)</h2>
                 <p class="text-gray-600 mb-4">
-                    Cliquez sur le bouton ci-dessous pour exporter tous les graphiques affichés sous forme d'images PNG dans un fichier ZIP.
+                    Veuillez sélectionner le fichier \`AntennaPod.db\` de votre installation AntennaPod.
+                    Vous pouvez généralement le trouver dans le dossier de données de l'application sur votre appareil Android.
+                    <br><br>
+                    <span class="text-sm text-red-500">Note: Les images de couverture des podcasts sont souvent stockées localement sur votre appareil et ne peuvent pas être affichées directement dans cette application web pour des raisons de sécurité. Des images de remplacement génériques seront utilisées si l'URL de l'image n'est pas accessible.</span>
                 </p>
-                <button id="exportAllCharts" class="button w-full">Exporter tous les graphiques (ZIP)</button>
+                <div id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white hover:border-blue-400 transition-colors duration-200">
+                    <label for="db-file-input" class="cursor-pointer">
+                        <div class="flex flex-col items-center">
+                            <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <span class="text-lg text-gray-700 font-medium">Déposez votre fichier ici ou cliquez pour uploader</span>
+                            <span id="fileName" class="text-sm text-gray-500 mt-1">Aucun fichier sélectionné</span>
+                        </div>
+                    </label>
+                    <input type="file" id="db-file-input" accept=".db" class="hidden" />
+                </div>
+                <button id="analyzeButton" class="button w-full mt-6 flex items-center justify-center" disabled>
+                    <span id="analyzeButtonText">Analyser les statistiques</span>
+                    <div id="loadingSpinner" class="spinner ml-3 hidden"></div>
+                </button>
+            </div>
+
+            <div id="statsSection" class="hidden main-content-grid">
+                <div class="card full-width-card filter-section">
+                    <h2>Filtres de Données</h2>
+                    <div class="filter-group">
+                        <label for="monthFilter">Sélectionnez un mois:</label>
+                        <select id="monthFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <option value="">Toutes les données</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="podcastSearchInput">Rechercher un podcast:</label>
+                        <div class="podcast-search-container">
+                            <input type="text" id="podcastSearchInput" placeholder="Tapez le nom du podcast..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <div id="podcastSuggestions" class="podcast-suggestions hidden"></div>
+                        </div>
+                        <button id="clearPodcastSelection" class="search-clear-button">Effacer</button>
+                        <input type="hidden" id="selectedPodcastHiddenInput"> <!-- To store the actual selected podcast title -->
+                    </div>
+                    <div class="filter-group mt-4">
+                        <label for="podcastDisplayLimitInput">Nombre de podcasts à afficher :</label>
+                        <input type="number" id="podcastDisplayLimitInput" value="10" min="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Vue d'ensemble</h3>
+                    <p><strong>🎧 Temps total d'écoute :</strong> <span id="totalListeningTime">0 heures</span></p>
+                    <p><strong>📻 Épisodes écoutés :</strong> <span id="episodesListened">0</span></p>
+                    <p><strong>✅ Épisodes terminés (>90%) :</strong> <span id="episodesCompleted">0 (0%)</span></p>
+                    <p><strong>⏱️ Durée moyenne par écoute :</strong> <span id="avgListenDuration">0 minutes</span></p>
+                    <p><strong>📊 Progression moyenne :</strong> <span id="avgProgress">0%</span></p>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Top Podcasts par temps d'écoute (global)</h3>
+                    <ul id="topPodcastsTimeListShort" class="list-disc ml-5"></ul>
+                    <div id="topPodcastsTimeListFull" class="hidden">
+                        <ul id="topPodcastsTimeListAll" class="list-disc ml-5"></ul>
+                    </div>
+                    <button id="toggleTopPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
+                </div>
+
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Écoutes par mois</h3>
+                    <p id="monthlyChartPeriodInfo" class="chart-period-info"></p>
+                    <div class="chart-container">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+                </div>
+
+                <div id="monthlyPodcastDetail" class="card hidden">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700" id="monthlyPodcastDetailTitle"></h3>
+                    <ul id="monthlyPodcastListShort" class="ml-5"></ul>
+                    <div id="monthlyPodcastListFull" class="hidden">
+                        <ul id="monthlyPodcastListAll" class="ml-5"></ul>
+                    </div>
+                    <button id="toggleMonthlyPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
+                </div>
+
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Distribution du temps d'écoute par Podcast</h3>
+                    <p id="podcastTimeDistributionChartPeriodInfo" class="chart-period-info"></p>
+                    <div class="chart-container">
+                        <canvas id="podcastTimeDistributionChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Statistiques par Podcast</h3>
+                    <p id="podcastEpisodeCountChartPeriodInfo" class="chart-period-info"></p>
+                    
+                    <!-- Separated list and chart for Podcast Stats -->
+                    <h4 class="font-medium text-gray-700 mt-4 mb-2">Top Podcasts par épisodes écoutés (Liste)</h4>
+                    <ul id="podcastStatsListShort" class="ml-5"></ul>
+                    <div id="podcastStatsListFull" class="hidden">
+                        <ul id="podcastStatsListAll" class="ml-5"></ul>
+                    </div>
+                    <button id="togglePodcastStats" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
+
+                    <h4 class="font-medium text-gray-700 mt-6 mb-2">Top Podcasts par épisodes écoutés (Graphique)</h4>
+                    <div id="selectedPodcastStats" class="mt-4 hidden">
+                        <h4 class="font-medium text-gray-700 mb-2">Détails pour : <span id="selectedPodcastTitleDisplay" class="font-semibold"></span></h4>
+                        <p><strong>🎧 Temps d'écoute sur la période :</strong> <span id="selectedPodcastTime">0 heures</span></p>
+                        <p><strong>📻 Épisodes écoutés sur la période :</strong> <span id="selectedPodcastEpisodes">0</span></p>
+                    </div>
+                    <div id="podcastEpisodeCountChart-container" class="chart-container">
+                        <canvas id="podcastEpisodeCountChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Habitudes d'écoute</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <p id="hourlyChartPeriodInfo" class="chart-period-info"></p>
+                            <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par heure de la journée</h4>
+                            <div class="chart-container">
+                                <canvas id="hourlyChart"></canvas>
+                            </div>
+                        </div>
+                        <div>
+                            <p id="dailyChartPeriodInfo" class="chart-period-info"></p>
+                            <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par jour de la semaine</h4>
+                            <div class="chart-container">
+                                <canvas id="dailyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Export pour Réseaux Sociaux (Inspiré de Spotify Wrapped)</h3>
+                    <div id="wrappedContent">
+                        <p id="wrappedPeriodInfo" class="text-sm text-gray-600 mb-2"></p>
+                        <div id="wrappedTextContent" class="text-gray-800 bg-gray-50 p-4 rounded-lg text-left whitespace-pre-wrap"></div>
+                    </div>
+                    <div class="export-buttons">
+                        <button id="copyWrapped" class="button">Copier le texte Wrapped</button>
+                        <button id="exportWrappedImage" class="button">Exporter l'image Wrapped</button>
+                    </div>
+                </div>
+
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Exporter tous les graphiques</h3>
+                    <p class="text-gray-600 mb-4">
+                        Cliquez sur le bouton ci-dessous pour exporter tous les graphiques affichés sous forme d'images PNG dans un fichier ZIP.
+                    </p>
+                    <button id="exportAllCharts" class="button w-full">Exporter tous les graphiques (ZIP)</button>
+                </div>
             </div>
         </div>
     </div>
@@ -548,7 +544,7 @@
         const messageBox = document.getElementById('messageBox');
         const totalListeningTimeSpan = document.getElementById('totalListeningTime');
         const episodesListenedSpan = document.getElementById('episodesListened');
-        const episodesCompletedSpan = document.getElementById('episodesCompleted');
+        const episodesCompletedSpan = document.getElementById('episodesCompleted'); 
         const avgListenDurationSpan = document.getElementById('avgListenDuration');
         const avgProgressSpan = document.getElementById('avgProgress');
         
@@ -577,7 +573,6 @@
 
         const podcastDisplayLimitInput = document.getElementById('podcastDisplayLimitInput'); // New input for limit
 
-        // Removed wrappedExportTextarea from here as it's no longer in HTML
         const copyWrappedButton = document.getElementById('copyWrapped');
         const wrappedPeriodInfo = document.getElementById('wrappedPeriodInfo');
         const exportWrappedImageButton = document.getElementById('exportWrappedImage');
@@ -721,10 +716,10 @@
                     // Fallback for older browsers or environments without navigator.clipboard
                     const tempTextArea = document.createElement('textarea');
                     tempTextArea.value = textToCopy;
-                    document.body.appendChild(tempTextArea);
+                    document.body.appendChild(tempTextArea); 
                     tempTextArea.select();
                     document.execCommand('copy');
-                    document.body.removeChild(tempTextArea);
+                    document.body.removeChild(tempTextArea); 
                     showMessage('success', 'Rapport copié dans le presse-papiers (via fallback) !');
                 }
             } catch (err) {
@@ -754,9 +749,9 @@
                 const downloadLink = document.createElement('a');
                 downloadLink.href = imageDataURL;
                 downloadLink.download = 'AntennaPod_Wrapped_Report.png'; // File name
-                document.body.appendChild(downloadLink); // Append to body is required for Firefox
+                document.body.appendChild(downloadLink); 
                 downloadLink.click(); // Programmatically click the link to trigger download
-                document.body.removeChild(downloadLink); // Clean up
+                document.body.removeChild(downloadLink); 
                 
                 showMessage('success', 'Image exportée avec succès !');
             } catch (error) {
@@ -781,7 +776,7 @@
             const exportPadding = 20; // pixels
 
             for (const chartInfo of chartsToExport) {
-                const canvasElement = document.getElementById(chartInfo.id);
+                const canvasElement = document.getElementById(chartInfo.id); 
                 if (canvasElement) {
                     try {
                         // Get the data URL directly from the Chart.js rendered canvas
@@ -856,7 +851,7 @@
         });
 
         // Add a click listener to the document to hide suggestions when clicking outside
-        document.addEventListener('click', (event) => {
+        document.addEventListener('click', (event) => { 
             if (!podcastSuggestions.contains(event.target) && event.target !== podcastSearchInput) {
                 podcastSuggestions.classList.add('hidden');
             }
@@ -1576,21 +1571,8 @@
 
             // Daily Chart (Starts Monday)
             const dayNames = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; // Order starts Monday
-            const dailyListeningTimeMap = new Map(); 
-            // Initialize map with 0 for all days in the desired order
-            dayNames.forEach(day => dailyListeningTimeMap.set(day, 0)); 
-
-            stats.allHistoryData.forEach(item => {
-                if (item.last_played_time > 0 && item.played_duration > 0) {
-                    const date = new Date(item.last_played_time);
-                    let dayOfWeekIndex = date.getDay(); // 0 (Sunday) to 6 (Saturday)
-                    // Adjust index to start from Monday (1 becomes 0, 0 becomes 6)
-                    dayOfWeekIndex = (dayOfWeekIndex === 0) ? 6 : dayOfWeekIndex - 1;
-                    const dayOfWeekName = dayNames[dayOfWeekIndex]; // Use dayNamesOrdered array
-                    dailyListeningTimeMap.set(dayOfWeekName, (dailyListeningTimeMap.get(dayOfWeekName) || 0) + (item.played_duration || 0)); // Sum durations
-                }
-            });
-            const dailyValues = dayNames.map(day => (dailyListeningTimeMap.get(day) || 0) / (1000 * 3600)); // Get counts in correct order and convert to hours
+            // Access dailyListening from the stats object
+            const dailyValues = stats.dailyListening.map(item => item.count); // Get counts in correct order and convert to hours
 
             dailyChartInstance = new Chart(dailyCtx, {
                 type: 'bar',
@@ -1650,6 +1632,10 @@
         let SQL;
         async function loadSqlJs() {
             try {
+                // Ensure Chart.js, JSZip, FileSaver.js, html2canvas are loaded before proceeding
+                // These are loaded in the <head> so they should be available.
+                // No explicit check needed here for them, but good to be aware.
+
                 const SQL_wasm = await initSqlJs({
                     locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
                 });
@@ -1868,8 +1854,13 @@
             };
         }
     </script>
-
-    <!-- sql.js library for client-side SQLite processing -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- JSZip for creating zip files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <!-- FileSaver.js for saving files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- html2canvas for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </body>
 </html>
