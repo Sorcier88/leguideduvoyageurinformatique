@@ -359,6 +359,30 @@
             background-color: #e2e8f0; /* Hover for inactive buttons */
             color: #0e6270;
         }
+
+        /* Bento layout for key stats */
+        #antennapod-analyzer-app-container .bento-key-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* Stack vertically on small screens */
+            gap: 20px;
+            grid-column: 1 / -1; /* Make this new grid span full width within main-content-grid */
+        }
+
+        @media (min-width: 768px) {
+            #antennapod-analyzer-app-container .bento-key-stats-grid {
+                grid-template-columns: repeat(3, 1fr); /* Three equal columns on desktop */
+            }
+            #antennapod-analyzer-app-container .overview-card {
+                order: 1; /* Vue d'ensemble is leftmost */
+                grid-column: span 1; /* It will take 1 column now */
+            }
+            #antennapod-analyzer-app-container .global-top-podcasts-card {
+                order: 2; /* Global is in the center */
+            }
+            #antennapod-analyzer-app-container .period-top-podcasts-card {
+                order: 3; /* Period is rightmost */
+            }
+        }
     </style>
 
     <div id="antennapod-analyzer-app-container">
@@ -438,22 +462,34 @@
                     </div>
                 </div>
 
-                <div class="card">
-                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Vue d'ensemble</h3>
-                    <p><strong>🎧 Temps total d'écoute&nbsp;:</strong> <span id="totalListeningTime">0 heures</span></p>
-                    <p><strong>📻 Épisodes écoutés&nbsp;:</strong> <span id="episodesListened">0</span></p>
-                    <p><strong>✅ Épisodes terminés (>90%)&nbsp;:</strong> <span id="episodesCompleted">0 (0%)</span></p>
-                    <p><strong>⏱️ Durée moyenne par écoute&nbsp;:</strong> <span id="avgListenDuration">0 minutes</span></p>
-                    <p><strong>📊 Progression moyenne&nbsp;:</strong> <span id="avgProgress">0%</span></p>
-                </div>
-
-                <div class="card">
-                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Top Podcasts par temps d'écoute (global)</h3>
-                    <ul id="topPodcastsTimeListShort" class="list-disc ml-5"></ul>
-                    <div id="topPodcastsTimeListFull" class="hidden">
-                        <ul id="topPodcastsTimeListAll" class="list-disc ml-5"></ul>
+                <!-- Bento layout for key stats -->
+                <div class="bento-key-stats-grid">
+                    <div class="card overview-card">
+                        <h3 class="text-lg font-semibold mb-2 text-gray-700">Vue d'ensemble</h3>
+                        <p><strong>🎧 Temps total d'écoute&nbsp;:</strong> <span id="totalListeningTime">0 heures</span></p>
+                        <p><strong>📻 Épisodes écoutés&nbsp;:</strong> <span id="episodesListened">0</span></p>
+                        <p><strong>✅ Épisodes terminés (>90%)&nbsp;:</strong> <span id="episodesCompleted">0 (0%)</span></p>
+                        <p><strong>⏱️ Durée moyenne par écoute&nbsp;:</strong> <span id="avgListenDuration">0 minutes</span></p>
+                        <p><strong>📊 Progression moyenne&nbsp;:</strong> <span id="avgProgress">0%</span></p>
                     </div>
-                    <button id="toggleTopPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
+
+                    <div class="card global-top-podcasts-card">
+                        <h3 class="text-lg font-semibold mb-2 text-gray-700">Top Podcasts par temps d'écoute (global)</h3>
+                        <ul id="topPodcastsTimeListShort" class="list-disc ml-5"></ul>
+                        <div id="topPodcastsTimeListFull" class="hidden">
+                            <ul id="topPodcastsTimeListAll" class="list-disc ml-5"></ul>
+                        </div>
+                        <button id="toggleTopPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
+                    </div>
+
+                    <div id="monthlyPodcastDetail" class="card period-top-podcasts-card">
+                        <h3 class="text-lg font-semibold mb-2 text-gray-700" id="monthlyPodcastDetailTitle">Top Podcasts pour la période</h3>
+                        <ul id="monthlyPodcastListShort" class="ml-5"></ul>
+                        <div id="monthlyPodcastListFull" class="hidden">
+                            <ul id="monthlyPodcastListAll" class="ml-5"></ul>
+                        </div>
+                        <button id="toggleMonthlyPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
+                    </div>
                 </div>
 
                 <div class="card full-width-card">
@@ -468,15 +504,6 @@
                     <div class="chart-container">
                         <canvas id="monthlyChart"></canvas>
                     </div>
-                </div>
-
-                <div id="monthlyPodcastDetail" class="card hidden">
-                    <h3 class="text-lg font-semibold mb-2 text-gray-700" id="monthlyPodcastDetailTitle"></h3>
-                    <ul id="monthlyPodcastListShort" class="ml-5"></ul>
-                    <div id="monthlyPodcastListFull" class="hidden">
-                        <ul id="monthlyPodcastListAll" class="ml-5"></ul>
-                    </div>
-                    <button id="toggleMonthlyPodcasts" class="button mt-4 text-sm px-4 py-2">Afficher plus</button>
                 </div>
 
                 <div class="card full-width-card">
@@ -1141,12 +1168,16 @@
             if (isExpanded) {
                 monthlyPodcastListFull.classList.remove('expanded');
                 monthlyPodcastListFull.classList.add('hidden');
+                monthlyPodcastListShort.classList.remove('hidden'); // Show short list again
                 toggleMonthlyPodcastsButton.textContent = 'Afficher plus';
             } else {
                 monthlyPodcastListFull.classList.remove('hidden');
                 monthlyPodcastListFull.classList.add('expanded');
+                monthlyPodcastListShort.classList.add('hidden'); // Hide short list
                 toggleMonthlyPodcastsButton.textContent = 'Afficher moins';
             }
+            // Re-render the short list based on the new expanded state
+            updateMonthlyPodcastList(currentProcessedData.topPodcastsByTime, !isExpanded);
         });
 
         // Toggle Podcast Stats Drawer (New)
@@ -1235,6 +1266,7 @@
 
             // Initial render of Top Podcasts by Time (collapsed state)
             renderTopPodcastsTimeList(stats.topPodcastsByTime, false);
+            updateMonthlyPodcastList(stats.topPodcastsByTime, false); // Initial render for monthly list
         }
 
         /**
@@ -1444,41 +1476,74 @@
 
             currentProcessedData = processRawData(filteredData); // Update global variable
             updateUIWithStats(currentProcessedData);
-            updateMonthlyPodcastList(startDateTime || endDateTime !== Infinity ? 'filtered' : 'all', currentProcessedData.topPodcastsByTime);
+            // Re-render both top podcast lists based on the current filter
+            renderTopPodcastsTimeList(currentProcessedData.topPodcastsByTime, topPodcastsTimeListFull.classList.contains('expanded'));
+            updateMonthlyPodcastList(currentProcessedData.topPodcastsByTime, monthlyPodcastListFull.classList.contains('expanded'));
             renderPodcastStatsList(currentProcessedData.topPodcastsByEpisodeCount, false); // Initial render for podcast stats
             drawCharts(currentProcessedData, startDateTime, endDateTime, selectedPodcast, showSansTag); // Pass showSansTag
             generateWrappedReport(currentProcessedData, startDateTime, endDateTime);
         }
 
-        function updateMonthlyPodcastList(periodType, topPodcastsForPeriod) {
+        // Updated function signature and logic
+        function updateMonthlyPodcastList(topPodcastsForPeriod, isExpanded) {
             monthlyPodcastListShort.innerHTML = '';
             monthlyPodcastListAll.innerHTML = '';
             
-            if (periodType === 'filtered') { // If a specific date range is applied
-                const start = startDateFilter.value;
-                const end = endDateFilter.value;
-                let titleText = 'Top Podcasts pour la période';
-                if (start && end) {
-                    titleText += ` du ${start} au ${end}`;
-                } else if (start) {
-                    titleText += ` à partir du ${start}`;
-                } else if (end) {
-                    titleText += ` jusqu'au ${end}`;
-                }
-                monthlyPodcastDetailTitle.textContent = titleText;
-                monthlyPodcastDetail.classList.remove('hidden'); // Ensure the monthly detail card is visible
+            const start = startDateFilter.value;
+            const end = endDateFilter.value;
+            let titleText = 'Top Podcasts pour la période';
+            let periodDescription = '';
 
-                if (topPodcastsForPeriod.length === 0) {
+            if (start && end) {
+                periodDescription = ` du ${start} au ${end}`;
+            } else if (start) {
+                periodDescription = ` à partir du ${start}`;
+            } else if (end) {
+                periodDescription = ` jusqu'au ${end}`;
+            } else {
+                periodDescription = ` (toutes les périodes)`;
+            }
+            monthlyPodcastDetailTitle.textContent = `${titleText}${periodDescription}`;
+
+            if (topPodcastsForPeriod.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = "Aucun podcast écouté sur cette période.";
+                monthlyPodcastListShort.appendChild(li);
+                toggleMonthlyPodcastsButton.classList.add('hidden');
+                monthlyPodcastListFull.classList.add('hidden');
+                return;
+            }
+
+            const displayLimit = podcastDisplayLimit;
+
+            if (isExpanded) {
+                // If expanded, populate full list and hide short list
+                topPodcastsForPeriod.forEach((p, index) => {
                     const li = document.createElement('li');
-                    li.textContent = "Aucun podcast écouté sur cette période.";
-                    monthlyPodcastListShort.appendChild(li);
-                    toggleMonthlyPodcastsButton.classList.add('hidden');
-                    monthlyPodcastListFull.classList.add('hidden');
-                    return;
-                }
-
-                // Populate short list
-                topPodcastsForPeriod.slice(0, podcastDisplayLimit).forEach((p, index) => {
+                    li.className = 'podcast-item';
+                    const img = document.createElement('img');
+                    const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
+                    if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
+                        img.src = p.imageUrl;
+                        img.onerror = () => { // Fallback if the external image fails to load
+                            img.src = defaultPlaceholder;
+                        };
+                    } else {
+                        img.src = defaultPlaceholder;
+                    }
+                    img.alt = `Couverture de ${p.podcast}`;
+                    li.appendChild(img);
+                    
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
+                    li.appendChild(textSpan);
+                    monthlyPodcastListAll.appendChild(li);
+                });
+                monthlyPodcastListShort.classList.add('hidden');
+                monthlyPodcastListFull.classList.remove('hidden');
+            } else {
+                // If collapsed, populate short list (with "Autres" if needed) and hide full list
+                topPodcastsForPeriod.slice(0, displayLimit).forEach((p, index) => {
                     const li = document.createElement('li');
                     li.className = 'podcast-item';
                     const img = document.createElement('img');
@@ -1500,34 +1565,8 @@
                     monthlyPodcastListShort.appendChild(li);
                 });
 
-                // Populate full list (only items beyond the limit)
-                let otherHours = 0;
-                if (topPodcastsForPeriod.length > podcastDisplayLimit) {
-                    topPodcastsForPeriod.slice(podcastDisplayLimit).forEach((p, index) => {
-                        const li = document.createElement('li');
-                        li.className = 'podcast-item';
-                        const img = document.createElement('img');
-                        const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
-                        if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
-                            img.src = p.imageUrl;
-                            img.onerror = () => { // Fallback if the external image fails to load
-                                img.src = defaultPlaceholder;
-                            };
-                        } else {
-                            img.src = defaultPlaceholder;
-                        }
-                        img.alt = `Couverture de ${p.podcast}`;
-                        li.appendChild(img);
-                        
-                        const textSpan = document.createElement('span');
-                        textSpan.textContent = `${podcastDisplayLimit + 1 + index}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
-                        li.appendChild(textSpan);
-                        monthlyPodcastListAll.appendChild(li);
-                    });
-                    // Calculate other hours for the short list
-                    otherHours = topPodcastsForPeriod.slice(podcastDisplayLimit).reduce((sum, p) => sum + p.hours, 0);
-
-                    // Add "Autres" to the short list if applicable
+                if (topPodcastsForPeriod.length > displayLimit) {
+                    const otherHours = topPodcastsForPeriod.slice(displayLimit).reduce((sum, p) => sum + p.hours, 0);
                     const liAutres = document.createElement('li');
                     liAutres.className = 'podcast-item';
                     const imgAutres = document.createElement('img');
@@ -1539,21 +1578,16 @@
                     liAutres.appendChild(textSpanAutres);
                     monthlyPodcastListShort.appendChild(liAutres);
                 }
+                monthlyPodcastListShort.classList.remove('hidden');
+                monthlyPodcastListFull.classList.add('hidden');
+            }
 
-
-                // Show/hide toggle button for monthly list
-                if (topPodcastsForPeriod.length <= podcastDisplayLimit) {
-                    toggleMonthlyPodcastsButton.classList.add('hidden');
-                    monthlyPodcastListFull.classList.add('hidden');
-                } else {
-                    toggleMonthlyPodcastsButton.classList.remove('hidden');
-                    monthlyPodcastListFull.classList.remove('expanded'); // Ensure collapsed by default
-                    monthlyPodcastListFull.classList.add('hidden');
-                    toggleMonthlyPodcastsButton.textContent = 'Afficher plus';
-                }
-
+            // Show/hide toggle button for monthly list
+            if (topPodcastsForPeriod.length <= displayLimit) {
+                toggleMonthlyPodcastsButton.classList.add('hidden');
             } else {
-                monthlyPodcastDetail.classList.add('hidden');
+                toggleMonthlyPodcastsButton.classList.remove('hidden');
+                toggleMonthlyPodcastsButton.textContent = isExpanded ? 'Afficher moins' : 'Afficher plus';
             }
         }
 
@@ -1640,7 +1674,7 @@
                 const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
                 periodInfoText += `jusqu'au ${endDate}`;
             } else {
-                periodInfoText += `pour toutes les périodes`;
+                periodInfoText = `pour toutes les périodes`;
             }
 
             // Update chart period info
