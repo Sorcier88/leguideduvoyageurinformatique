@@ -55,4 +55,4 @@ N'hésitez pas à l'essayer et à me faire part de vos impressions ou suggestion
 
 ---
 
-Si vous avez des questions ou des remarques, n’hésitez pas à m’envoyer un mail à [votre adresse mail] 😊
+Si vous avez des questions ou des remarques, n’hésitez pas à m’envoyer un mail à [guidevoyageurinformatique@sorcier.mozmail.com](mailto:guidevoyageurinformatique@sorcier.mozmail.com) 😊
