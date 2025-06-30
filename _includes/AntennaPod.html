@@ -328,6 +328,37 @@
             max-height: 1000px;
             overflow-y: auto;
         }
+        /* Styles for the new period navigation */
+        #antennapod-analyzer-app-container .period-nav {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #edf2f7; /* Light background for the nav bar */
+            border-radius: 12px; /* Rounded corners for the bar */
+            padding: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Inner shadow */
+        }
+        #antennapod-analyzer-app-container .period-nav button {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 8px; /* Rounded buttons */
+            background-color: transparent;
+            color: #4a5568; /* Default text color */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none; /* No border for buttons */
+            cursor: pointer;
+        }
+        #antennapod-analyzer-app-container .period-nav button.active {
+            background-color: #0e6270; /* Active button background */
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Shadow for active button */
+            transform: translateY(-1px);
+        }
+        #antennapod-analyzer-app-container .period-nav button:not(.active):hover {
+            background-color: #e2e8f0; /* Hover for inactive buttons */
+            color: #0e6270;
+        }
     </style>
 
     <div id="antennapod-analyzer-app-container">
@@ -427,6 +458,12 @@
 
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Écoutes par période</h3>
+                    <!-- New Period Navigation -->
+                    <div class="period-nav" id="periodNav">
+                        <button id="viewMonthly" class="active">Mois</button>
+                        <button id="viewWeekly">Semaine</button>
+                        <button id="viewDaily">Jour</button>
+                    </div>
                     <p id="monthlyChartPeriodInfo" class="chart-period-info"></p>
                     <div class="chart-container">
                         <canvas id="monthlyChart"></canvas>
@@ -522,11 +559,15 @@
                 </div>
 
                 <div class="card full-width-card">
-                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Exporter tous les graphiques</h3>
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Exporter tous les graphiques et données</h3>
                     <p class="text-gray-600 mb-4">
-                        Cliquez sur le bouton ci-dessous pour exporter tous les graphiques affichés sous forme d'images PNG dans un fichier ZIP.
+                        Cliquez sur les boutons ci-dessous pour exporter les données ou les graphiques.
                     </p>
-                    <button id="exportAllCharts" class="button w-full">Exporter tous les graphiques (ZIP)</button>
+                    <div class="export-buttons">
+                        <button id="exportAllCharts" class="button">Exporter tous les graphiques (ZIP)</button>
+                        <button id="exportCsvButton" class="button">Exporter les statistiques (CSV)</button>
+                        <button id="exportRawDataCsvButton" class="button">Exporter les données brutes (CSV)</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -548,9 +589,11 @@
         // Variables pour les graphiques Chart.js
         let monthlyChartInstance, podcastEpisodeCountChartInstance, hourlyChartInstance, dailyChartInstance, podcastTimeDistributionChartInstance, tagTimeDistributionChartInstance;
         let globalDfHistory = null; // Stocke les données de l'historique global
+        let currentProcessedData = null; // Stores the currently processed (filtered) data for CSV export
         let allPodcastsTitles = []; // Global to store unique podcast titles for search suggestions
         let podcastDisplayLimit = 10; // Default display limit for top podcasts
         let podcastSearchSelectedIndex = -1; // For keyboard navigation in podcast search suggestions
+        let currentPeriodView = 'month'; // New: Default view for "Écoutes par période" chart
 
 
         // --- Firebase Initialization and Authentication ---
@@ -643,6 +686,8 @@
         const wrappedTextContentDiv = document.getElementById('wrappedTextContent'); // New div for wrapped text
 
         const exportAllChartsButton = document.getElementById('exportAllCharts'); // New button for all charts export
+        const exportCsvButton = document.getElementById('exportCsvButton'); // New button for CSV export
+        const exportRawDataCsvButton = document.getElementById('exportRawDataCsvButton'); // New button for raw data CSV export
 
         // Chart Period Info Elements
         const monthlyChartPeriodInfo = document.getElementById('monthlyChartPeriodInfo');
@@ -663,6 +708,12 @@
 
         // Drag and Drop elements
         const fileInputWrapper = document.getElementById('fileInputWrapper');
+
+        // New Period Navigation Elements
+        const periodNav = document.getElementById('periodNav');
+        const viewMonthlyButton = document.getElementById('viewMonthly');
+        const viewWeeklyButton = document.getElementById('viewWeekly');
+        const viewDailyButton = document.getElementById('viewDaily');
 
 
         // --- Chart Contexts ---
@@ -688,8 +739,8 @@
         // Function to convert milliseconds to hours, minutes, seconds
         function msToHMS(ms) {
             const totalSeconds = Math.floor(ms / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const hours = Math.floor((totalSeconds % 3600) / 60);
+            const minutes = totalSeconds % 60;
             const seconds = totalSeconds % 60;
             return { hours, minutes, seconds };
         }
@@ -752,6 +803,24 @@
             return fixedText;
         }
 
+        /**
+         * Calculates the ISO week number (YYYY-WW) for a given Date object.
+         * @param {Date} d The date to calculate the ISO week for.
+         * @returns {string} The ISO week string in "YYYY-WW" format.
+         */
+        function getISOWeek(d) {
+            d = new Date(d.getTime()); // Create a copy to avoid modifying the original date
+            d.setHours(0, 0, 0, 0); // Set to midnight UTC to avoid timezone issues
+            // Thursday in current week decides the year.
+            d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
+            // January 4 is always in week 1.
+            var week1 = new Date(d.getFullYear(), 0, 4);
+            // Adjust to Sunday in week 1 and count number of weeks from date to week1.
+            const weekNo = 1 + Math.round(((d.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+            return `${d.getFullYear()}-S${String(weekNo).padStart(2, '0')}`; // Changed 'W' to 'S'
+        }
+
+
         // --- Event Listeners ---
         dbFileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
@@ -810,6 +879,7 @@
 
                 if (processedData) {
                     globalDfHistory = processedData.allHistoryData; // Store raw data for filters
+                    currentProcessedData = processedData; // Store processed data for CSV export
                     updateUIWithStats(processedData);
                     populateFilters(processedData.allHistoryData);
                     updateCharts(); // Call updateCharts to draw with initial (all data) filters
@@ -954,6 +1024,24 @@
             }
         });
 
+        // New: Export statistics to CSV
+        exportCsvButton.addEventListener('click', () => {
+            if (!currentProcessedData) {
+                showMessage('error', 'Aucune donnée à exporter. Veuillez d\'abord analyser un fichier.');
+                return;
+            }
+            exportStatsToCsv(currentProcessedData);
+        });
+
+        // New: Export raw data to CSV
+        exportRawDataCsvButton.addEventListener('click', () => {
+            if (!currentProcessedData || !currentProcessedData.allHistoryData || currentProcessedData.allHistoryData.length === 0) {
+                showMessage('error', 'Aucune donnée brute à exporter. Veuillez d\'abord analyser un fichier.');
+                return;
+            }
+            exportRawDataToCsv(currentProcessedData.allHistoryData);
+        });
+
 
         startDateFilter.addEventListener('change', updateCharts); // New event listener
         endDateFilter.addEventListener('change', updateCharts);   // New event listener
@@ -1031,15 +1119,20 @@
         // Toggle Top Podcasts Drawer (Global)
         toggleTopPodcastsButton.addEventListener('click', () => {
             const isExpanded = topPodcastsTimeListFull.classList.contains('expanded');
+            // Toggle the expanded state
             if (isExpanded) {
                 topPodcastsTimeListFull.classList.remove('expanded');
                 topPodcastsTimeListFull.classList.add('hidden');
+                topPodcastsTimeListShort.classList.remove('hidden'); // Show short list again
                 toggleTopPodcastsButton.textContent = 'Afficher plus';
             } else {
                 topPodcastsTimeListFull.classList.remove('hidden');
                 topPodcastsTimeListFull.classList.add('expanded');
+                topPodcastsTimeListShort.classList.add('hidden'); // Hide short list
                 toggleTopPodcastsButton.textContent = 'Afficher moins';
             }
+            // Re-render the short list based on the new expanded state
+            renderTopPodcastsTimeList(currentProcessedData.topPodcastsByTime, !isExpanded);
         });
 
         // Toggle Monthly Podcasts Drawer
@@ -1059,15 +1152,20 @@
         // Toggle Podcast Stats Drawer (New)
         togglePodcastStatsButton.addEventListener('click', () => {
             const isExpanded = podcastStatsListFull.classList.contains('expanded');
+            // Toggle the expanded state
             if (isExpanded) {
                 podcastStatsListFull.classList.remove('expanded');
                 podcastStatsListFull.classList.add('hidden');
+                podcastStatsListShort.classList.remove('hidden'); // Show short list again
                 togglePodcastStatsButton.textContent = 'Afficher plus';
             } else {
                 podcastStatsListFull.classList.remove('hidden');
                 podcastStatsListFull.classList.add('expanded');
+                podcastStatsListShort.classList.add('hidden'); // Hide short list
                 togglePodcastStatsButton.textContent = 'Afficher moins';
             }
+            // Re-render the short list based on the new expanded state
+            renderPodcastStatsList(currentProcessedData.topPodcastsByEpisodeCount, !isExpanded);
         });
 
 
@@ -1082,6 +1180,37 @@
                 podcastDisplayLimitInput.value = podcastDisplayLimit; // Revert to last valid value
             }
         });
+
+        // New: Event listeners for period navigation buttons
+        viewMonthlyButton.addEventListener('click', () => {
+            currentPeriodView = 'month';
+            updatePeriodNavButtons();
+            updateCharts();
+        });
+        viewWeeklyButton.addEventListener('click', () => {
+            currentPeriodView = 'week';
+            updatePeriodNavButtons();
+            updateCharts();
+        });
+        viewDailyButton.addEventListener('click', () => {
+            currentPeriodView = 'day';
+            updatePeriodNavButtons();
+            updateCharts();
+        });
+
+        function updatePeriodNavButtons() {
+            viewMonthlyButton.classList.remove('active');
+            viewWeeklyButton.classList.remove('active');
+            viewDailyButton.classList.remove('active');
+
+            if (currentPeriodView === 'month') {
+                viewMonthlyButton.classList.add('active');
+            } else if (currentPeriodView === 'week') {
+                viewWeeklyButton.classList.add('active');
+            } else if (currentPeriodView === 'day') {
+                viewDailyButton.classList.add('active');
+            }
+        }
 
 
         // --- UI Update Functions ---
@@ -1104,45 +1233,31 @@
             avgListenDurationSpan.textContent = `${stats.avgListenDurationMinutes.toFixed(1)} minutes`;
             avgProgressSpan.textContent = `${stats.avgProgressPercent.toFixed(1)}%`;
 
-            // Top Podcasts (global) - Short list with 'Autres'
+            // Initial render of Top Podcasts by Time (collapsed state)
+            renderTopPodcastsTimeList(stats.topPodcastsByTime, false);
+        }
+
+        /**
+         * Renders the Top Podcasts by Time list, handling "Autres" based on expanded state.
+         * @param {Array} topPodcasts The full sorted list of top podcasts by time.
+         * @param {boolean} isExpanded Whether the full list is currently expanded.
+         */
+        function renderTopPodcastsTimeList(topPodcasts, isExpanded) {
             topPodcastsTimeListShort.innerHTML = '';
-            const globalTopPodcasts = stats.topPodcastsByTime;
-            const globalDisplayLimit = podcastDisplayLimit;
-
-            globalTopPodcasts.slice(0, globalDisplayLimit).forEach((p, index) => {
-                const li = document.createElement('li');
-                li.className = 'podcast-item'; // Add class for consistent styling
-                const img = document.createElement('img');
-                const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
-                if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
-                    img.src = p.imageUrl;
-                    img.onerror = () => { // Fallback if the external image fails to load
-                        img.src = defaultPlaceholder;
-                    };
-                } else {
-                    img.src = defaultPlaceholder;
-                }
-                img.alt = `Couverture de ${p.podcast}`;
-                li.appendChild(img);
-                
-                const textSpan = document.createElement('span');
-                textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
-                li.appendChild(textSpan);
-                topPodcastsTimeListShort.appendChild(li);
-            });
-
-            // Top Podcasts (global) - Full list (only items beyond the limit)
             topPodcastsTimeListAll.innerHTML = '';
-            let globalOtherHours = 0;
-            if (globalTopPodcasts.length > globalDisplayLimit) {
-                globalTopPodcasts.slice(globalDisplayLimit).forEach((p, index) => {
+
+            const displayLimit = podcastDisplayLimit;
+
+            if (isExpanded) {
+                // If expanded, populate full list and hide short list
+                topPodcasts.forEach((p, index) => {
                     const li = document.createElement('li');
                     li.className = 'podcast-item';
                     const img = document.createElement('img');
                     const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
                     if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
                         img.src = p.imageUrl;
-                        img.onerror = () => { // Fallback if the external image fails to load
+                        img.onerror = () => {
                             img.src = defaultPlaceholder;
                         };
                     } else {
@@ -1152,37 +1267,62 @@
                     li.appendChild(img);
                     
                     const textSpan = document.createElement('span');
-                    textSpan.textContent = `${globalDisplayLimit + 1 + index}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
+                    textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
                     li.appendChild(textSpan);
                     topPodcastsTimeListAll.appendChild(li);
                 });
-                // Calculate other hours for the short list
-                globalOtherHours = globalTopPodcasts.slice(globalDisplayLimit).reduce((sum, p) => sum + p.hours, 0);
+                topPodcastsTimeListShort.classList.add('hidden');
+                topPodcastsTimeListFull.classList.remove('hidden');
+            } else {
+                // If collapsed, populate short list (with "Autres" if needed) and hide full list
+                topPodcasts.slice(0, displayLimit).forEach((p, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'podcast-item';
+                    const img = document.createElement('img');
+                    const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
+                    if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
+                        img.src = p.imageUrl;
+                        img.onerror = () => {
+                            img.src = defaultPlaceholder;
+                        };
+                    } else {
+                        img.src = defaultPlaceholder;
+                    }
+                    img.alt = `Couverture de ${p.podcast}`;
+                    li.appendChild(img);
+                    
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
+                    li.appendChild(textSpan);
+                    topPodcastsTimeListShort.appendChild(li);
+                });
 
-                // Add 'Autres' to the short list if there are more
-                const liAutres = document.createElement('li');
-                liAutres.className = 'podcast-item';
-                const imgAutres = document.createElement('img');
-                imgAutres.src = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
-                imgAutres.alt = `Autres podcasts`;
-                liAutres.appendChild(imgAutres);
-                const textSpanAutres = document.createElement('span');
-                textSpanAutres.textContent = `... Autres : ${globalOtherHours.toFixed(1)}h`;
-                liAutres.appendChild(textSpanAutres);
-                topPodcastsTimeListShort.appendChild(liAutres);
+                if (topPodcasts.length > displayLimit) {
+                    const otherHours = topPodcasts.slice(displayLimit).reduce((sum, p) => sum + p.hours, 0);
+                    const liAutres = document.createElement('li');
+                    liAutres.className = 'podcast-item';
+                    const imgAutres = document.createElement('img');
+                    imgAutres.src = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
+                    imgAutres.alt = `Autres podcasts`;
+                    liAutres.appendChild(imgAutres);
+                    const textSpanAutres = document.createElement('span');
+                    textSpanAutres.textContent = `... Autres : ${otherHours.toFixed(1)}h`;
+                    liAutres.appendChild(textSpanAutres);
+                    topPodcastsTimeListShort.appendChild(liAutres);
+                }
+                topPodcastsTimeListShort.classList.remove('hidden');
+                topPodcastsTimeListFull.classList.add('hidden');
             }
 
-            // Show/hide toggle button for global list
-            if (globalTopPodcasts.length <= globalDisplayLimit) {
+            // Show/hide toggle button
+            if (topPodcasts.length <= displayLimit) {
                 toggleTopPodcastsButton.classList.add('hidden');
-                topPodcastsTimeListFull.classList.add('hidden');
             } else {
                 toggleTopPodcastsButton.classList.remove('hidden');
-                topPodcastsTimeListFull.classList.remove('expanded'); // Ensure collapsed by default on new data load
-                topPodcastsTimeListFull.classList.add('hidden');
-                toggleTopPodcastsButton.textContent = 'Afficher plus';
+                toggleTopPodcastsButton.textContent = isExpanded ? 'Afficher moins' : 'Afficher plus';
             }
         }
+
 
         // --- Filtering and Charting Functions ---
         function populateFilters(data) {
@@ -1302,19 +1442,12 @@
                 });
             }
 
-            const processedFilteredData = processRawData(filteredData);
-
-            // Update monthly podcast list (uses topPodcastsByTime from the processedFilteredData)
-            updateMonthlyPodcastList(startDateTime || endDateTime !== Infinity ? 'filtered' : 'all', processedFilteredData.topPodcastsByTime);
-
-            // Update Podcast Stats List (by episode count)
-            updatePodcastStatsList(processedFilteredData.topPodcastsByEpisodeCount);
-
-            // Redraw charts
-            drawCharts(processedFilteredData, startDateTime, endDateTime, selectedPodcast, showSansTag); // Pass showSansTag
-
-            // Generate Wrapped Report for the filtered period
-            generateWrappedReport(processedFilteredData, startDateTime, endDateTime);
+            currentProcessedData = processRawData(filteredData); // Update global variable
+            updateUIWithStats(currentProcessedData);
+            updateMonthlyPodcastList(startDateTime || endDateTime !== Infinity ? 'filtered' : 'all', currentProcessedData.topPodcastsByTime);
+            renderPodcastStatsList(currentProcessedData.topPodcastsByEpisodeCount, false); // Initial render for podcast stats
+            drawCharts(currentProcessedData, startDateTime, endDateTime, selectedPodcast, showSansTag); // Pass showSansTag
+            generateWrappedReport(currentProcessedData, startDateTime, endDateTime);
         }
 
         function updateMonthlyPodcastList(periodType, topPodcastsForPeriod) {
@@ -1424,47 +1557,57 @@
             }
         }
 
-        function updatePodcastStatsList(topPodcastsByEpisodeCount) {
+        /**
+         * Renders the Podcast Stats list, handling "Autres" based on expanded state.
+         * @param {Array} topPodcastsByEpisodeCount The full sorted list of top podcasts by episode count.
+         * @param {boolean} isExpanded Whether the full list is currently expanded.
+         */
+        function renderPodcastStatsList(topPodcastsByEpisodeCount, isExpanded) {
             podcastStatsListShort.innerHTML = '';
             podcastStatsListAll.innerHTML = '';
 
-            const statsDisplayLimit = podcastDisplayLimit;
+            const displayLimit = podcastDisplayLimit;
 
-            topPodcastsByEpisodeCount.slice(0, statsDisplayLimit).forEach((p, index) => {
-                const li = document.createElement('li');
-                li.textContent = `${index + 1}. ${p.podcast}: ${p.count} épisodes`;
-                podcastStatsListShort.appendChild(li);
-            });
-
-            let otherEpisodesCount = 0;
-            if (topPodcastsByEpisodeCount.length > statsDisplayLimit) {
-                topPodcastsByEpisodeCount.slice(statsDisplayLimit).forEach((p, index) => {
+            if (isExpanded) {
+                // If expanded, populate full list and hide short list
+                topPodcastsByEpisodeCount.forEach((p, index) => {
                     const li = document.createElement('li');
-                    li.textContent = `${statsDisplayLimit + 1 + index}. ${p.podcast}: ${p.count} épisodes`;
+                    li.textContent = `${index + 1}. ${p.podcast}: ${p.count} épisodes`;
                     podcastStatsListAll.appendChild(li);
                 });
-                otherEpisodesCount = topPodcastsByEpisodeCount.slice(statsDisplayLimit).reduce((sum, p) => sum + p.count, 0);
+                podcastStatsListShort.classList.add('hidden');
+                podcastStatsListFull.classList.remove('hidden');
+            } else {
+                // If collapsed, populate short list (with "Autres" if needed) and hide full list
+                topPodcastsByEpisodeCount.slice(0, displayLimit).forEach((p, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = `${index + 1}. ${p.podcast}: ${p.count} épisodes`;
+                    podcastStatsListShort.appendChild(li);
+                });
 
-                const liAutres = document.createElement('li');
-                liAutres.className = 'podcast-item';
-                const imgAutres = document.createElement('img');
-                imgAutres.src = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
-                imgAutres.alt = `Autres podcasts`;
-                liAutres.appendChild(imgAutres);
-                const textSpanAutres = document.createElement('span');
-                textSpanAutres.textContent = `... Autres : ${otherEpisodesCount} épisodes`;
-                liAutres.appendChild(textSpanAutres);
-                podcastStatsListShort.appendChild(liAutres);
+                if (topPodcastsByEpisodeCount.length > displayLimit) {
+                    const otherEpisodesCount = topPodcastsByEpisodeCount.slice(displayLimit).reduce((sum, p) => sum + p.count, 0);
+                    const liAutres = document.createElement('li');
+                    liAutres.className = 'podcast-item';
+                    const imgAutres = document.createElement('img');
+                    imgAutres.src = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
+                    imgAutres.alt = `Autres podcasts`;
+                    liAutres.appendChild(imgAutres);
+                    const textSpanAutres = document.createElement('span');
+                    textSpanAutres.textContent = `... Autres : ${otherEpisodesCount} épisodes`;
+                    liAutres.appendChild(textSpanAutres);
+                    podcastStatsListShort.appendChild(liAutres);
+                }
+                podcastStatsListShort.classList.remove('hidden');
+                podcastStatsListFull.classList.add('hidden');
             }
 
-            if (topPodcastsByEpisodeCount.length <= statsDisplayLimit) {
+            // Show/hide toggle button
+            if (topPodcastsByEpisodeCount.length <= displayLimit) {
                 togglePodcastStatsButton.classList.add('hidden');
-                podcastStatsListFull.classList.add('hidden');
             } else {
                 togglePodcastStatsButton.classList.remove('hidden');
-                podcastStatsListFull.classList.remove('expanded');
-                podcastStatsListFull.classList.add('hidden');
-                togglePodcastStatsButton.textContent = 'Afficher plus';
+                togglePodcastStatsButton.textContent = isExpanded ? 'Afficher moins' : 'Afficher plus';
             }
         }
 
@@ -1509,31 +1652,12 @@
             dailyChartPeriodInfo.textContent = periodInfoText;
 
 
-            // Monthly/Daily Chart (Time instead of Count)
-            let monthlyChartLabels;
-            let monthlyChartValues;
-            let monthlyChartTitle;
+            // Monthly/Daily/Weekly Chart (Time instead of Count) based on currentPeriodView
+            let chartLabels;
+            let chartValues;
+            let chartTitle;
 
-            if (startDateTime || endDateTime !== Infinity) {
-                // If a period is selected, show daily listening time for that period
-                const dailyListeningTimeForPeriod = {};
-                stats.allHistoryData.forEach(item => {
-                    if (item.last_played_time > 0) {
-                        const date = new Date(item.last_played_time);
-                        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                        dailyListeningTimeForPeriod[dateKey] = (dailyListeningTimeForPeriod[dateKey] || 0) + (item.played_duration || 0);
-                    }
-                });
-
-                // Sort by date and fill missing days with 0 within the range
-                const sortedDailyData = Object.entries(dailyListeningTimeForPeriod).sort(([dateA], [dateB]) => dateA.localeCompare(dateB));
-
-                monthlyChartLabels = sortedDailyData.map(([date]) => date);
-                monthlyChartValues = sortedDailyData.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
-                monthlyChartTitle = `Temps d'écoute quotidien sur la période (heures)`;
-
-            } else {
-                // Otherwise, show monthly total listening time for all time
+            if (currentPeriodView === 'month') {
                 const monthlyTotalTimeMap = {};
                 stats.allHistoryData.forEach(item => {
                     if (item.last_played_time > 0) {
@@ -1545,18 +1669,52 @@
                 const sortedMonthlyTime = Object.entries(monthlyTotalTimeMap)
                     .sort(([monthA], [monthB]) => monthA.localeCompare(monthB));
 
-                monthlyChartLabels = sortedMonthlyTime.map(([month]) => month);
-                monthlyChartValues = sortedMonthlyTime.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
-                monthlyChartTitle = 'Temps d\'écoute mensuel (heures)';
+                chartLabels = sortedMonthlyTime.map(([month]) => month);
+                chartValues = sortedMonthlyTime.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
+                chartTitle = 'Temps d\'écoute mensuel (heures)';
+
+            } else if (currentPeriodView === 'week') {
+                const weeklyListeningTimeMap = {};
+                stats.allHistoryData.forEach(item => {
+                    if (item.last_played_time > 0 && item.played_duration > 0) {
+                        const date = new Date(item.last_played_time);
+                        const weekKey = getISOWeek(date); // Get ISO week (YYYY-WW)
+                        weeklyListeningTimeMap[weekKey] = (weeklyListeningTimeMap[weekKey] || 0) + (item.played_duration || 0);
+                    }
+                });
+
+                const sortedWeeklyData = Object.entries(weeklyListeningTimeMap)
+                    .sort(([weekA], [weekB]) => weekA.localeCompare(weekB));
+
+                chartLabels = sortedWeeklyData.map(([week]) => week);
+                chartValues = sortedWeeklyData.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
+                chartTitle = 'Temps d\'écoute par semaine (heures)';
+
+            } else if (currentPeriodView === 'day') {
+                const dailyListeningTimeForPeriod = {};
+                stats.allHistoryData.forEach(item => {
+                    if (item.last_played_time > 0) {
+                        const date = new Date(item.last_played_time);
+                        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                        dailyListeningTimeForPeriod[dateKey] = (dailyListeningTimeForPeriod[dateKey] || 0) + (item.played_duration || 0);
+                    }
+                });
+
+                const sortedDailyData = Object.entries(dailyListeningTimeForPeriod).sort(([dateA], [dateB]) => dateA.localeCompare(dateB));
+
+                chartLabels = sortedDailyData.map(([date]) => date);
+                chartValues = sortedDailyData.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
+                chartTitle = `Temps d'écoute quotidien sur la période (heures)`;
             }
+
 
             monthlyChartInstance = new Chart(monthlyCtx, {
                 type: 'bar', // Always bar chart for this now
                 data: {
-                    labels: monthlyChartLabels,
+                    labels: chartLabels,
                     datasets: [{
                         label: 'Heures écoutées',
-                        data: monthlyChartValues,
+                        data: chartValues,
                         backgroundColor: '#0e6270', /* New color */
                         borderColor: '#0e6270', /* New color */
                         borderWidth: 1
@@ -1571,7 +1729,7 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: monthlyChartTitle
+                            text: chartTitle
                         }
                     }
                 }
@@ -1750,50 +1908,19 @@
             });
 
             // New: Tag Time Distribution Chart (Doughnut Chart)
-            const tagTimeDistributionData = {};
-            stats.allHistoryData.forEach(item => {
-                let tagsRaw = item.tags_column; // Use the correct column name from SQL query
-                
-                // If tagsRaw is null, empty, or only contains whitespace/root, assign 'Sans Tag'
-                if (!tagsRaw || tagsRaw.trim() === '' || tagsRaw.trim() === '#root') {
-                    tagTimeDistributionData['Sans Tag'] = (tagTimeDistributionData['Sans Tag'] || 0) + (item.played_duration || 0);
-                    return; // Skip further tag processing for this item
-                }
-
-                tagsRaw = tagsRaw.replace('#root', '').trim(); // Remove #root and trim whitespace
-                
-                // Regex to find sequences starting with an uppercase letter followed by any letters
-                // This will split "ScienceFiction" into ["Science", "Fiction"]
-                // Using \p{L} for any letter, and \p{Lu} for any uppercase letter, with 'u' flag for Unicode
-                const tags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
-                
-                if (tags.length === 0) { // If no valid tags found after regex, also put in 'Sans Tag'
-                    tagTimeDistributionData['Sans Tag'] = (tagTimeDistributionData['Sans Tag'] || 0) + (item.played_duration || 0);
-                    return;
-                }
-
-                tags.forEach(tag => {
-                    if (tag) { // Ensure tag is not empty after regex match
-                        tagTimeDistributionData[tag] = (tagTimeDistributionData[tag] || 0) + (item.played_duration || 0);
-                    }
-                });
-            });
-
-            const sortedTagTimeDistribution = Object.entries(tagTimeDistributionData)
-                .sort(([, a], [, b]) => b - a)
-                .filter(([, duration]) => duration > 0); // Filter out tags with 0 duration
-
             const tagDistributionLabels = [];
             const tagDistributionValues = [];
             let otherTagHours = 0;
-            const displayLimitForTagDoughnut = podcastDisplayLimit; // Use same limit for consistency
+            const displayLimitForTagDoughnut = podcastDisplayLimit;
 
-            for (let i = 0; i < sortedTagTimeDistribution.length; i++) {
-                const [tag, durationMs] = sortedTagTimeDistribution[i];
+            // Iterate directly over the pre-processed stats.tagsListening
+            // Filter out 'Sans Tag' if the checkbox is unchecked
+            const filteredTags = stats.tagsListening.filter(([tag]) => !(tag === 'Sans Tag' && !showSansTag));
+
+            for (let i = 0; i < filteredTags.length; i++) {
+                const [tag, durationMs] = filteredTags[i];
                 const hours = durationMs / (1000 * 3600);
-                if (tag === 'Sans Tag' && !showSansTag) { // Skip 'Sans Tag' if checkbox is unchecked
-                    continue;
-                }
+                
                 if (i < displayLimitForTagDoughnut) {
                     tagDistributionLabels.push(tag);
                     tagDistributionValues.push(hours);
@@ -1979,6 +2106,127 @@
             // Update the div for html2canvas
             wrappedTextContentDiv.textContent = message; 
         }
+
+        // --- CSV Export Function ---
+        function exportStatsToCsv(stats) {
+            let csvContent = "Statistique,Valeur\n";
+
+            // Overall Stats
+            csvContent += `Temps total d'écoute (heures),${stats.totalListeningTimeHours.toFixed(1)}\n`;
+            csvContent += `Temps total d'écoute (jours),${stats.totalListeningTimeDays.toFixed(1)}\n`;
+            csvContent += `Épisodes écoutés,${stats.episodesListened}\n`;
+            csvContent += `Épisodes terminés (>90%),${stats.episodesCompleted}\n`;
+            csvContent += `Taux de complétion (%),${stats.completionRate.toFixed(1)}\n`;
+            csvContent += `Durée moyenne par écoute (minutes),${stats.avgListenDurationMinutes.toFixed(1)}\n`;
+            csvContent += `Progression moyenne (%),${stats.avgProgressPercent.toFixed(1)}\n`;
+            csvContent += "\n";
+
+            // Top Podcasts by Time
+            csvContent += "Top Podcasts par temps d'écoute\n";
+            csvContent += "Rang,Podcast,Heures\n";
+            stats.topPodcastsByTime.forEach((p, index) => {
+                csvContent += `${index + 1},"${p.podcast.replace(/"/g, '""')}",${p.hours.toFixed(1)}\n`;
+            });
+            csvContent += "\n";
+
+            // Top Podcasts by Episode Count
+            csvContent += "Top Podcasts par épisodes écoutés\n";
+            csvContent += "Rang,Podcast,Épisodes\n";
+            stats.topPodcastsByEpisodeCount.forEach((p, index) => {
+                csvContent += `${index + 1},"${p.podcast.replace(/"/g, '""')}",${p.count}\n`;
+            });
+            csvContent += "\n";
+
+            // Monthly Listening (if applicable, otherwise daily for period)
+            csvContent += "Écoutes par période\n";
+            if (startDateFilter.value || endDateFilter.value) { // Daily data if a period is selected
+                csvContent += "Date,Heures\n";
+                const dailyData = {};
+                stats.allHistoryData.forEach(item => {
+                    if (item.last_played_time > 0) {
+                        const date = new Date(item.last_played_time);
+                        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                        dailyData[dateKey] = (dailyData[dateKey] || 0) + (item.played_duration || 0);
+                    }
+                });
+                Object.entries(dailyData).sort(([dateA], [dateB]) => dateA.localeCompare(dateB)).forEach(([date, ms]) => {
+                    csvContent += `${date},${(ms / (1000 * 3600)).toFixed(1)}\n`;
+                });
+            } else { // Monthly data if no period selected
+                csvContent += "Mois,Heures\n";
+                stats.monthlyListening.forEach(m => {
+                    csvContent += `${m.month},${m.count.toFixed(1)}\n`;
+                });
+            }
+            csvContent += "\n";
+
+            // Hourly Listening
+            csvContent += "Temps d'écoute par heure de la journée\n";
+            csvContent += "Heure,Heures\n";
+            stats.hourlyListening.forEach(h => {
+                csvContent += `${h.hour},${h.count.toFixed(1)}\n`;
+            });
+            csvContent += "\n";
+
+            // Daily Listening
+            csvContent += "Temps d'écoute par jour de la semaine\n";
+            csvContent += "Jour,Heures\n";
+            stats.dailyListening.forEach(d => {
+                csvContent += `${d.day},${d.count.toFixed(1)}\n`;
+            });
+            csvContent += "\n";
+
+            // Tags Listening
+            csvContent += "Distribution du temps d'écoute par Tag\n";
+            csvContent += "Tag,Heures\n";
+            stats.tagsListening.forEach(([tag, durationMs]) => {
+                csvContent += `"${tag.replace(/"/g, '""')}",${(durationMs / (1000 * 3600)).toFixed(1)}\n`;
+            });
+            csvContent += "\n";
+
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, 'AntennaPod_Stats.csv');
+            showMessage('success', 'Statistiques exportées au format CSV !');
+        }
+
+        // --- Raw Data CSV Export Function ---
+        function exportRawDataToCsv(data) {
+            if (!data || data.length === 0) {
+                showMessage('error', 'Aucune donnée brute à exporter.');
+                return;
+            }
+
+            const headers = [
+                "media_id", "episode_title", "podcast_title", "played_duration_ms", "duration_ms",
+                "position_ms", "last_played_time_timestamp", "last_played_time_date", "pubDate_timestamp", "pubDate_date",
+                "podcast_image_url", "tags_column"
+            ];
+            let csvContent = headers.map(header => `"${header}"`).join(',') + "\n";
+
+            data.forEach(row => {
+                const rowData = [
+                    row.media_id,
+                    `"${(row.episode_title || '').replace(/"/g, '""')}"`,
+                    `"${(row.podcast_title || '').replace(/"/g, '""')}"`,
+                    row.played_duration,
+                    row.duration,
+                    row.position,
+                    row.last_played_time,
+                    row.last_played_time ? new Date(row.last_played_time).toISOString() : '',
+                    row.pubDate,
+                    row.pubDate ? new Date(row.pubDate).toISOString() : '',
+                    `"${(row.podcast_image_url || '').replace(/"/g, '""')}"`,
+                    `"${(row.tags_column || '').replace(/"/g, '""')}"`
+                ];
+                csvContent += rowData.join(',') + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            saveAs(blob, 'AntennaPod_Raw_Data.csv');
+            showMessage('success', 'Données brutes exportées au format CSV !');
+        }
+
 
         // --- Simulate Python Script Logic with sql.js ---
         // This part requires sql.js library to be loaded.
