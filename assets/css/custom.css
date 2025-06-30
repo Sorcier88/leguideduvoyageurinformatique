@@ -1,5 +1,8 @@
 :root {
-    --couleur-primaire : #0E6270;
+    --couleur-primaire : #0E6270; 
+}
+
+.main { 
     max-width: 100%;
 }
 
