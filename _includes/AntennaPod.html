@@ -1,6 +1,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyseur AntennaPod</title>
     <!-- Tailwind CSS is loaded globally -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- sql.js library for client-side SQLite processing - Moved to head for earlier loading -->
@@ -12,12 +13,13 @@
             background-color: #f0f4f8; /* Light blue-gray background */
             color: #2d3748; /* Darker text */
             padding: 6px; /* Added padding to ensure it doesn't touch the edges of the host page */
+            overflow-x: hidden; /* Prevent horizontal scrolling on the main container */
         }
         /* All other CSS styles are now directly on class names, assuming they are unique enough
            or that the host page's CSS won't heavily conflict.
            This simplifies selectors and might resolve rendering issues. */
         #antennapod-analyzer-app-container .container { /* Re-scoped the container class */
-            max-width: 1200px; /* Wider container for bento layout */
+            max-width: 1400px; /* Wider container for bento layout */
             margin: 40px auto;
             padding: 20px;
             background-color: #ffffff;
@@ -31,7 +33,7 @@
         @media (min-width: 768px) {
             #antennapod-analyzer-app-container .main-content-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjusted min width for better mobile fit */
                 gap: 20px;
             }
             #antennapod-analyzer-app-container .full-width-card {
@@ -314,12 +316,12 @@
             <div id="messageBox" class="message-box"></div>
 
             <div class="card mb-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">1. Uploader votre base de données AntennaPod (.db)</h2>
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Uploader votre base de données AntennaPod (.db)</h2>
                 <p class="text-gray-600 mb-4">
                     Veuillez sélectionner le fichier \`AntennaPod.db\` de votre installation AntennaPod.
                     Vous pouvez généralement le trouver dans le dossier de données de l'application sur votre appareil Android.
                     <br><br>
-                    <span class="text-sm text-red-500">Note: Les images de couverture des podcasts sont souvent stockées localement sur votre appareil et ne peuvent pas être affichées directement dans cette application web pour des raisons de sécurité. Des images de remplacement génériques seront utilisées si l'URL de l'image n'est pas accessible.</span>
+                    <span class="text-sm text-red-500">Note: Les images de couverture des podcasts seront affichées si elles sont accessibles. Si une image ne peut pas être chargée, une image de remplacement générique sera utilisée.</span>
                 </p>
                 <div id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white hover:border-blue-400 transition-colors duration-200">
                     <label for="db-file-input" class="cursor-pointer">
