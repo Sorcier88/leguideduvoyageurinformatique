@@ -67,6 +67,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow */
             border: 1px solid #e2e8f0; /* Light border */
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative; /* Needed for absolute positioning of download button */
         }
         #antennapod-analyzer-app-container .card:hover {
             transform: translateY(-3px);
@@ -360,7 +361,7 @@
             width: 100%; /* Make them take full width on mobile */
             padding: 10px 15px;
             border: 1px solid #cbd5e0;
-            border-radius: 8鸣;
+            border-radius: 8px;
             background-color: #ffffff;
             color: #2d3748;
             font-size: 1rem;
@@ -458,6 +459,33 @@
                 order: 3; /* Period is rightmost */
             }
         }
+
+        /* Styles for download button */
+        .download-button {
+            position: absolute;
+            top: 1rem; /* Adjust as needed */
+            right: 1rem; /* Adjust as needed */
+            background-color: #e2e8f0; /* Light gray background */
+            border-radius: 9999px; /* Full rounded */
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            z-index: 10; /* Ensure it's above the chart */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .download-button:hover {
+            background-color: #cbd5e0; /* Slightly darker on hover */
+        }
+        .download-button svg {
+            width: 1.25rem; /* Icon size */
+            height: 1.25rem; /* Icon size */
+            color: #4a5568; /* Icon color */
+        }
+        /* Styles for the SVG template */
+        /* These styles are now embedded directly into the SVG string for export consistency */
     </style>
 
     <div id="antennapod-analyzer-app-container">
@@ -573,6 +601,11 @@
 
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Écoutes par période</h3>
+                    <button class="download-button" onclick="downloadChartAsPng('monthlyChart', 'Ecoutes_par_periode.png')">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </button>
                     <!-- New Period Navigation -->
                     <div class="period-nav" id="periodNav">
                         <button id="viewMonthly" class="active">Mois</button>
@@ -587,6 +620,11 @@
 
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Distribution du temps d'écoute par Podcast</h3>
+                    <button class="download-button" onclick="downloadChartAsPng('podcastTimeDistributionChart', 'Distribution_temps_ecoute_podcast.png')">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </button>
                     <p id="podcastTimeDistributionChartPeriodInfo" class="chart-period-info"></p>
                     <div class="chart-container">
                         <canvas id="podcastTimeDistributionChart"></canvas>
@@ -596,6 +634,11 @@
                 <!-- New Tag Distribution Chart -->
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Distribution du temps d'écoute par Tag</h3>
+                    <button class="download-button" onclick="downloadChartAsPng('tagTimeDistributionChart', 'Distribution_temps_ecoute_tag.png')">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </button>
                     <p class="text-sm text-gray-600 mb-2" id="tagInfoNote">
                         Note : Les tags sont extraits du nom de la catégorie. L'application suppose qu'un tag commence par une majuscule et ne contient que des lettres (ex: "ScienceFiction" est interprété comme "Science" et "Fiction"). Les podcasts sans tags sont regroupés sous la catégorie "Sans Tag".
                     </p>
@@ -611,6 +654,11 @@
 
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Statistiques par Podcast</h3>
+                    <button class="download-button" onclick="downloadChartAsPng('podcastEpisodeCountChart', 'Statistiques_par_podcast.png')">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </button>
                     <p id="podcastEpisodeCountChartPeriodInfo" class="chart-period-info"></p>
                     
                     <!-- Separated list and chart for Podcast Stats -->
@@ -635,14 +683,24 @@
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Habitudes d'écoute</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
+                        <div class="relative">
+                            <button class="download-button" onclick="downloadChartAsPng('hourlyChart', 'Temps_ecoute_par_heure.png')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                            </button>
                             <p id="hourlyChartPeriodInfo" class="chart-period-info"></p>
                             <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par heure de la journée</h4>
                             <div class="chart-container">
                                 <canvas id="hourlyChart"></canvas>
                             </div>
                         </div>
-                        <div>
+                        <div class="relative">
+                            <button class="download-button" onclick="downloadChartAsPng('dailyChart', 'Temps_ecoute_par_jour.png')">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </button>
                             <p id="dailyChartPeriodInfo" class="chart-period-info"></p>
                             <h4 class="font-medium text-gray-700 mb-2">Temps d'écoute par jour de la semaine</h4>
                             <div class="chart-container">
@@ -916,7 +974,7 @@
          */
         function getISOWeek(d) {
             d = new Date(d.getTime()); // Create a copy to avoid modifying the original date
-            d.setHours(0, 0, 0, 0); // Set to midnight UTC to avoid timezone issues
+            d.setHours(0, 0, 0, 0);
             // Thursday in current week decides the year.
             d.setDate(d.getDate() + 3 - (d.getDay() + 6) % 7);
             // January 4 is always in week 1.
@@ -1004,7 +1062,7 @@
             }
 
             setLoadingState(true);
-            showMessage('info', 'Analyse en cours, cela peut prendre quelques instants...');
+            showMessage('info', 'Analyse en cours, cela peut peut prendre quelques instants...');
 
             try {
                 // Read the file as an array buffer
@@ -1058,34 +1116,58 @@
         });
 
         exportWrappedImageButton.addEventListener('click', async () => {
+            if (!currentProcessedData) {
+                showMessage('error', 'Aucune donnée à exporter. Veuillez d\'abord analyser un fichier.');
+                return;
+            }
+            showMessage('info', 'Génération de l\'image de bilan en cours...');
             try {
-                showMessage('info', 'Génération de l\'image en cours...');
+                const startDateTime = startDateFilter.value ? new Date(startDateFilter.value).getTime() : 0;
+                const endDateTime = endDateFilter.value ? new Date(endDateFilter.value).setHours(23, 59, 59, 999) : Infinity;
                 
-                // Ensure the content is visible and rendered before capturing
-                wrappedContentDiv.style.display = 'block'; 
+                const svgString = await generateWrappedSvgString(currentProcessedData, startDateTime, endDateTime);
                 
-                const canvas = await html2canvas(wrappedContentDiv, { 
-                    scale: 2, // Increase resolution for better quality
-                    useCORS: true, // Needed if you have images from different origins (like placehold.co)
-                    logging: false, // Disable logging if not debugging
-                    backgroundColor: '#e2e8f0' // Ensure background is captured
-                }); 
-                
-                // Convert canvas to image data URL
-                const imageDataURL = canvas.toDataURL('image/png');
-                
-                // Create a temporary link element to trigger download
-                const downloadLink = document.createElement('a');
-                downloadLink.href = imageDataURL;
-                downloadLink.download = 'AntennaPod_Wrapped_Report.png'; // File name
-                document.body.appendChild(downloadLink); 
-                downloadLink.click(); // Programmatically click the link to trigger download
-                document.body.removeChild(downloadLink); 
-                
-                showMessage('success', 'Image exportée avec succès !');
+                // Convert SVG string to a Base64 Data URL directly
+                // Use encodeURIComponent and unescape for proper handling of non-ASCII characters
+                const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
+
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    // Set canvas dimensions for 1080p height (maintaining 9:16 aspect ratio)
+                    const targetHeight = 1080;
+                    const targetWidth = (9 / 16) * targetHeight; // 607.5, round to 608
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    const ctx = canvas.getContext('2d');
+
+                    // Fill with white background before drawing SVG
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // Draw image scaled to fill the canvas
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    // No need to revokeObjectURL since we are not using blob: URL
+                    const imageDataURL = canvas.toDataURL('image/png');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = imageDataURL;
+                    downloadLink.download = 'AntennaPod_Bilan.png';
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    showMessage('success', 'Image de bilan exportée avec succès !');
+                };
+                img.onerror = (e) => {
+                    console.error('Erreur lors du chargement de l\'image SVG pour l\'exportation :', e);
+                    console.error('SVG Data URL qui a échoué (tronqué) :', svgDataUrl.substring(0, 200) + '...'); // Log a truncated URL
+                    showMessage('error', 'Erreur lors de la génération de l\'image de bilan.');
+                };
+                img.src = svgDataUrl; // Assign the data URL directly
+
             } catch (error) {
-                console.error('Erreur lors de l\'exportation de l\'image :', error);
-                showMessage('error', `Erreur lors de l'exportation de l'image : ${error.message}.`);
+                console.error('Erreur lors de l\'exportation de l\'image de bilan :', error);
+                showMessage('error', `Erreur lors de l'exportation de l'image de bilan : ${error.message}.`);
             }
         });
 
@@ -1590,7 +1672,7 @@
             updateMonthlyPodcastList(currentProcessedData.topPodcastsByTime, monthlyPodcastListFull.classList.contains('expanded'));
             renderPodcastStatsList(currentProcessedData.topPodcastsByEpisodeCount, false); // Initial render for podcast stats
             drawCharts(currentProcessedData, startDateTime, endDateTime, selectedPodcast, showSansTag); // Pass showSansTag
-            generateWrappedReport(currentProcessedData, startDateTime, endDateTime);
+            generateWrappedReport(currentProcessedData, startDateTime, endDateTime); // Keep for text report
         }
 
         // Updated function signature and logic
@@ -2207,7 +2289,7 @@
             });
         }
 
-        // --- Spotify Wrapped inspired report generation ---
+        // --- Spotify Wrapped inspired report generation (text-based, kept for copy function) ---
         function generateWrappedReport(stats, startDateTime, endDateTime) {
             const totalHours = stats.totalListeningTimeHours.toFixed(1);
             let periodText;
@@ -2348,7 +2430,7 @@
                 const rowData = [
                     row.media_id,
                     `"${(row.episode_title || '').replace(/"/g, '""')}"`,
-                    `"${(row.podcast_title || '').replace(/"/g, '""')}"`,
+                    row.podcast_title ? `"${row.podcast_title.replace(/"/g, '""')}"` : '""', // Ensure podcast_title is quoted and escaped
                     row.played_duration,
                     row.duration,
                     row.position,
@@ -2356,8 +2438,8 @@
                     row.last_played_time ? new Date(row.last_played_time).toISOString() : '',
                     row.pubDate,
                     row.pubDate ? new Date(row.pubDate).toISOString() : '',
-                    `"${(row.podcast_image_url || '').replace(/"/g, '""')}"`,
-                    `"${(row.tags_column || '').replace(/"/g, '""')}"`
+                    row.podcast_image_url ? `"${row.podcast_image_url.replace(/"/g, '""')}"` : '""', // Ensure image URL is quoted and escaped
+                    row.tags_column ? `"${row.tags_column.replace(/"/g, '""')}"` : '""' // Ensure tags are quoted and escaped
                 ];
                 csvContent += rowData.join(',') + "\n";
             });
@@ -2643,6 +2725,236 @@
                 tagsListening: tagsListening, // New for tags
                 allHistoryData: listenedEpisodes // Return the filtered data as allHistoryData
             };
+        }
+
+        /**
+         * Downloads a Chart.js canvas as a PNG image with a white background.
+         * @param {string} chartId The ID of the canvas element.
+         * @param {string} filename The desired filename for the downloaded image.
+         */
+        window.downloadChartAsPng = function(chartId, filename) {
+            const canvas = document.getElementById(chartId);
+            if (canvas) {
+                try {
+                    // Create a new canvas to draw the chart with a white background
+                    const tempCanvas = document.createElement('canvas');
+                    const ctx = tempCanvas.getContext('2d');
+
+                    // Set dimensions of the temporary canvas to match the chart canvas
+                    tempCanvas.width = canvas.width;
+                    tempCanvas.height = canvas.height;
+
+                    // Fill the background with white
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+
+                    // Draw the chart onto the temporary canvas
+                    ctx.drawImage(canvas, 0, 0);
+
+                    // Get the image data URL from the temporary canvas
+                    const imageDataURL = tempCanvas.toDataURL('image/png');
+                    
+                    // Create a temporary link element to trigger download
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = imageDataURL;
+                    downloadLink.download = filename;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    showMessage('success', `Graphique "${filename}" téléchargé !`);
+                } catch (error) {
+                    console.error(`Erreur lors du téléchargement du graphique ${chartId}:`, error);
+                    showMessage('error', `Erreur lors du téléchargement du graphique "${filename}".`);
+                }
+            } else {
+                showMessage('error', `Graphique avec l'ID "${chartId}" introuvable.`);
+            }
+        };
+
+        /**
+         * Converts an image URL to a Base64 Data URL.
+         * Handles CORS by using a temporary canvas.
+         * @param {string} url The URL of the image.
+         * @param {string} podcastTitle The title of the podcast, used for fallback text.
+         * @returns {Promise<string>} A promise that resolves with the Base64 Data URL.
+         */
+        async function imageToDataURL(url, podcastTitle) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous'; // Crucial for CORS
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/png'));
+                };
+                img.onerror = () => {
+                    // Fallback to a placeholder image if loading fails, using the same style as in the app
+                    const fallbackText = podcastTitle.substring(0, 2).toUpperCase();
+                    const placeholderUrl = `https://placehold.co/80x80/ADD8E6/000000?text=${encodeURIComponent(fallbackText)}`;
+                    fetch(placeholderUrl)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                        })
+                        .catch(e => {
+                            console.error("Failed to load placeholder:", e);
+                            resolve(''); // Resolve with empty string if even placeholder fails
+                        });
+                };
+                img.src = url;
+            });
+        }
+
+        /**
+         * Generates the SVG string for the Wrapped report.
+         * @param {object} stats The processed statistics data.
+         * @param {number} startDateTime Filter start date timestamp.
+         * @param {number} endDateTime Filter end date timestamp.
+         * @returns {Promise<string>} A promise that resolves with the SVG string.
+         */
+        async function generateWrappedSvgString(stats, startDateTime, endDateTime) {
+            const totalHours = stats.totalListeningTimeHours.toFixed(1);
+            let periodText;
+            if (startDateTime && endDateTime !== Infinity) {
+                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
+                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
+                periodText = `du ${startDate} au ${endDate}`;
+            } else if (startDateTime) {
+                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
+                periodText = `à partir du ${startDate}`;
+            } else if (endDateTime !== Infinity) {
+                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
+                periodText = `jusqu'au ${endDate}`;
+            } else {
+                periodText = `cette année`; // Default if no dates selected
+            }
+
+            const top5Podcasts = stats.topPodcastsByTime.slice(0, 5);
+
+            // Pre-fetch and convert all necessary images to data URLs
+            const podcastImagePromises = top5Podcasts.map((p) => 
+                imageToDataURL(p.imageUrl, p.podcast) // Pass podcast title for fallback text
+            );
+            const antennapodLogoUrl = 'https://raw.githubusercontent.com/AntennaPod/Branding/master/Logo/logo-full-horizontal-light.svg';
+            const antennapodLogoPromise = imageToDataURL(antennapodLogoUrl, 'AntennaPod'); // Pass fallback text for logo
+
+            const [podcastImageDataUrls, antennapodLogoDataUrl] = await Promise.all([
+                Promise.all(podcastImagePromises),
+                antennapodLogoPromise
+            ]);
+
+            let podcastSvgGroups = '';
+            const startY = 110; // Initial Y position for the first podcast group
+            const groupHeight = 100; // Height of each podcast group
+
+            top5Podcasts.forEach((p, index) => {
+                const yOffset = startY + (index * groupHeight);
+                const podcastImage = podcastImageDataUrls[index];
+                const podcastNameLines = wrapText(p.podcast, 20); // Max 20 chars per line for podcast name
+                
+                let tspanElements = '';
+                podcastNameLines.forEach((line, lineIndex) => {
+                    tspanElements += `<tspan x="130" dy="${lineIndex === 0 ? 0 : 20}">${escapeHtml(line)}</tspan>`;
+                });
+
+                podcastSvgGroups += `
+                    <g transform="translate(50, ${yOffset})">
+                        <defs>
+                            <clipPath id="clipRect${index}">
+                                <rect x="0" y="0" width="80" height="80" rx="5" ry="5"/>
+                            </clipPath>
+                        </defs>
+                        <rect x="0" y="0" width="80" height="80" fill="#282828" rx="5" ry="5"/>
+                        <image href="${podcastImage}" x="0" y="0" width="80" height="80" clip-path="url(#clipRect${index})" preserveAspectRatio="xMidYMid slice"/>
+                        <text x="100" y="25" class="svg-wrapped-rank" style="font-family: 'Inter', sans-serif; fill: #1b8bf6; font-weight: bold; font-size: 24px;">${index + 1}.</text>
+                        <text x="130" y="25" class="svg-wrapped-podcast-name" style="font-family: 'Inter', sans-serif; fill: #ffffff; font-size: 18px;">
+                            ${tspanElements}
+                        </text>
+                        <text x="380" y="70" text-anchor="end" class="svg-wrapped-podcast-hours" style="font-family: 'Inter', sans-serif; fill: #b3b3b3; font-size: 16px;">${p.hours.toFixed(1)} heures</text>
+                    </g>
+                `;
+            });
+
+            // Helper to escape HTML entities for SVG text
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            const svgContent = `
+                <svg viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" width="450" height="800">
+                    <style>
+                        /* Removed @import url(...) to prevent security errors when drawing to canvas */
+                        .svg-wrapped-title {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 32px;
+                            font-weight: bold;
+                            fill: #1b8bf6;
+                        }
+                        .svg-wrapped-subtitle {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 24px;
+                            font-weight: bold;
+                            fill: #ffffff;
+                        }
+                        .svg-wrapped-podcast-name {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 18px;
+                            fill: #ffffff;
+                        }
+                        .svg-wrapped-podcast-hours {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 16px;
+                            fill: #b3b3b3;
+                        }
+                        .svg-wrapped-rank {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 24px;
+                            font-weight: bold;
+                            fill: #1b8bf6;
+                        }
+                        .svg-wrapped-total-time-label {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 20px;
+                            fill: #b3b3b3;
+                        }
+                        .svg-wrapped-total-time {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 26px;
+                            fill: #ffffff;
+                            font-weight: bold;
+                        }
+                        .svg-wrapped-other-stats {
+                            font-family: 'Inter', sans-serif;
+                            font-size: 18px;
+                            fill: #ffffff;
+                        }
+                    </style>
+                    <rect x="0" y="0" width="450" height="800" fill="#1a1a1a" rx="10" ry="10"/>
+
+                    <text x="225" y="50" text-anchor="middle" class="svg-wrapped-title">Votre Bilan AntennaPod</text>
+                    <text x="225" y="90" text-anchor="middle" class="svg-wrapped-subtitle">Mon Top 5 Podcasts ${periodText}</text>
+
+                    ${podcastSvgGroups}
+
+                    <text x="225" y="630" text-anchor="middle" class="svg-wrapped-total-time-label">Durée totale d'écoute</text>
+                    <text x="225" y="665" text-anchor="middle" class="svg-wrapped-total-time">${totalHours} heures (${stats.totalListeningTimeDays.toFixed(1)} jours)</text>
+
+                    <text x="225" y="690" text-anchor="middle" class="svg-wrapped-other-stats">${stats.episodesListened} épisodes écoutés</text>
+
+                    <image href="${antennapodLogoDataUrl}" x="150" y="720" width="150" height="30"/>
+                </svg>
+            `;
+            return svgContent;
         }
     </script>
     <!-- Chart.js for visualizations -->
