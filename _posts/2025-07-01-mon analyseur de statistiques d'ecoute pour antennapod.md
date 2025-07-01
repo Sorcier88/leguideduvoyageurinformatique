@@ -1,6 +1,7 @@
 ---
 title: "Mon analyseur de statistiques d'ecoute pour AntennaPod"
 ---
+{% include article-cover.html image="https://unsplash.com/photos/T2KXgTdssx4/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8NTd8fHBvZGNhc3R8ZnJ8MHwwfHx8MTc1MTMyNjY1Nnwy&force=true" %} 
 {% include toc.html %} 
 {% include ia.html %} 
 
