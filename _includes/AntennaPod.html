@@ -15,6 +15,14 @@
             padding: 6px; /* Added padding to ensure it doesn't touch the edges of the host page */
             overflow-x: hidden; /* Prevent horizontal scrolling on the main container */
         }
+        /* Mobile specific: remove outermost background */
+        @media (max-width: 767px) {
+            #antennapod-analyzer-app-container {
+                background-color: transparent; /* Remove background on mobile */
+                padding: 0; /* Remove padding to gain pixels */
+            }
+        }
+
         /* All other CSS styles are now directly on class names, assuming they are unique enough
            or that the host page's CSS won't heavily conflict.
            This simplifies selectors and might resolve rendering issues. */
@@ -29,6 +37,17 @@
             grid-template-columns: 1fr;
             gap: 20px; /* Spacing between cards */
         }
+
+        /* Responsive adjustments for main container padding */
+        @media (max-width: 767px) {
+            #antennapod-analyzer-app-container .container {
+                padding: 10px; /* Reduce padding on smaller screens */
+                margin: 20px auto; /* Adjust margin for mobile */
+                border-radius: 0; /* Remove border-radius on mobile for full width */
+                box-shadow: none; /* Remove shadow on mobile */
+            }
+        }
+
         /* Grid for main sections if needed, or keep as flow */
         @media (min-width: 768px) {
             #antennapod-analyzer-app-container .main-content-grid {
@@ -53,6 +72,14 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
+
+        /* Responsive card padding */
+        @media (max-width: 767px) {
+            #antennapod-analyzer-app-container .card {
+                padding: 15px; /* Reduce card padding on mobile */
+            }
+        }
+
         #antennapod-analyzer-app-container .file-input-wrapper {
             position: relative;
             overflow: hidden;
@@ -170,6 +197,7 @@
             flex-grow: 1; /* Allow text to take remaining space */
             word-break: break-word; /* Break long words */
             overflow-wrap: break-word; /* Ensure wrapping for long strings */
+            min-width: 0; /* Allow shrinking */
         }
 
         #antennapod-analyzer-app-container #wrappedContent {
@@ -222,6 +250,17 @@
             justify-content: center;
             margin-top: 20px;
         }
+        /* Responsive export buttons */
+        @media (max-width: 767px) {
+            #antennapod-analyzer-app-container .export-buttons {
+                flex-direction: column; /* Stack buttons vertically on mobile */
+                gap: 10px; /* Reduce gap */
+            }
+            #antennapod-analyzer-app-container .export-buttons .button {
+                width: 100%; /* Full width for buttons */
+            }
+        }
+
         #antennapod-analyzer-app-container .podcast-search-container {
             position: relative;
             width: 100%;
@@ -275,6 +314,13 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
             border: 1px solid #e2e8f0;
         }
+        /* Responsive filter section padding */
+        @media (max-width: 767px) {
+            #antennapod-analyzer-app-container .filter-section {
+                padding: 15px; /* Reduce filter section padding on mobile */
+            }
+        }
+
         #antennapod-analyzer-app-container .filter-section h2 {
             font-size: 1.5rem;
             font-weight: 700;
@@ -314,7 +360,7 @@
             width: 100%; /* Make them take full width on mobile */
             padding: 10px 15px;
             border: 1px solid #cbd5e0;
-            border-radius: 8px;
+            border-radius: 8鸣;
             background-color: #ffffff;
             color: #2d3748;
             font-size: 1rem;
@@ -355,7 +401,19 @@
             transition: all 0.3s ease;
             border: none; /* No border for buttons */
             cursor: pointer;
+            /* Ensure buttons don't overflow on small screens */
+            min-width: 0; /* Allow buttons to shrink */
+            font-size: 0.85rem; /* Smaller font on mobile */
+            white-space: nowrap; /* Prevent text wrapping within button */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Add ellipsis for overflow text */
         }
+        @media (min-width: 768px) {
+            #antennapod-analyzer-app-container .period-nav button {
+                font-size: 1rem; /* Restore font size on larger screens */
+            }
+        }
+
         #antennapod-analyzer-app-container .period-nav button.active {
             background-color: #0e6270; /* Active button background */
             color: white;
@@ -373,6 +431,16 @@
             grid-template-columns: 1fr; /* Stack vertically on small screens */
             gap: 20px;
             grid-column: 1 / -1; /* Make this new grid span full width within main-content-grid */
+        }
+
+        /* Mobile specific styles for bento cards */
+        @media (max-width: 767px) {
+            #antennapod-analyzer-app-container .bento-key-stats-grid .card {
+                background-color: transparent; /* Remove background on mobile */
+                box-shadow: none; /* Remove shadow on mobile */
+                border: none; /* Remove border on mobile */
+                padding: 10px 0; /* Reduce padding to save space */
+            }
         }
 
         @media (min-width: 768px) {
@@ -858,6 +926,36 @@
             return `${d.getFullYear()}-S${String(weekNo).padStart(2, '0')}`; // Changed 'W' to 'S'
         }
 
+        /**
+         * Wraps text into multiple lines based on a maximum character limit per line.
+         * @param {string} text The input string.
+         * @param {number} maxCharsPerLine The maximum number of characters allowed per line.
+         * @returns {string[]} An array of strings, where each element is a line.
+         */
+        function wrapText(text, maxCharsPerLine) {
+            if (text.length <= maxCharsPerLine) {
+                return [text];
+            }
+            const words = text.split(' ');
+            let lines = [];
+            let currentLine = '';
+
+            for (let i = 0; i < words.length; i++) {
+                const word = words[i];
+                // Check if adding the next word (plus a space if not the first word) exceeds the limit
+                if ((currentLine.length + word.length + (currentLine === '' ? 0 : 1)) <= maxCharsPerLine) {
+                    currentLine += (currentLine === '' ? '' : ' ') + word;
+                } else {
+                    // If adding the word exceeds the limit, push the current line and start a new one
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            // Push the last line
+            lines.push(currentLine);
+            return lines;
+        }
+
 
         // --- Event Listeners ---
         dbFileInput.addEventListener('change', (event) => {
@@ -1074,7 +1172,7 @@
         // New: Export raw data to CSV
         exportRawDataCsvButton.addEventListener('click', () => {
             if (!currentProcessedData || !currentProcessedData.allHistoryData || currentProcessedData.allHistoryData.length === 0) {
-                showMessage('error', 'Aucune donnée brute à exporter. Veuillez d\'abord analyser un fichier.');
+                showMessage('error', 'Aucune donnée brute à exporter.');
                 return;
             }
             exportRawDataToCsv(currentProcessedData.allHistoryData);
@@ -1816,12 +1914,18 @@
                     indexAxis: 'y', // Make it horizontal
                     scales: {
                         x: { beginAtZero: true, title: { display: true, text: 'Nombre d\'épisodes' } },
-                        y: { // Ensure labels are fully visible
+                        y: { // Ensure labels are fully visible and wrap
                             ticks: {
                                 autoSkip: false, // Prevent Chart.js from skipping labels
-                                // Callback to ensure full labels are shown, Chart.js will adjust width
+                                font: {
+                                    size: 12 // Keep standard font size
+                                },
                                 callback: function(value, index, values) {
-                                    return this.getLabelForValue(value); 
+                                    const label = this.getLabelForValue(value);
+                                    // Wrap text for labels on Y-axis
+                                    // Adjust maxCharsPerLine based on expected label length and screen size
+                                    const maxChars = window.innerWidth < 768 ? 20 : 30; // Shorter lines on mobile
+                                    return wrapText(label, maxChars);
                                 }
                             }
                         }
@@ -1904,11 +2008,12 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'right',
+                            // Position legend at bottom on small screens, right on larger screens
+                            position: window.innerWidth < 768 ? 'bottom' : 'right',
                             labels: {
                                 boxWidth: 20, // Smaller color box to give more space for text
                                 font: {
-                                    size: 12 // Slightly smaller font for legend if needed
+                                    size: window.innerWidth < 768 ? 10 : 12 // Slightly smaller font for legend on mobile
                                 },
                                 generateLabels: function(chart) {
                                     const data = chart.data;
@@ -1995,11 +2100,11 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'right',
+                            position: window.innerWidth < 768 ? 'bottom' : 'right', // Position legend at bottom on mobile
                             labels: {
                                 boxWidth: 20,
                                 font: {
-                                    size: 12
+                                    size: window.innerWidth < 768 ? 10 : 12 // Smaller font on mobile
                                 },
                                 generateLabels: function(chart) {
                                     const data = chart.data;
@@ -2044,17 +2149,8 @@
 
 
             // Hourly Chart
-            const hourlyListeningTimeMap = {};
-            for (let i = 0; i < 24; i++) hourlyListeningTimeMap[i] = 0; // Initialize all hours with 0 duration
-            stats.allHistoryData.forEach(item => {
-                if (item.last_played_time > 0 && item.played_duration > 0) {
-                    const date = new Date(item.last_played_time);
-                    const hour = date.getHours();
-                    hourlyListeningTimeMap[hour] = (hourlyListeningTimeMap[hour] || 0) + (item.played_duration || 0);
-                }
-            });
-            const hourlyLabels = Object.keys(hourlyListeningTimeMap).map(hour => `${hour}h`);
-            const hourlyValues = Object.values(hourlyListeningTimeMap).map(ms => ms / (1000 * 3600)); // Convert ms to hours
+            const hourlyLabels = stats.hourlyListening.map(item => `${item.hour}h`);
+            const hourlyValues = stats.hourlyListening.map(item => item.count); // Already in hours
 
             hourlyChartInstance = new Chart(hourlyCtx, {
                 type: 'bar',
@@ -2083,7 +2179,6 @@
 
             // Daily Chart (Starts Monday)
             const dayNames = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; // Order starts Monday
-            // Access dailyListening from the stats object
             const dailyValues = stats.dailyListening.map(item => item.count); // Get counts in correct order and convert to hours
 
             dailyChartInstance = new Chart(dailyCtx, {
