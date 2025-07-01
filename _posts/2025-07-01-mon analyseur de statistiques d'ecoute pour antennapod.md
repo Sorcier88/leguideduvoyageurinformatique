@@ -1,9 +1,8 @@
 ---
 title: "Mon analyseur de statistiques d'ecoute pour AntennaPod"
 ---
-{% include article-cover.html image="https://unsplash.com/photos/T2KXgTdssx4/download?ixid=M3wxMjA3fDB8MXxzZWFyY2h8NTd8fHBvZGNhc3R8ZnJ8MHwwfHx8MTc1MTMyNjY1Nnwy&force=true" %} 
-{% include toc.html %}
-{% include ia.html %}
+{% include toc.html %} 
+{% include ia.html %} 
 
 Vous êtes un auditeur passionné de podcasts sur AntennaPod et vous aimeriez mieux comprendre vos habitudes d'écoute ? Vous êtes curieux de savoir combien de temps vous consacrez à vos podcasts préférés, quels sont ceux que vous écoutez le plus, ou même à quels moments de la journée vous êtes le plus actif ? Si oui, j'ai développé l'outil qu'il vous faut : l'**Analyseur de Statistiques AntennaPod** !
 
