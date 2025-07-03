@@ -230,16 +230,6 @@
             max-width: 90%;
             margin: 0 auto 20px auto;
         }
-        #antennapod-analyzer-app-container .wrapped-list li {
-            background-color: #ffffff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            font-size: 0.95rem;
-        }
         #antennapod-analyzer-app-container .wrapped-list li .icon {
             margin-right: 10px;
             font-size: 1.3em;
@@ -366,6 +356,12 @@
             color: #2d3748;
             font-size: 1rem;
         }
+        /* Specific style for multi-select dropdown */
+        #antennapod-analyzer-app-container .filter-group select[multiple] {
+            min-height: 100px; /* Provide enough height for multiple selections */
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
         #antennapod-analyzer-app-container .chart-period-info {
             text-align: center;
             font-size: 0.9rem;
@@ -484,8 +480,50 @@
             height: 1.25rem; /* Icon size */
             color: #4a5568; /* Icon color */
         }
+        /* Mobile specific adjustments for download button */
+        @media (max-width: 767px) {
+            #antennapod-analyzer-app-container .download-button {
+                top: 0.5rem; /* Slightly lower to avoid overlap with potential smaller titles */
+                right: 0.5rem; /* Keep some margin */
+                padding: 0.3rem; /* Smaller button */
+            }
+            #antennapod-analyzer-app-container .download-button svg {
+                width: 1rem;
+                height: 1rem;
+            }
+        }
         /* Styles for the SVG template */
         /* These styles are now embedded directly into the SVG string for export consistency */
+
+        /* Styles for tag chips */
+        #antennapod-analyzer-app-container .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            background-color: #0e6270;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            cursor: default;
+        }
+        #antennapod-analyzer-app-container .tag-chip .remove-tag {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        #antennapod-analyzer-app-container .tag-chip .remove-tag:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
     </style>
 
     <div id="antennapod-analyzer-app-container">
@@ -557,11 +595,15 @@
                         <input type="hidden" id="selectedPodcastHiddenInput"> <!-- To store the actual selected podcast title -->
                     </div>
                     <div class="filter-group">
-                        <label for="tagFilter">Sélectionnez un tag&nbsp;:</label>
-                        <select id="tagFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                            <option value="">Tous les tags</option>
-                            <option value="Sans Tag">Sans Tag</option>
-                        </select>
+                        <label for="tagSearchInput">Rechercher un tag&nbsp;:</label>
+                        <div class="podcast-search-container">
+                            <input type="text" id="tagSearchInput" placeholder="Rechercher ou sélectionner un tag..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <div id="tagSuggestions" class="podcast-suggestions hidden"></div>
+                        </div>
+                        <div id="selectedTagsContainer" class="flex flex-wrap gap-2 mt-2">
+                            <!-- Selected tags will appear here -->
+                        </div>
+                        <!-- selectedTagsHiddenInput is not needed anymore as selectedTags array directly holds the state -->
                     </div>
                     <div class="filter-group mt-4">
                         <label for="podcastDisplayLimitInput">Nombre de podcasts à afficher&nbsp;:</label>
@@ -576,7 +618,7 @@
                         <p><strong>🎧 Temps total d'écoute&nbsp;:</strong> <span id="totalListeningTime">0 heures</span></p>
                         <p><strong>📻 Épisodes écoutés&nbsp;:</strong> <span id="episodesListened">0</span></p>
                         <p><strong>✅ Épisodes terminés (>90%)&nbsp;:</strong> <span id="episodesCompleted">0 (0%)</span></p>
-                        <p><strong>⏱️ Durée moyenne par écoute&nbsp;:</strong> <span id="avgListenDuration">0 minutes</span></p>
+                        <p><strong>⏱️ Durée moyenne d'un épisode&nbsp;:</strong> <span id="avgListenDuration">0 minutes</span></p>
                         <p><strong>📊 Progression moyenne&nbsp;:</strong> <span id="avgProgress">0%</span></p>
                     </div>
 
@@ -640,7 +682,7 @@
                         </svg>
                     </button>
                     <p class="text-sm text-gray-600 mb-2" id="tagInfoNote">
-                        Note : Les tags sont extraits du nom de la catégorie. L'application suppose qu'un tag commence par une majuscule et ne contient que des lettres (ex: "ScienceFiction" est interprété comme "Science" et "Fiction"). Les podcasts sans tags sont regroupés sous la catégorie "Sans Tag".
+                        Note : Les tags sont extraits des catégories du podcast. Si une catégorie contient des virgules ou des barres obliques, elle sera divisée en tags distincts. Si elle contient des mots composés sans espace (ex: "ScienceFiction", "CultureGénérale"), ils seront séparés. Les acronymes (ex: "HTML", "NASA") sont traités comme des tags uniques et ne sont pas divisés. Sinon, la catégorie entière est traitée comme un seul tag (ex: "Culture générale"). Les podcasts sans tags sont regroupés sous la catégorie "Sans Tag".
                     </p>
                     <div class="flex items-center mb-4">
                         <input type="checkbox" id="showSansTagCheckbox" checked class="mr-2">
@@ -755,8 +797,11 @@
         let globalDfHistory = null; // Stocke les données de l'historique global
         let currentProcessedData = null; // Stores the currently processed (filtered) data for CSV export
         let allPodcastsTitles = []; // Global to store unique podcast titles for search suggestions
+        let allTags = []; // Global to store unique tags for search suggestions
+        let selectedTags = []; // Global array to hold currently selected tags (chips)
         let podcastDisplayLimit = 10; // Default display limit for top podcasts
         let podcastSearchSelectedIndex = -1; // For keyboard navigation in podcast search suggestions
+        let tagSearchSelectedIndex = -1; // For keyboard navigation in tag search suggestions
         let currentPeriodView = 'month'; // New: Default view for "Écoutes par période" chart
 
 
@@ -812,7 +857,7 @@
         const totalListeningTimeSpan = document.getElementById('totalListeningTime');
         const episodesListenedSpan = document.getElementById('episodesListened');
         const episodesCompletedSpan = document.getElementById('episodesCompleted'); 
-        const avgListenDurationSpan = document.getElementById('avgListenDuration');
+        const avgListenDurationSpan = document.getElementById('avgListenDuration'); // Changed to 'Durée moyenne d\'un épisode'
         const avgProgressSpan = document.getElementById('avgProgress');
         
         // Top Podcasts Drawer Elements
@@ -823,7 +868,12 @@
 
         const startDateFilter = document.getElementById('startDateFilter'); // New start date filter
         const endDateFilter = document.getElementById('endDateFilter');   // New end date filter
-        const tagFilter = document.getElementById('tagFilter'); // New tag filter element
+        
+        // New Tag Filter Elements
+        const tagSearchInput = document.getElementById('tagSearchInput');
+        const tagSuggestions = document.getElementById('tagSuggestions');
+        const selectedTagsContainer = document.getElementById('selectedTagsContainer');
+
         const showSansTagCheckbox = document.getElementById('showSansTagCheckbox'); // New checkbox for 'Sans Tag'
         const monthlyPodcastDetail = document.getElementById('monthlyPodcastDetail');
         const monthlyPodcastDetailTitle = document.getElementById('monthlyPodcastDetailTitle');
@@ -1012,6 +1062,145 @@
             // Push the last line
             lines.push(currentLine);
             return lines;
+        }
+
+        /**
+         * Extracts tags from a raw tags string, handling various formats.
+         * Prioritizes comma-separated lists, then hierarchical paths, then single phrases,
+         * then PascalCase/camelCase splitting.
+         * @param {string} tagString The raw tags string from the database.
+         * @returns {string[]} An array of extracted tag strings.
+         */
+        function extractTagsFromString(tagString) {
+            if (!tagString || tagString.trim() === '' || tagString.trim() === '#root') {
+                return [];
+            }
+            let cleanedString = tagString.replace('#root', '').trim();
+
+            const tags = [];
+            if (cleanedString.includes(',')) {
+                // Prioritize comma splitting
+                cleanedString.split(',').forEach(part => {
+                    const trimmedPart = part.trim();
+                    if (trimmedPart.length > 0) {
+                        tags.push(trimmedPart);
+                    }
+                });
+            } else if (cleanedString.includes('/')) {
+                // Handle hierarchical paths, take the last segment
+                const parts = cleanedString.split('/').map(part => part.trim()).filter(part => part.length > 0);
+                if (parts.length > 0) {
+                    tags.push(parts[parts.length - 1]);
+                }
+            } else {
+                // No commas or slashes. Check for spaces or PascalCase/camelCase.
+                if (cleanedString.includes(' ')) {
+                    // If it contains spaces, treat the whole phrase as one tag
+                    tags.push(cleanedString);
+                } else {
+                    // Refined PascalCase/camelCase splitting: insert space before uppercase letters
+                    // that are not at the start and are either followed by a lowercase letter
+                    // or are preceded by a lowercase letter (to handle cases like "MyHTML")
+                    let tempSplitString = cleanedString.replace(/(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])/g, ' $1');
+                    
+                    // Split by space and filter out empty strings
+                    const potentialTags = tempSplitString.split(' ').filter(part => part.length > 0);
+
+                    // Add to tags, ensuring no duplicates if a tag was already added by other means
+                    potentialTags.forEach(tag => {
+                        if (!tags.includes(tag)) {
+                            tags.push(tag);
+                        }
+                    });
+                }
+            }
+            return tags.filter(tag => tag.length > 0); // Ensure no empty tags
+        }
+
+        /**
+         * Formats a date range into a human-readable string (e.g., "Février 2025", "De Février 2025 à Juin 2025", "2025").
+         * @param {number} startTimestamp User-provided start date in milliseconds (or 0 if empty).
+         * @param {number} endTimestamp User-provided end date in milliseconds (or Infinity if empty).
+         * @param {Array} allHistoryData The full dataset to determine min/max dates if filters are empty.
+         * @returns {string} Formatted period text.
+         */
+        function formatPeriodText(userStartTimestamp, userEndTimestamp, allHistoryData) {
+            const optionsMonthYear = { year: 'numeric', month: 'long' };
+            const optionsYear = { year: 'numeric' };
+            const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit' };
+
+            let actualStartTimestamp = userStartTimestamp;
+            let actualEndTimestamp = userEndTimestamp;
+
+            // Determine overall min/max dates from data if filters are not set
+            if (allHistoryData && allHistoryData.length > 0) {
+                const allDates = allHistoryData
+                    .filter(item => item.last_played_time > 0)
+                    .map(item => item.last_played_time);
+                
+                if (allDates.length > 0) {
+                    const minDataDate = Math.min(...allDates);
+                    const maxDataDate = Math.max(...allDates);
+
+                    if (userStartTimestamp === 0) {
+                        actualStartTimestamp = minDataDate;
+                    }
+                    if (userEndTimestamp === Infinity) {
+                        actualEndTimestamp = maxDataDate;
+                    }
+                }
+            }
+
+            const startDate = actualStartTimestamp ? new Date(actualStartTimestamp) : null;
+            const endDate = actualEndTimestamp !== Infinity ? new Date(actualEndTimestamp) : null;
+
+            if (!startDate && !endDate) {
+                return "toutes les périodes";
+            }
+
+            // Case 1: Full year (e.g., 2025)
+            if (startDate && endDate &&
+                startDate.getMonth() === 0 && startDate.getDate() === 1 &&
+                endDate.getMonth() === 11 && endDate.getDate() === 31 &&
+                startDate.getFullYear() === endDate.getFullYear()) {
+                return `${startDate.toLocaleDateString('fr-FR', optionsYear)}`;
+            }
+
+            // Case 2: Single full month (e.g., Février 2025)
+            if (startDate && endDate &&
+                startDate.getDate() === 1 &&
+                endDate.getDate() === new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0).getDate() &&
+                startDate.getFullYear() === endDate.getFullYear() &&
+                startDate.getMonth() === endDate.getMonth()) {
+                return `${startDate.toLocaleDateString('fr-FR', optionsMonthYear)}`;
+            }
+
+            // Case 3: Period between two full months (e.g., entre Février 2025 et Juin 2025)
+            if (startDate && endDate &&
+                startDate.getDate() === 1 &&
+                endDate.getDate() === new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0).getDate() &&
+                (startDate.getFullYear() !== endDate.getFullYear() || startDate.getMonth() !== endDate.getMonth())) {
+                const startMonthYear = startDate.toLocaleDateString('fr-FR', optionsMonthYear);
+                const endMonthYear = endDate.toLocaleDateString('fr-FR', optionsMonthYear);
+                return `entre ${startMonthYear} et ${endMonthYear}`;
+            }
+
+            // Case 4: Only start date provided
+            if (startDate && !endDate) {
+                return `entre le ${startDate.toLocaleDateString('fr-FR', optionsDate)} et la fin des données`;
+            }
+
+            // Case 5: Only end date provided
+            if (!startDate && endDate) {
+                return `entre le début des données et le ${endDate.toLocaleDateString('fr-FR', optionsDate)}`;
+            }
+            
+            // Case 6: Arbitrary date range (e.g., entre le 01/02/2025 et le 15/03/2025)
+            if (startDate && endDate) {
+                return `entre le ${startDate.toLocaleDateString('fr-FR', optionsDate)} et le ${endDate.toLocaleDateString('fr-FR', optionsDate)}`;
+            }
+
+            return "période indéfinie"; // Should not be reached
         }
 
 
@@ -1263,7 +1452,6 @@
 
         startDateFilter.addEventListener('change', updateCharts); // New event listener
         endDateFilter.addEventListener('change', updateCharts);   // New event listener
-        tagFilter.addEventListener('change', updateCharts); // New event listener for tag filter
         showSansTagCheckbox.addEventListener('change', updateCharts); // New event listener for 'Sans Tag' checkbox
         
         // Podcast search input event listeners
@@ -1290,11 +1478,11 @@
             if (event.key === 'ArrowDown') {
                 event.preventDefault(); // Prevent cursor movement in input
                 podcastSearchSelectedIndex = (podcastSearchSelectedIndex + 1) % suggestions.length;
-                highlightSuggestion(suggestions);
+                highlightSuggestion(suggestions, podcastSuggestions);
             } else if (event.key === 'ArrowUp') {
                 event.preventDefault(); // Prevent cursor movement in input
                 podcastSearchSelectedIndex = (podcastSearchSelectedIndex - 1 + suggestions.length) % suggestions.length;
-                highlightSuggestion(suggestions);
+                highlightSuggestion(suggestions, podcastSuggestions);
             } else if (event.key === 'Enter') {
                 event.preventDefault(); // Prevent form submission
                 if (podcastSearchSelectedIndex !== -1) {
@@ -1308,9 +1496,9 @@
             }
         });
 
-        function highlightSuggestion(suggestions) {
+        function highlightSuggestion(suggestions, container) {
             suggestions.forEach((item, index) => {
-                if (index === podcastSearchSelectedIndex) {
+                if (index === podcastSearchSelectedIndex || index === tagSearchSelectedIndex) { // Use correct index
                     item.classList.add('highlighted');
                     item.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // Scroll to highlighted item smoothly
                 } else {
@@ -1331,6 +1519,9 @@
         document.addEventListener('click', (event) => { 
             if (!podcastSuggestions.contains(event.target) && event.target !== podcastSearchInput) {
                 podcastSuggestions.classList.add('hidden');
+            }
+            if (!tagSuggestions.contains(event.target) && event.target !== tagSearchInput && !selectedTagsContainer.contains(event.target)) {
+                tagSuggestions.classList.add('hidden');
             }
         });
 
@@ -1552,32 +1743,14 @@
             // Populate Tag Filter
             const tags = new Set();
             data.forEach(item => {
-                let tagsRaw = item.tags_column;
-                if (tagsRaw && tagsRaw.trim() !== '' && tagsRaw.trim() !== '#root') {
-                    // Using \p{L} for any letter, and \p{Lu} for any uppercase letter, with 'u' flag for Unicode
-                    const extractedTags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
-                    extractedTags.forEach(tag => tags.add(tag));
-                }
+                let extractedTags = extractTagsFromString(item.tags_column);
+                extractedTags.forEach(tag => tags.add(tag));
             });
-            const sortedTags = Array.from(tags).sort();
-            tagFilter.innerHTML = '<option value="">Tous les tags</option>';
-            tagFilter.innerHTML += '<option value="Sans Tag">Sans Tag</option>'; // Add "Sans Tag" option
-            sortedTags.forEach(tag => {
-                const option = document.createElement('option');
-                option.value = tag;
-                option.textContent = tag;
-                tagFilter.appendChild(option);
-            });
-
+            allTags = Array.from(tags).sort();
+            renderSelectedTagChips(); // Re-render chips after data load
 
             // Populate allPodcastsTitles for search suggestions
-            const podcasts = new Set();
-            data.forEach(item => {
-                if (item.podcast_title) {
-                    podcasts.add(item.podcast_title);
-                }
-            });
-            allPodcastsTitles = Array.from(podcasts).sort();
+            allPodcastsTitles = Array.from(new Set(data.map(item => item.podcast_title))).sort();
         }
 
         function filterPodcastSuggestions() {
@@ -1615,6 +1788,103 @@
             }
         }
 
+        // Tag search input event listeners
+        tagSearchInput.addEventListener('input', filterTagSuggestions);
+        tagSearchInput.addEventListener('focus', () => {
+            if (tagSearchInput.value.length === 0) {
+                filterTagSuggestions();
+            }
+            tagSuggestions.classList.remove('hidden');
+        });
+        tagSearchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                tagSuggestions.classList.add('hidden');
+            }, 100);
+        });
+
+        // Keyboard navigation for tag search suggestions
+        tagSearchInput.addEventListener('keydown', (event) => {
+            const suggestions = Array.from(tagSuggestions.children);
+            if (suggestions.length === 0) return;
+
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                tagSearchSelectedIndex = (tagSearchSelectedIndex + 1) % suggestions.length;
+                highlightSuggestion(suggestions, tagSuggestions);
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                tagSearchSelectedIndex = (tagSearchSelectedIndex - 1 + suggestions.length) % suggestions.length;
+                highlightSuggestion(suggestions, tagSuggestions);
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                if (tagSearchSelectedIndex !== -1) {
+                    const selectedTag = suggestions[tagSearchSelectedIndex].textContent;
+                    addTagChip(selectedTag);
+                    tagSearchInput.value = '';
+                    tagSuggestions.classList.add('hidden');
+                    tagSearchSelectedIndex = -1;
+                    updateCharts();
+                }
+            }
+        });
+
+        function filterTagSuggestions() {
+            const searchTerm = tagSearchInput.value.toLowerCase();
+            tagSuggestions.innerHTML = '';
+            tagSearchSelectedIndex = -1;
+
+            let filtered = allTags.filter(tag =>
+                tag.toLowerCase().includes(searchTerm) && !selectedTags.includes(tag)
+            );
+
+            if (filtered.length > 0) {
+                tagSuggestions.classList.remove('hidden');
+                filtered.forEach(tag => {
+                    const div = document.createElement('div');
+                    div.textContent = tag;
+                    div.className = 'podcast-suggestion-item';
+                    div.addEventListener('mousedown', (event) => {
+                        event.preventDefault();
+                        addTagChip(tag);
+                        tagSearchInput.value = '';
+                        tagSuggestions.classList.add('hidden');
+                        tagSearchSelectedIndex = -1;
+                        updateCharts();
+                    });
+                    tagSuggestions.appendChild(div);
+                });
+            } else {
+                tagSuggestions.classList.add('hidden');
+            }
+        }
+
+        function addTagChip(tag) {
+            if (!selectedTags.includes(tag)) {
+                selectedTags.push(tag);
+                renderSelectedTagChips();
+            }
+        }
+
+        function removeTagChip(tagToRemove) {
+            selectedTags = selectedTags.filter(tag => tag !== tagToRemove);
+            renderSelectedTagChips();
+            updateCharts(); // Re-apply filters after removing a tag
+        }
+
+        function renderSelectedTagChips() {
+            selectedTagsContainer.innerHTML = '';
+            selectedTags.forEach(tag => {
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                chip.innerHTML = `<span>${tag}</span><span class="remove-tag" data-tag="${tag}">&times;</span>`;
+                chip.querySelector('.remove-tag').addEventListener('click', (event) => {
+                    removeTagChip(event.target.dataset.tag);
+                });
+                selectedTagsContainer.appendChild(chip);
+            });
+        }
+
+
         function updateCharts() {
             if (!globalDfHistory) return;
 
@@ -1622,7 +1892,8 @@
             const startDateTime = startDateFilter.value ? new Date(startDateFilter.value).getTime() : 0; // Convert to timestamp
             const endDateTime = endDateFilter.value ? new Date(endDateFilter.value).setHours(23, 59, 59, 999) : Infinity; // End of day
             const selectedPodcast = selectedPodcastHiddenInput.value; // Use the value from the hidden input
-            const selectedTag = tagFilter.value; // Get selected tag
+            // Use the global selectedTags array for filtering
+            const currentSelectedTags = selectedTags;
             const showSansTag = showSansTagCheckbox.checked; // Get state of 'Sans Tag' checkbox
 
             // Apply date range filter
@@ -1649,21 +1920,30 @@
                 selectedPodcastStatsDiv.classList.add('hidden');
             }
 
-            // Apply tag filter
-            if (selectedTag) {
+            // Apply tag filter (multi-select logic)
+            if (currentSelectedTags.length > 0) {
                 filteredData = filteredData.filter(item => {
-                    let tagsRaw = item.tags_column;
-                    if (!tagsRaw || tagsRaw.trim() === '' || tagsRaw.trim() === '#root') {
-                        return selectedTag === 'Sans Tag'; // Match 'Sans Tag' if no tags
+                    let itemTags = extractTagsFromString(item.tags_column);
+                    let matches = false;
+
+                    // If 'Sans Tag' is selected, include items that have no extracted tags
+                    if (currentSelectedTags.includes('Sans Tag')) {
+                        if (itemTags.length === 0) {
+                            matches = true;
+                        }
                     }
-                    tagsRaw = tagsRaw.replace('#root', '').trim();
-                    const tags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
-                    if (selectedTag === 'Sans Tag') {
-                        return tags.length === 0; // If 'Sans Tag' selected, return true if no tags found
+                    
+                    // Check for other selected tags (excluding 'Sans Tag' from the comparison)
+                    const otherSelectedTags = currentSelectedTags.filter(tag => tag !== 'Sans Tag');
+                    if (otherSelectedTags.length > 0) {
+                        if (itemTags.some(itemTag => otherSelectedTags.includes(itemTag))) {
+                            matches = true;
+                        }
                     }
-                    return tags.includes(selectedTag); // Check if item has the selected tag
+                    return matches;
                 });
             }
+
 
             currentProcessedData = processRawData(filteredData); // Update global variable
             updateUIWithStats(currentProcessedData);
@@ -1680,21 +1960,11 @@
             monthlyPodcastListShort.innerHTML = '';
             monthlyPodcastListAll.innerHTML = '';
             
-            const start = startDateFilter.value;
-            const end = endDateFilter.value;
-            let titleText = 'Top Podcasts pour la période';
-            let periodDescription = '';
-
-            if (start && end) {
-                periodDescription = ` du ${start} au ${end}`;
-            } else if (start) {
-                periodDescription = ` à partir du ${start}`;
-            } else if (end) {
-                periodDescription = ` jusqu'au ${end}`;
-            } else {
-                periodDescription = ` (toutes les périodes)`;
-            }
-            monthlyPodcastDetailTitle.textContent = `${titleText}${periodDescription}`;
+            const start = startDateFilter.value ? new Date(startDateFilter.value).getTime() : null;
+            const end = endDateFilter.value ? new Date(endDateFilter.value).setHours(23, 59, 59, 999) : Infinity;
+            let periodDescription = formatPeriodText(start, end, globalDfHistory); // Pass globalDfHistory
+            
+            monthlyPodcastDetailTitle.textContent = `Top Podcasts pour la période : ${periodDescription}`;
 
             if (topPodcastsForPeriod.length === 0) {
                 const li = document.createElement('li');
@@ -1738,7 +2008,7 @@
                     const li = document.createElement('li');
                     li.className = 'podcast-item';
                     const img = document.createElement('img');
-                    const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
+                    const defaultPlaceholder = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
                     if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
                         img.src = p.imageUrl;
                         img.onerror = () => { // Fallback if the external image fails to load
@@ -1854,19 +2124,8 @@
                 periodInfoText = `Données `;
             }
 
-            if (startDateTime && endDateTime !== Infinity) {
-                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
-                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
-                periodInfoText += `du ${startDate} au ${endDate}`;
-            } else if (startDateTime) {
-                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
-                periodInfoText += `à partir du ${startDate}`;
-            } else if (endDateTime !== Infinity) {
-                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
-                periodInfoText += `jusqu'au ${endDate}`;
-            } else {
-                periodInfoText = `pour toutes les périodes`;
-            }
+            // Pass globalDfHistory to formatPeriodText
+            periodInfoText += `pour ${formatPeriodText(startDateTime, endDateTime, globalDfHistory)}`;
 
             // Update chart period info
             monthlyChartPeriodInfo.textContent = periodInfoText;
@@ -2289,40 +2548,39 @@
             });
         }
 
-        // --- Spotify Wrapped inspired report generation (text-based, kept for copy function) ---
+        /**
+         * Generates the text content for the Spotify Wrapped inspired report.
+         * @param {object} stats The processed statistics data.
+         * @param {number} startDateTime Filter start date timestamp.
+         * @param {number} endDateTime Filter end date timestamp.
+         */
         function generateWrappedReport(stats, startDateTime, endDateTime) {
             const totalHours = stats.totalListeningTimeHours.toFixed(1);
-            let periodText;
-            if (startDateTime && endDateTime !== Infinity) {
-                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
-                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
-                periodText = `du ${startDate} au ${endDate}`;
-            } else if (startDateTime) {
-                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
-                periodText = `à partir du ${startDate}`;
-            } else if (endDateTime !== Infinity) {
-                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
-                periodText = `jusqu'au ${endDate}`;
-            } else {
-                periodText = `cette année`; // Default if no dates selected
+            let formattedPeriod = formatPeriodText(startDateTime, endDateTime, globalDfHistory);
+
+            let periodConnector = '';
+            // Determine if "en" is needed for the main sentence
+            // Matches "2025" or "Février 2025" (single year or single month-year)
+            if (formattedPeriod.match(/^\d{4}$/) || formattedPeriod.match(/^[A-Za-zÀ-ÿ]+ \d{4}$/)) { 
+                periodConnector = 'en ';
             }
 
             const top5Podcasts = stats.topPodcastsByTime.slice(0, 5); // Get top 5 from filtered data
 
-            let message = `🎉 Mon Bilan AntennaPod ${periodText} !\n\n`;
-            message += `J'ai écouté des podcasts pendant ${totalHours} heures ${periodText.replace('pour ', '')} ! C'est l'équivalent de ${stats.totalListeningTimeDays.toFixed(1)} jours complets 🎧.\n\n`;
+            let message = `🎉 Mon Bilan AntennaPod ${formattedPeriod} !\n\n`; // This line is fine as is
+            message += `J'ai écouté des podcasts pendant ${totalHours} heures ${periodConnector}${formattedPeriod} ! C'est l'équivalent de ${stats.totalListeningTimeDays.toFixed(1)} jours complets 🎧.\n\n`;
             
             if (top5Podcasts.length > 0) {
-                message += `Mes top 5 podcasts ${periodText.replace('pour ', '')} :\n`;
+                message += `Mes top 5 podcasts ${formattedPeriod} :\n`; // This line is fine as is
                 top5Podcasts.forEach((p, index) => {
                     // Using a simple emoji for podcast image representation in text export
                     message += `${index + 1}. 🎙️ "${p.podcast}" : ${p.hours.toFixed(1)} heures\n`;
                 });
             } else {
-                message += `Aucun podcast écouté ${periodText.replace('pour ', '')}.\n`;
+                message += `Aucun podcast écouté ${formattedPeriod}.\n`; // This line is fine as is
             }
 
-            message += `\nJ'ai découvert et écouté ${stats.episodesListened} épisodes différents 📚, avec une durée moyenne par écoute de ${stats.avgListenDurationMinutes.toFixed(1)} minutes.\n\n`;
+            message += `\nJ'ai découvert et écouté ${stats.episodesListened} épisodes différents 📚, avec une durée moyenne d'un épisode de ${stats.avgListenDurationMinutes.toFixed(1)} minutes.\n\n`;
             message += `Quelles sont vos stats ? Partagez les vôtre ! #AntennaPodStats #PodcastAddict`;
 
             // Update the div for html2canvas
@@ -2339,7 +2597,7 @@
             csvContent += `Épisodes écoutés,${stats.episodesListened}\n`;
             csvContent += `Épisodes terminés (>90%),${stats.episodesCompleted}\n`;
             csvContent += `Taux de complétion (%),${stats.completionRate.toFixed(1)}\n`;
-            csvContent += `Durée moyenne par écoute (minutes),${stats.avgListenDurationMinutes.toFixed(1)}\n`;
+            csvContent += `Durée moyenne d'un épisode (minutes),${stats.avgListenDurationMinutes.toFixed(1)}\n`;
             csvContent += `Progression moyenne (%),${stats.avgProgressPercent.toFixed(1)}\n`;
             csvContent += "\n";
 
@@ -2677,31 +2935,15 @@
             // New: Tags Listening
             const timeByTag = {};
             listenedEpisodes.forEach(item => {
-                let tagsRaw = item.tags_column; // Use the correct column name from SQL query
+                let tags = extractTagsFromString(item.tags_column); // Use the new function
                 
-                // If tagsRaw is null, empty, or only contains whitespace/root, assign 'Sans Tag'
-                if (!tagsRaw || tagsRaw.trim() === '' || tagsRaw.trim() === '#root') {
+                if (tags.length === 0) { // If no valid tags found, put in 'Sans Tag'
                     timeByTag['Sans Tag'] = (timeByTag['Sans Tag'] || 0) + (item.played_duration || 0);
-                    return; // Skip further tag processing for this item
-                }
-
-                tagsRaw = tagsRaw.replace('#root', '').trim(); // Remove #root and trim whitespace
-                
-                // Regex to find sequences starting with an uppercase letter followed by any letters
-                // This will split "ScienceFiction" into ["Science", "Fiction"]
-                // Using \p{L} for any letter, and \p{Lu} for any uppercase letter, with 'u' flag for Unicode
-                const tags = tagsRaw.match(/\p{Lu}[\p{L}]*/gu) || [];
-                
-                if (tags.length === 0) { // If no valid tags found after regex, also put in 'Sans Tag'
-                    timeByTag['Sans Tag'] = (timeByTag['Sans Tag'] || 0) + (item.played_duration || 0);
-                    return;
-                }
-
-                tags.forEach(tag => {
-                    if (tag) { // Ensure tag is not empty after regex match
+                } else {
+                    tags.forEach(tag => {
                         timeByTag[tag] = (timeByTag[tag] || 0) + (item.played_duration || 0);
-                    }
-                });
+                    });
+                }
             });
 
             const tagsListening = Object.entries(timeByTag)
@@ -2772,6 +3014,26 @@
         };
 
         /**
+         * Generates a simple SVG placeholder image as a data URL.
+         * @param {string} text The text to display in the placeholder.
+         * @param {number} width The width of the placeholder.
+         * @param {number} height The height of the placeholder.
+         * @param {string} bgColor Background color (hex).
+         * @param {string} textColor Text color (hex).
+         * @returns {string} The SVG data URL.
+         */
+        function generateSvgPlaceholder(text, width, height, bgColor, textColor) {
+            const encodedText = encodeURIComponent(text);
+            const svgString = `
+                <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="${width}" height="${height}" fill="${bgColor}" rx="5" ry="5"/>
+                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="${textColor}" font-family="sans-serif" font-size="${Math.min(width, height) / 3}" font-weight="bold">${encodedText}</text>
+                </svg>
+            `;
+            return `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
+        }
+
+        /**
          * Converts an image URL to a Base64 Data URL.
          * Handles CORS by using a temporary canvas.
          * @param {string} url The URL of the image.
@@ -2791,20 +3053,10 @@
                     resolve(canvas.toDataURL('image/png'));
                 };
                 img.onerror = () => {
-                    // Fallback to a placeholder image if loading fails, using the same style as in the app
-                    const fallbackText = podcastTitle.substring(0, 2).toUpperCase();
-                    const placeholderUrl = `https://placehold.co/80x80/ADD8E6/000000?text=${encodeURIComponent(fallbackText)}`;
-                    fetch(placeholderUrl)
-                        .then(response => response.blob())
-                        .then(blob => {
-                            const reader = new FileReader();
-                            reader.onloadend = () => resolve(reader.result);
-                            reader.readAsDataURL(blob);
-                        })
-                        .catch(e => {
-                            console.error("Failed to load placeholder:", e);
-                            resolve(''); // Resolve with empty string if even placeholder fails
-                        });
+                    // Fallback to a locally generated SVG placeholder
+                    const fallbackText = podcastTitle ? podcastTitle.substring(0, 2).toUpperCase() : 'AP';
+                    const placeholderDataUrl = generateSvgPlaceholder(fallbackText, 80, 80, '#ADD8E6', '#000000');
+                    resolve(placeholderDataUrl);
                 };
                 img.src = url;
             });
@@ -2819,19 +3071,13 @@
          */
         async function generateWrappedSvgString(stats, startDateTime, endDateTime) {
             const totalHours = stats.totalListeningTimeHours.toFixed(1);
-            let periodText;
-            if (startDateTime && endDateTime !== Infinity) {
-                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
-                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
-                periodText = `du ${startDate} au ${endDate}`;
-            } else if (startDateTime) {
-                const startDate = new Date(startDateTime).toLocaleDateString('fr-FR');
-                periodText = `à partir du ${startDate}`;
-            } else if (endDateTime !== Infinity) {
-                const endDate = new Date(endDateTime).toLocaleDateString('fr-FR');
-                periodText = `jusqu'au ${endDate}`;
-            } else {
-                periodText = `cette année`; // Default if no dates selected
+            let formattedPeriod = formatPeriodText(startDateTime, endDateTime, globalDfHistory);
+
+            let periodConnector = '';
+            // Determine if "en" is needed for the main sentence
+            // Matches "2025" or "Février 2025" (single year or single month-year)
+            if (formattedPeriod.match(/^\d{4}$/) || formattedPeriod.match(/^[A-Za-zÀ-ÿ]+ \d{4}$/)) { 
+                periodConnector = 'en ';
             }
 
             const top5Podcasts = stats.topPodcastsByTime.slice(0, 5);
@@ -2875,7 +3121,7 @@
                         <text x="130" y="25" class="svg-wrapped-podcast-name" style="font-family: 'Inter', sans-serif; fill: #ffffff; font-size: 18px;">
                             ${tspanElements}
                         </text>
-                        <text x="380" y="70" text-anchor="end" class="svg-wrapped-podcast-hours" style="font-family: 'Inter', sans-serif; fill: #b3b3b3; font-size: 16px;">${p.hours.toFixed(1)} heures</text>
+                        <text x="400" y="70" text-anchor="end" class="svg-wrapped-podcast-hours" style="font-family: 'Inter', sans-serif; fill: #b3b3b3; font-size: 16px;">${p.hours.toFixed(1)} heures</text>
                     </g>
                 `;
             });
@@ -2942,7 +3188,7 @@
                     <rect x="0" y="0" width="450" height="800" fill="#1a1a1a" rx="10" ry="10"/>
 
                     <text x="225" y="50" text-anchor="middle" class="svg-wrapped-title">Votre Bilan AntennaPod</text>
-                    <text x="225" y="90" text-anchor="middle" class="svg-wrapped-subtitle">Mon Top 5 Podcasts ${periodText}</text>
+                    <text x="225" y="90" text-anchor="middle" class="svg-wrapped-subtitle">Mon Top 5 Podcasts ${formattedPeriod}</text>
 
                     ${podcastSvgGroups}
 
