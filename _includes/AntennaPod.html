@@ -561,7 +561,7 @@
                 <div id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white hover:border-blue-400 transition-colors duration-200">
                     <label for="db-file-input" class="cursor-pointer">
                         <div class="flex flex-col items-center">
-                            <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                             <span class="text-lg text-gray-700 font-medium">Déposez votre fichier ici ou cliquez pour uploader</span>
                             <span id="fileName" class="text-sm text-gray-500 mt-1">Aucun fichier sélectionné</span>
                         </div>
@@ -682,7 +682,7 @@
                         </svg>
                     </button>
                     <p class="text-sm text-gray-600 mb-2" id="tagInfoNote">
-                        Note : Les tags sont extraits des catégories du podcast. Si une catégorie contient des virgules ou des barres obliques, elle sera divisée en tags distincts. Si elle contient des mots composés sans espace (ex: "ScienceFiction", "CultureGénérale"), ils seront séparés. Les acronymes (ex: "HTML", "NASA") sont traités comme des tags uniques et ne sont pas divisés. Sinon, la catégorie entière est traitée comme un seul tag (ex: "Culture générale"). Les podcasts sans tags sont regroupés sous la catégorie "Sans Tag".
+                        Note : Les tags sont extraits de la colonne 'tags' des podcasts. Si un tag contient des virgules ou des barres obliques, il sera divisé en tags distincts. Si elle contient des mots composés sans espace (ex: "ScienceFiction", "CultureGénérale"), ils seront séparés. Les acronymes (ex: "HTML", "NASA") sont traités comme des tags uniques et ne sont pas divisés. Sinon, le texte entier est traité comme un seul tag (ex: "Culture générale"). Les podcasts sans tags sont regroupés sous la catégorie "Sans Tag".
                     </p>
                     <div class="flex items-center mb-4">
                         <input type="checkbox" id="showSansTagCheckbox" checked class="mr-2">
@@ -1068,18 +1068,22 @@
          * Extracts tags from a raw tags string, handling various formats.
          * Prioritizes comma-separated lists, then hierarchical paths, then single phrases,
          * then PascalCase/camelCase splitting.
+         * Includes robust normalization to prevent duplicates (case, trim, Unicode, non-printable chars).
          * @param {string} tagString The raw tags string from the database.
-         * @returns {string[]} An array of extracted tag strings.
+         * @returns {string[]} An array of extracted tag strings, all normalized to lowercase, trimmed, and NFC.
          */
         function extractTagsFromString(tagString) {
-            if (!tagString || tagString.trim() === '' || tagString.trim() === '#root') {
+            if (!tagString || typeof tagString !== 'string' || tagString.trim() === '' || tagString.trim() === '#root') {
                 return [];
             }
             let cleanedString = tagString.replace('#root', '').trim();
 
+            // Aggressive cleaning: remove all non-printable ASCII characters (except common whitespace)
+            // and replace multiple spaces with single space.
+            cleanedString = cleanedString.replace(/[\x00-\x1F\x7F]/g, '').replace(/\s+/g, ' ').trim();
+
             const tags = [];
             if (cleanedString.includes(',')) {
-                // Prioritize comma splitting
                 cleanedString.split(',').forEach(part => {
                     const trimmedPart = part.trim();
                     if (trimmedPart.length > 0) {
@@ -1087,26 +1091,27 @@
                     }
                 });
             } else if (cleanedString.includes('/')) {
-                // Handle hierarchical paths, take the last segment
                 const parts = cleanedString.split('/').map(part => part.trim()).filter(part => part.length > 0);
                 if (parts.length > 0) {
                     tags.push(parts[parts.length - 1]);
                 }
             } else {
-                // No commas or slashes. Check for spaces or PascalCase/camelCase.
                 if (cleanedString.includes(' ')) {
-                    // If it contains spaces, treat the whole phrase as one tag
                     tags.push(cleanedString);
                 } else {
-                    // Refined PascalCase/camelCase splitting: insert space before uppercase letters
-                    // that are not at the start and are either followed by a lowercase letter
-                    // or are preceded by a lowercase letter (to handle cases like "MyHTML")
-                    let tempSplitString = cleanedString.replace(/(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])/g, ' $1');
-                    
-                    // Split by space and filter out empty strings
+                    // Refined PascalCase/CamelCase splitting:
+                    // Insert space before uppercase letters that are not at the start,
+                    // and are either followed by a lowercase letter (e.g., "Fiction" in "ScienceFiction")
+                    // OR are preceded by a lowercase letter (to handle cases like "MyHTML" -> "My HTML").
+                    // This avoids splitting consecutive uppercase letters (e.g., "HTML" remains "HTML").
+                    // Also handle numbers being treated as separate words (e.g. "Tag123" -> "Tag 123")
+                    let tempSplitString = cleanedString
+                        .replace(/(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])/g, ' $1') // PascalCase/CamelCase
+                        .replace(/([0-9])(?=[A-Za-z])/g, '$1 ') // Number followed by letter (e.g., "123Tag" -> "123 Tag")
+                        .replace(/([A-Za-z])(?=[0-9])/g, '$1 '); // Letter followed by number (e.g., "Tag123" -> "Tag 123")
+
                     const potentialTags = tempSplitString.split(' ').filter(part => part.length > 0);
 
-                    // Add to tags, ensuring no duplicates if a tag was already added by other means
                     potentialTags.forEach(tag => {
                         if (!tags.includes(tag)) {
                             tags.push(tag);
@@ -1114,7 +1119,8 @@
                     });
                 }
             }
-            return tags.filter(tag => tag.length > 0); // Ensure no empty tags
+            // Final, robust normalization step for all extracted tags
+            return tags.filter(tag => tag.length > 0).map(tag => tag.toLowerCase().trim().normalize('NFC'));
         }
 
         /**
@@ -1294,7 +1300,6 @@
                     tempTextArea.value = textToCopy;
                     document.body.appendChild(tempTextArea); 
                     tempTextArea.select();
-                    document.execCommand('copy');
                     document.body.removeChild(tempTextArea); 
                     showMessage('success', 'Rapport copié dans le presse-papiers (via fallback) !');
                 }
@@ -1742,12 +1747,23 @@
         function populateFilters(data) {
             // Populate Tag Filter
             const tags = new Set();
+            let hasUntaggedEpisodes = false; // Flag to check for episodes without tags
+
             data.forEach(item => {
-                let extractedTags = extractTagsFromString(item.tags_column);
-                extractedTags.forEach(tag => tags.add(tag));
+                let extractedTags = extractTagsFromString(item.tags_column); // This now returns normalized tags
+                if (extractedTags.length === 0) {
+                    hasUntaggedEpisodes = true;
+                }
+                extractedTags.forEach(tag => tags.add(tag)); // Add directly, as they are already normalized
             });
+
+            // If there are episodes without tags, add 'sans tag' as a selectable option
+            if (hasUntaggedEpisodes) {
+                tags.add('sans tag');
+            }
+
             allTags = Array.from(tags).sort();
-            renderSelectedTagChips(); // Re-render chips after data load
+            renderSelectedTagChips();
 
             // Populate allPodcastsTitles for search suggestions
             allPodcastsTitles = Array.from(new Set(data.map(item => item.podcast_title))).sort();
@@ -1779,12 +1795,12 @@
                         selectedPodcastHiddenInput.value = podcast; // Store the exact selected value
                         podcastSuggestions.classList.add('hidden');
                         podcastSearchSelectedIndex = -1; // Reset index after selection
-                        updateCharts(); // Trigger chart update with exact podcast match
+                        updateCharts();
                     });
                     podcastSuggestions.appendChild(div);
                 });
             } else {
-                podcastSuggestions.classList.add('hidden'); // Hide if no suggestions
+                podcastSuggestions.classList.add('hidden');
             }
         }
 
@@ -1841,11 +1857,13 @@
                 tagSuggestions.classList.remove('hidden');
                 filtered.forEach(tag => {
                     const div = document.createElement('div');
-                    div.textContent = tag;
+                    // Display the tag with first letter capitalized for suggestions
+                    // Special handling for 'sans tag' display
+                    div.textContent = tag === 'sans tag' ? 'Sans Tag' : tag.charAt(0).toUpperCase() + tag.slice(1);
                     div.className = 'podcast-suggestion-item';
                     div.addEventListener('mousedown', (event) => {
                         event.preventDefault();
-                        addTagChip(tag);
+                        addTagChip(tag); // Add the normalized (lowercase) tag
                         tagSearchInput.value = '';
                         tagSuggestions.classList.add('hidden');
                         tagSearchSelectedIndex = -1;
@@ -1859,8 +1877,10 @@
         }
 
         function addTagChip(tag) {
-            if (!selectedTags.includes(tag)) {
-                selectedTags.push(tag);
+            // Ensure tag is normalized before adding to selectedTags
+            const normalizedTag = tag.toLowerCase().trim().normalize('NFC'); // Add NFC normalization here too
+            if (!selectedTags.includes(normalizedTag)) {
+                selectedTags.push(normalizedTag);
                 renderSelectedTagChips();
             }
         }
@@ -1873,10 +1893,12 @@
 
         function renderSelectedTagChips() {
             selectedTagsContainer.innerHTML = '';
-            selectedTags.forEach(tag => {
+            selectedTags.forEach(tag => { // 'tag' here will be lowercase
+                // Special handling for 'sans tag' display
+                const displayTag = tag === 'sans tag' ? 'Sans Tag' : tag.charAt(0).toUpperCase() + tag.slice(1);
                 const chip = document.createElement('div');
                 chip.className = 'tag-chip';
-                chip.innerHTML = `<span>${tag}</span><span class="remove-tag" data-tag="${tag}">&times;</span>`;
+                chip.innerHTML = `<span>${displayTag}</span><span class="remove-tag" data-tag="${tag}">&times;</span>`; // data-tag stores original lowercase
                 chip.querySelector('.remove-tag').addEventListener('click', (event) => {
                     removeTagChip(event.target.dataset.tag);
                 });
@@ -1923,18 +1945,18 @@
             // Apply tag filter (multi-select logic)
             if (currentSelectedTags.length > 0) {
                 filteredData = filteredData.filter(item => {
-                    let itemTags = extractTagsFromString(item.tags_column);
+                    let itemTags = extractTagsFromString(item.tags_column); // Already normalized
                     let matches = false;
 
-                    // If 'Sans Tag' is selected, include items that have no extracted tags
-                    if (currentSelectedTags.includes('Sans Tag')) {
+                    // If 'sans tag' is selected, include items that have no extracted tags
+                    if (currentSelectedTags.includes('sans tag')) { // Check for normalized 'sans tag'
                         if (itemTags.length === 0) {
                             matches = true;
                         }
                     }
                     
-                    // Check for other selected tags (excluding 'Sans Tag' from the comparison)
-                    const otherSelectedTags = currentSelectedTags.filter(tag => tag !== 'Sans Tag');
+                    // Check for other selected tags (excluding 'sans tag' from the comparison)
+                    const otherSelectedTags = currentSelectedTags.filter(tag => tag !== 'sans tag');
                     if (otherSelectedTags.length > 0) {
                         if (itemTags.some(itemTag => otherSelectedTags.includes(itemTag))) {
                             matches = true;
@@ -2406,7 +2428,7 @@
 
             // Iterate directly over the pre-processed stats.tagsListening
             // Filter out 'Sans Tag' if the checkbox is unchecked
-            const filteredTags = stats.tagsListening.filter(([tag]) => !(tag === 'Sans Tag' && !showSansTag));
+            const filteredTags = stats.tagsListening.filter(([tag]) => !(tag === 'Sans Tag' && !showSansTag)); // Use capitalized 'Sans Tag' for comparison
 
             for (let i = 0; i < filteredTags.length; i++) {
                 const [tag, durationMs] = filteredTags[i];
@@ -2420,11 +2442,12 @@
                 }
             }
 
-            if (otherTagHours > 0) {
+            // Only add 'Autres Tags' if there's actual duration for them AND it's not already in the labels
+            if (otherTagHours > 0 && !tagDistributionLabels.includes('Autres Tags')) {
                 tagDistributionLabels.push('Autres Tags');
                 tagDistributionValues.push(otherTagHours);
             }
-
+            
             // Reusing backgroundColors, can add more if needed
             tagTimeDistributionChartInstance = new Chart(tagTimeDistributionCtx, {
                 type: 'doughnut',
@@ -2457,6 +2480,7 @@
                                             const strokeStyle = style.borderColor || '#cccccc';
 
                                             const value = data.datasets[0].data[i];
+                                            // The label is already capitalized from processRawData
                                             return {
                                                 text: `${label}: ${value.toFixed(1)}h`,
                                                 fillStyle: fillStyle,
@@ -2474,7 +2498,7 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    const label = context.label || '';
+                                    const label = context.label || ''; // This label is already capitalized
                                     const value = context.parsed || 0;
                                     return `${label}: ${value.toFixed(1)} heures`;
                                 }
@@ -2659,7 +2683,9 @@
             // Tags Listening
             csvContent += "Distribution du temps d'écoute par Tag\n";
             csvContent += "Tag,Heures\n";
+            // For CSV, display the capitalized version of the tag
             stats.tagsListening.forEach(([tag, durationMs]) => {
+                // The tag is already capitalized from processRawData for display
                 csvContent += `"${tag.replace(/"/g, '""')}",${(durationMs / (1000 * 3600)).toFixed(1)}\n`;
             });
             csvContent += "\n";
@@ -2703,7 +2729,7 @@
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, 'AntennaPod_Raw_Data.csv');
+            saveAs(blob, 'AntennaPod_Raw_Data.CVS');
             showMessage('success', 'Données brutes exportées au format CSV !');
         }
 
@@ -2847,7 +2873,6 @@
             const avgDurationMinutes = avgDurationMs / (1000 * 60);
 
             const progressData = listenedEpisodes.filter(item => item.duration > 0 && item.position >= 0);
-            // Corrected syntax for reduce callback and initial value
             const avgProgress = progressData.length > 0 ? progressData.reduce((sum, item) => sum + ((item.position / item.duration) * 100), 0) / progressData.length : 0;
 
             // Top Podcasts by Time (for the current filtered data)
@@ -2914,41 +2939,92 @@
 
 
             // Daily Listening (Monday as first day) (now calculates time)
-            // Note: getDay() returns 0 for Sunday, 1 for Monday... 6 for Saturday
             const dayNamesOrdered = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
             const dailyListeningMap = new Map(); 
-            // Initialize map with 0 for all days in the desired order
             dayNamesOrdered.forEach(day => dailyListeningMap.set(day, 0)); 
 
             listenedEpisodes.forEach(item => {
                 if (item.last_played_time > 0 && item.played_duration > 0) {
                     const date = new Date(item.last_played_time);
-                    let dayOfWeekIndex = date.getDay(); // 0 (Sunday) to 6 (Saturday)
-                    // Adjust index to start from Monday (1 becomes 0, 0 becomes 6)
+                    let dayOfWeekIndex = date.getDay(); 
                     dayOfWeekIndex = (dayOfWeekIndex === 0) ? 6 : dayOfWeekIndex - 1;
-                    const dayOfWeekName = dayNamesOrdered[dayOfWeekIndex]; // Use dayNamesOrdered array
-                    dailyListeningMap.set(dayOfWeekName, (dailyListeningMap.get(dayOfWeekName) || 0) + (item.played_duration || 0)); // Sum played duration
+                    const dayOfWeekName = dayNamesOrdered[dayOfWeekIndex]; 
+                    dailyListeningMap.set(dayOfWeekName, (dailyListeningMap.get(dayOfWeekName) || 0) + (item.played_duration || 0)); 
                 }
             });
-            const dailyListening = Array.from(dailyListeningMap.entries()).map(([day, durationMs]) => ({ day, count: durationMs / (1000 * 3600) })); // Convert to hours
+            const dailyListening = Array.from(dailyListeningMap.entries()).map(([day, durationMs]) => ({ day, count: durationMs / (1000 * 3600) })); 
 
-            // New: Tags Listening
-            const timeByTag = {};
+            // NEW: Tags Listening for Tag Distribution Chart (Revised Logic)
+            const tagChartData = {};
+            const activeSelectedTagsSet = new Set(selectedTags.filter(tag => tag !== 'sans tag'));
+            const isTagFilterActive = selectedTags.length > 0;
+            const isSansTagSelectedInFilter = selectedTags.includes('sans tag');
+
             listenedEpisodes.forEach(item => {
-                let tags = extractTagsFromString(item.tags_column); // Use the new function
-                
-                if (tags.length === 0) { // If no valid tags found, put in 'Sans Tag'
-                    timeByTag['Sans Tag'] = (timeByTag['Sans Tag'] || 0) + (item.played_duration || 0);
+                let itemTags = extractTagsFromString(item.tags_column); // Already normalized (lowercase, trimmed, NFC)
+                const duration = item.played_duration || 0;
+
+                if (!isTagFilterActive) {
+                    // If no specific tags are selected (filter is empty), show all actual tags or 'sans tag'
+                    if (itemTags.length === 0) {
+                        tagChartData['sans tag'] = (tagChartData['sans tag'] || 0) + duration;
+                    } else {
+                        itemTags.forEach(tag => {
+                            tagChartData[tag] = (tagChartData[tag] || 0) + duration;
+                        });
+                    }
                 } else {
-                    tags.forEach(tag => {
-                        timeByTag[tag] = (timeByTag[tag] || 0) + (item.played_duration || 0);
-                    });
+                    // If specific tags are selected, apply the previous logic
+                    let assignedToChart = false; // Flag to ensure each episode's duration is assigned only once
+
+                    if (itemTags.length === 0) {
+                        // Episode has no tags
+                        if (isSansTagSelectedInFilter) {
+                            tagChartData['sans tag'] = (tagChartData['sans tag'] || 0) + duration;
+                        } else {
+                            // If 'sans tag' is not selected, but episode has no tags, its duration goes to 'autres tags'
+                            tagChartData['autres tags'] = (tagChartData['autres tags'] || 0) + duration;
+                        }
+                        assignedToChart = true;
+                    }
+
+                    if (!assignedToChart && itemTags.length > 0) {
+                        let foundMatchingSelectedTag = false;
+                        // Prioritize selected tags: iterate through episode's tags to find a match in selectedTags
+                        for (const tag of itemTags) {
+                            if (activeSelectedTagsSet.has(tag)) {
+                                tagChartData[tag] = (tagChartData[tag] || 0) + duration;
+                                foundMatchingSelectedTag = true;
+                                assignedToChart = true;
+                                break; // Assign duration to the first matching selected tag and stop for this episode
+                            }
+                        }
+
+                        if (!foundMatchingSelectedTag) {
+                            // Episode has tags, but none of them are among the explicitly selected tags.
+                            // Its duration goes to 'autres tags'.
+                            tagChartData['autres tags'] = (tagChartData['autres tags'] || 0) + duration;
+                            assignedToChart = true;
+                        }
+                    }
                 }
             });
 
-            const tagsListening = Object.entries(timeByTag)
+            const tagsListening = Object.entries(tagChartData)
                 .sort(([, a], [, b]) => b - a)
                 .filter(([, duration]) => duration > 0); // Filter out tags with 0 duration
+
+            // Ensure 'Sans Tag' and 'Autres Tags' are capitalized for display
+            tagsListening.forEach(entry => {
+                if (entry[0] === 'sans tag') {
+                    entry[0] = 'Sans Tag'; // Capitalize for display in the stats object
+                } else if (entry[0] === 'autres tags') {
+                    entry[0] = 'Autres Tags'; // Capitalize for display
+                } else {
+                    // Capitalize first letter for other tags, as they are already normalized (lowercase)
+                    entry[0] = entry[0].charAt(0).toUpperCase() + entry[0].slice(1);
+                }
+            });
 
 
             return {
