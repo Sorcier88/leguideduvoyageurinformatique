@@ -521,15 +521,16 @@
                     </div>
                     <span class="text-sm text-red-500">Remarque : Les couvertures de vos podcasts seront affichées si elles sont accessibles en ligne. En cas d’échec de chargement, une illustration générique de remplacement sera utilisée.</span>
                 </p>
-                <label for="db-file-input" id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-[#0e6270] rounded-xl p-8 text-center bg-[#f0f4f8] hover:bg-[#e6f2f3] cursor-pointer transition-all duration-200 shadow-sm block w-full">
-                    <input type="file" id="db-file-input" accept=".db,.sqlite,.sqlite3" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;" />
-                    <svg class="w-14 h-14 text-[#0e6270] mb-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                    </svg>
-                    <span class="text-lg text-gray-800 font-semibold mb-1 pointer-events-none">Déposez votre sauvegarde AntennaPod (.db) ici ou cliquez pour choisir</span>
-                    <span class="text-xs text-gray-500 mb-3 pointer-events-none">Prend en charge les fichiers AntennaPod.db et AntennaPodBackup-*.db</span>
-                    <span id="fileName" class="text-sm font-medium text-[#0e6270] bg-white px-4 py-1.5 rounded-full border border-gray-300 shadow-sm pointer-events-none">Aucun fichier sélectionné</span>
-                </label>
+                <div id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white hover:border-blue-400 transition-colors duration-200 cursor-pointer">
+                    <label for="db-file-input" class="cursor-pointer w-full flex flex-col items-center">
+                        <div class="flex flex-col items-center">
+                            <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                            <span class="text-lg text-gray-700 font-medium">Déposez votre fichier ici ou cliquez pour uploader</span>
+                            <span id="fileName" class="text-sm text-gray-500 mt-1">Aucun fichier sélectionné</span>
+                        </div>
+                    </label>
+                    <input type="file" id="db-file-input" accept=".db" class="hidden" />
+                </div>
                 <button id="analyzeButton" class="button w-full mt-6 flex items-center justify-center" disabled>
                     <span id="analyzeButtonText">Analyser les statistiques</span>
                     <div id="loadingSpinner" class="spinner ml-3 hidden"></div>
@@ -1432,103 +1433,86 @@
 
         // --- Event Listeners ---
         // --- Event Listeners for File Selection and Analysis ---
-        if (fileInputWrapper) {
-            fileInputWrapper.addEventListener('dragover', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                fileInputWrapper.classList.add('dragover', 'border-blue-500', 'bg-blue-50');
-            });
+        let selectedDbFile = null;
 
-            fileInputWrapper.addEventListener('dragleave', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                fileInputWrapper.classList.remove('dragover', 'border-blue-500', 'bg-blue-50');
-            });
+        dbFileInput.addEventListener('change', (event) => {
+            const file = event.target.files && event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
 
-            fileInputWrapper.addEventListener('drop', (event) => {
-                event.preventDefault();
-                event.stopPropagation();
-                fileInputWrapper.classList.remove('dragover', 'border-blue-500', 'bg-blue-50');
-                const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
-                if (file) {
-                    handleFile(file);
-                } else {
-                    showMessage('error', 'Aucun fichier détecté lors du glisser-déposer.');
-                }
-            });
-        }
+        // Drag and Drop Event Listeners
+        fileInputWrapper.addEventListener('dragover', (event) => {
+            event.preventDefault(); // Prevent default to allow drop
+            fileInputWrapper.classList.add('dragover');
+        });
 
-        if (dbFileInput) {
-            dbFileInput.addEventListener('click', () => {
-                dbFileInput.value = ''; // Reset value to allow selecting same file again
-            });
+        fileInputWrapper.addEventListener('dragleave', (event) => {
+            fileInputWrapper.classList.remove('dragover');
+        });
 
-            dbFileInput.addEventListener('change', (event) => {
-                const file = event.target.files && event.target.files[0];
-                if (file) {
-                    handleFile(file);
-                }
-            });
-        }
+        fileInputWrapper.addEventListener('drop', (event) => {
+            event.preventDefault(); // Prevent default to allow drop
+            fileInputWrapper.classList.remove('dragover');
+            const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+            if (file && (file.name.endsWith('.db') || file.name.endsWith('.sqlite') || file.name.endsWith('.sqlite3'))) {
+                try {
+                    dbFileInput.files = event.dataTransfer.files;
+                } catch (e) {}
+                handleFile(file);
+            } else if (file) {
+                handleFile(file);
+            } else {
+                showMessage('error', 'Veuillez déposer un fichier .db valide.');
+            }
+        });
 
         function handleFile(file) {
-            if (!file) {
+            if (file) {
+                selectedDbFile = file;
+                fileNameSpan.textContent = file.name;
+                analyzeButton.disabled = false;
+                showMessage('info', `Fichier sélectionné : ${file.name}`);
+                runAnalysis();
+            } else {
+                selectedDbFile = null;
                 fileNameSpan.textContent = 'Aucun fichier sélectionné';
                 analyzeButton.disabled = true;
+            }
+        }
+
+        async function runAnalysis() {
+            const file = selectedDbFile || (dbFileInput && dbFileInput.files && dbFileInput.files[0]);
+            if (!file) {
+                showMessage('error', "Veuillez sélectionner un fichier .db d'abord.");
                 return;
             }
-            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
-            fileNameSpan.textContent = `📁 ${file.name} (${sizeMb} Mo)`;
-            analyzeButton.disabled = false;
-            analyzeButton.classList.remove('opacity-50', 'cursor-not-allowed');
-            
-            if (fileInputWrapper) {
-                fileInputWrapper.classList.add('border-green-500', 'bg-green-50');
-            }
-
-            showMessage('info', `Fichier "${file.name}" chargé (${sizeMb} Mo). Lancement de l'analyse...`);
-            
-            // Auto-trigger analysis immediately on file selection
-            startAnalysis(file);
-        }
-
-        if (analyzeButton) {
-            analyzeButton.addEventListener('click', () => {
-                const file = dbFileInput && dbFileInput.files && dbFileInput.files[0];
-                if (file) {
-                    startAnalysis(file);
-                } else {
-                    showMessage('error', 'Veuillez sélectionner un fichier de sauvegarde (.db).');
-                }
-            });
-        }
-
-        async function startAnalysis(file) {
-            if (!file) return;
 
             setLoadingState(true);
-            showMessage('info', `Analyse en cours de ${file.name}...`);
+            showMessage('info', 'Analyse en cours, cela peut prendre quelques instants...');
 
             try {
+                // Read the file as an array buffer
                 const arrayBuffer = await file.arrayBuffer();
                 const uint8Array = new Uint8Array(arrayBuffer);
                 
                 const processedData = await processAntennaPodDb(uint8Array);
 
                 if (processedData) {
-                    globalDfHistory = processedData.allHistoryData;
-                    currentProcessedData = processedData;
+                    globalDfHistory = processedData.allHistoryData; // Store raw data for filters
+                    currentProcessedData = processedData; // Store processed data for CSV export
                     updateUIWithStats(processedData);
                     populateFilters(processedData.allHistoryData);
-                    updateCharts();
+                    updateCharts(); // Call updateCharts to draw with initial (all data) filters
                     statsSection.classList.remove('hidden');
                     
-                    // Smooth scroll to the stats section
+                    // Smooth scroll to stats section
                     setTimeout(() => {
                         statsSection.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
 
-                    showMessage('success', `Analyse de ${file.name} terminée avec succès !`);
+                    showMessage('success', 'Analyse terminée avec succès !');
                 } else {
                     showMessage('error', "Échec de l'analyse du fichier. Aucune donnée d'écoute trouvée.");
                     statsSection.classList.add('hidden');
@@ -1536,12 +1520,14 @@
 
             } catch (error) {
                 console.error("Erreur lors de l'analyse du fichier :", error);
-                showMessage('error', `Une erreur est survenue lors de l'analyse : ${error.message}`);
+                showMessage('error', `Une erreur est survenue lors de l'analyse : ${error.message}.`);
                 statsSection.classList.add('hidden');
             } finally {
                 setLoadingState(false);
             }
         }
+
+        analyzeButton.addEventListener('click', runAnalysis);
 
         exportAllChartsButton.addEventListener('click', async () => {
             showMessage('info', 'Préparation de l\'exportation de tous les graphiques...');
