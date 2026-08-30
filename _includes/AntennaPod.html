@@ -12,39 +12,35 @@
             font-family: 'Inter', sans-serif;
             background-color: #f0f4f8; /* Light blue-gray background */
             color: #2d3748; /* Darker text */
-            padding: 6px; /* Added padding to ensure it doesn't touch the edges of the host page */
+            padding: 16px;
+            min-height: 100vh;
             overflow-x: hidden; /* Prevent horizontal scrolling on the main container */
         }
-        /* Mobile specific: remove outermost background */
         @media (max-width: 767px) {
             #antennapod-analyzer-app-container {
-                background-color: transparent; /* Remove background on mobile */
-                padding: 0; /* Remove padding to gain pixels */
+                padding: 8px;
             }
         }
 
-        /* All other CSS styles are now directly on class names, assuming they are unique enough
-           or that the host page's CSS won't heavily conflict.
-           This simplifies selectors and might resolve rendering issues. */
-        #antennapod-analyzer-app-container .container { /* Re-scoped the container class */
-            max-width: 1400px; /* Wider container for bento layout */
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 16px; /* More rounded */
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Stronger shadow */
+        /* Clean full-width container without nested capsule styling */
+        #antennapod-analyzer-app-container .container {
+            max-width: 1500px;
+            margin: 10px auto;
+            padding: 0;
+            background-color: transparent;
+            border-radius: 0;
+            box-shadow: none;
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px; /* Spacing between cards */
         }
 
-        /* Responsive adjustments for main container padding */
         @media (max-width: 767px) {
             #antennapod-analyzer-app-container .container {
-                padding: 10px; /* Reduce padding on smaller screens */
-                margin: 20px auto; /* Adjust margin for mobile */
-                border-radius: 0; /* Remove border-radius on mobile for full width */
-                box-shadow: none; /* Remove shadow on mobile */
+                padding: 0;
+                margin: 0 auto;
+                border-radius: 0;
+                box-shadow: none;
             }
         }
 
@@ -201,40 +197,6 @@
             min-width: 0; /* Allow shrinking */
         }
 
-        #antennapod-analyzer-app-container #wrappedContent {
-            padding: 25px;
-            background-color: #e2e8f0;
-            border-radius: 12px;
-            margin-top: 15px;
-            position: relative;
-            text-align: center;
-            font-family: 'Inter', sans-serif;
-            color: #2d3748;
-        }
-        #antennapod-analyzer-app-container #wrappedContent h3 {
-            color: #083e45;
-            font-size: 1.6rem;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-        #antennapod-analyzer-app-container #wrappedContent p {
-            color: #4a5568;
-            font-size: 1.05rem;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-        #antennapod-analyzer-app-container .wrapped-list {
-            list-style: none;
-            padding: 0;
-            text-align: left;
-            max-width: 90%;
-            margin: 0 auto 20px auto;
-        }
-        #antennapod-analyzer-app-container .wrapped-list li .icon {
-            margin-right: 10px;
-            font-size: 1.3em;
-            color: #0e6270;
-        }
         #antennapod-analyzer-app-container .export-buttons {
             display: flex;
             gap: 15px;
@@ -576,14 +538,24 @@
 
             <div id="statsSection" class="hidden main-content-grid">
                 <div class="card full-width-card filter-section">
-                    <h2>Filtres de Données</h2>
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-5 pb-3 border-b border-gray-200">
+                        <h2 class="text-xl font-bold text-[#083e45] m-0">Filtres de Données</h2>
+                        <button type="button" id="clearAllFiltersBtn" class="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 font-semibold text-sm rounded-lg transition flex items-center gap-1.5 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Effacer tous les filtres
+                        </button>
+                    </div>
                     <div class="filter-group">
                         <label for="startDateFilter">Date de début&nbsp;:</label>
                         <input type="date" id="startDateFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <button type="button" id="clearStartDateBtn" class="search-clear-button">Effacer</button>
                     </div>
                     <div class="filter-group">
                         <label for="endDateFilter">Date de fin&nbsp;:</label>
                         <input type="date" id="endDateFilter" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                        <button type="button" id="clearEndDateBtn" class="search-clear-button">Effacer</button>
                     </div>
                     <div class="filter-group">
                         <label for="podcastSearchInput">Rechercher un podcast&nbsp;:</label>
@@ -591,7 +563,7 @@
                             <input type="text" id="podcastSearchInput" placeholder="Tapez le nom du podcast..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             <div id="podcastSuggestions" class="podcast-suggestions hidden"></div>
                         </div>
-                        <button id="clearPodcastSelection" class="search-clear-button">Effacer</button>
+                        <button type="button" id="clearPodcastSelection" class="search-clear-button">Effacer</button>
                         <input type="hidden" id="selectedPodcastHiddenInput"> <!-- To store the actual selected podcast title -->
                     </div>
                     <div class="filter-group">
@@ -600,10 +572,21 @@
                             <input type="text" id="tagSearchInput" placeholder="Rechercher ou sélectionner un tag..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                             <div id="tagSuggestions" class="podcast-suggestions hidden"></div>
                         </div>
-                        <div id="selectedTagsContainer" class="flex flex-wrap gap-2 mt-2">
+                        <button type="button" id="clearTagsSelection" class="search-clear-button">Effacer</button>
+                        <div id="selectedTagsContainer" class="flex flex-wrap gap-2 mt-2 w-full">
                             <!-- Selected tags will appear here -->
                         </div>
-                        <!-- selectedTagsHiddenInput is not needed anymore as selectedTags array directly holds the state -->
+                    </div>
+                    <div class="filter-group">
+                        <label for="authorSearchInput">Rechercher un auteur&nbsp;:</label>
+                        <div class="podcast-search-container">
+                            <input type="text" id="authorSearchInput" placeholder="Rechercher ou sélectionner un auteur..." class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                            <div id="authorSuggestions" class="podcast-suggestions hidden"></div>
+                        </div>
+                        <button type="button" id="clearAuthorsSelection" class="search-clear-button">Effacer</button>
+                        <div id="selectedAuthorsContainer" class="flex flex-wrap gap-2 mt-2 w-full">
+                            <!-- Selected authors will appear here -->
+                        </div>
                     </div>
                     <div class="filter-group mt-4">
                         <label for="podcastDisplayLimitInput">Nombre de podcasts à afficher&nbsp;:</label>
@@ -694,6 +677,88 @@
                     </div>
                 </div>
 
+                <!-- Author Distribution Chart -->
+                <div class="card full-width-card">
+                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Distribution du temps d'écoute par Auteur</h3>
+                    <button class="download-button" onclick="downloadChartAsPng('authorTimeDistributionChart', 'Distribution_temps_ecoute_auteur.png')">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </button>
+                    <p class="text-sm text-gray-600 mb-2" id="authorInfoNote">
+                        Note : Les auteurs sont extraits de la colonne 'author' des podcasts. Si un podcast mentionne plusieurs auteurs séparés par des virgules ou des barres obliques, ils seront divisés. Les podcasts sans auteur sont regroupés sous la catégorie "Sans Auteur". Vous pouvez regrouper des variations d'auteurs ci-dessous.
+                    </p>
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" id="showSansAuthorCheckbox" checked class="mr-2">
+                        <label for="showSansAuthorCheckbox" class="text-gray-700">Afficher 'Sans Auteur'</label>
+                    </div>
+                    <p id="authorTimeDistributionChartPeriodInfo" class="chart-period-info"></p>
+                    <div class="chart-container">
+                        <canvas id="authorTimeDistributionChart"></canvas>
+                    </div>
+
+                    <!-- Collapsible Author Aliases & Grouping Section -->
+                    <div class="mt-6 border-t pt-4">
+                        <button type="button" id="toggleAuthorAliasesBtn" class="flex items-center justify-between w-full text-left font-semibold text-gray-700 hover:text-gray-900 focus:outline-none py-2">
+                            <span class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#0e6270]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span>Regrouper les auteurs (Alias & Fusions) <span id="authorAliasesCountBadge" class="ml-2 text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full font-normal">0 règle</span></span>
+                            </span>
+                            <span id="toggleAuthorAliasesIcon" class="text-gray-500 font-bold text-sm">▼</span>
+                        </button>
+
+                        <div id="authorAliasesPanel" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <p class="text-xs text-gray-600 mb-3">
+                                Associez des variations de noms d'auteurs (ou co-auteurs) à un nom unique pour regrouper leurs statistiques d'écoute (ex: <em>"BLAST, Le souffle de l'info"</em> &rarr; <em>"Blast"</em>).
+                            </p>
+                            
+                            <!-- Add Rule Form -->
+                            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end mb-4">
+                                <div class="md:col-span-5 relative">
+                                    <label for="aliasOriginalAuthorInput" class="block text-xs font-semibold text-gray-600 mb-1">Auteur original / variation :</label>
+                                    <input type="text" id="aliasOriginalAuthorInput" placeholder="Rechercher ou saisir un auteur..." class="w-full text-sm border rounded px-3 py-2 bg-white focus:outline-none focus:border-[#0e6270]" autocomplete="off">
+                                    <div id="aliasAuthorSuggestions" class="podcast-suggestions hidden"></div>
+                                </div>
+                                <div class="md:col-span-5">
+                                    <label for="aliasCanonicalAuthorInput" class="block text-xs font-semibold text-gray-600 mb-1">Nom regroupé cible (Canonique) :</label>
+                                    <input type="text" id="aliasCanonicalAuthorInput" placeholder="Ex: Blast, RTBF..." class="w-full text-sm border rounded px-3 py-2 bg-white focus:outline-none focus:border-[#0e6270]">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <button type="button" id="addAuthorAliasBtn" class="button w-full text-sm py-2 px-3 text-center">Associer</button>
+                                </div>
+                            </div>
+
+                            <!-- List of active rules -->
+                            <div class="mb-4">
+                                <h5 class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Règles actives :</h5>
+                                <div id="authorAliasesListContainer" class="max-h-48 overflow-y-auto space-y-1.5 p-1">
+                                    <!-- Rules will be rendered here -->
+                                </div>
+                                <p id="noAuthorAliasesMsg" class="text-xs text-gray-500 italic py-2 text-center">Aucun regroupement d'auteurs défini pour le moment.</p>
+                            </div>
+
+                            <!-- Import / Export / Reset Controls -->
+                            <div class="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-200">
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" id="exportAuthorAliasesBtn" class="text-xs px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold rounded transition shadow-sm flex items-center gap-1">
+                                        📥 Exporter les règles (JSON)
+                                    </button>
+                                    <label for="importAuthorAliasesInput" class="text-xs px-3 py-1.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 font-semibold rounded cursor-pointer transition shadow-sm flex items-center gap-1">
+                                        📤 Importer des règles (JSON)
+                                    </label>
+                                    <input type="file" id="importAuthorAliasesInput" accept=".json,application/json" class="hidden">
+                                </div>
+                                <button type="button" id="clearAuthorAliasesBtn" class="text-xs text-red-600 hover:text-red-800 underline">
+                                    Tout réinitialiser
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Statistiques par Podcast</h3>
                     <button class="download-button" onclick="downloadChartAsPng('podcastEpisodeCountChart', 'Statistiques_par_podcast.png')">
@@ -752,17 +817,8 @@
                     </div>
                 </div>
 
-                <div class="card full-width-card">
-                    <h3 class="text-lg font-semibold mb-2 text-gray-700">Export pour Réseaux Sociaux (Inspiré de Spotify Wrapped)</h3>
-                    <div id="wrappedContent">
-                        <p id="wrappedPeriodInfo" class="text-sm text-gray-600 mb-2"></p>
-                        <div id="wrappedTextContent" class="text-gray-800 bg-gray-50 p-4 rounded-lg text-left whitespace-pre-wrap"></div>
-                    </div>
-                    <div class="export-buttons">
-                        <button id="copyWrapped" class="button">Copier le texte Wrapped</button>
-                        <button id="exportWrappedImage" class="button">Exporter l'image Wrapped</button>
-                    </div>
-                </div>
+                
+
 
                 <div class="card full-width-card">
                     <h3 class="text-lg font-semibold mb-2 text-gray-700">Exporter tous les graphiques et données</h3>
@@ -793,12 +849,15 @@
         let firebaseConfig;
 
         // Variables pour les graphiques Chart.js
-        let monthlyChartInstance, podcastEpisodeCountChartInstance, hourlyChartInstance, dailyChartInstance, podcastTimeDistributionChartInstance, tagTimeDistributionChartInstance;
+        let monthlyChartInstance, podcastEpisodeCountChartInstance, hourlyChartInstance, dailyChartInstance, podcastTimeDistributionChartInstance, tagTimeDistributionChartInstance, authorTimeDistributionChartInstance;
         let globalDfHistory = null; // Stocke les données de l'historique global
         let currentProcessedData = null; // Stores the currently processed (filtered) data for CSV export
         let allPodcastsTitles = []; // Global to store unique podcast titles for search suggestions
         let allTags = []; // Global to store unique tags for search suggestions
         let selectedTags = []; // Global array to hold currently selected tags (chips)
+        let allAuthorsFilterList = []; // Array to store unique authors for the top filter
+        let selectedAuthors = []; // Global array to hold currently selected author filters (chips)
+        let authorSearchSelectedIndex = -1;
         let podcastDisplayLimit = 10; // Default display limit for top podcasts
         let podcastSearchSelectedIndex = -1; // For keyboard navigation in podcast search suggestions
         let tagSearchSelectedIndex = -1; // For keyboard navigation in tag search suggestions
@@ -874,6 +933,10 @@
         const tagSuggestions = document.getElementById('tagSuggestions');
         const selectedTagsContainer = document.getElementById('selectedTagsContainer');
 
+        const authorSearchInput = document.getElementById('authorSearchInput');
+        const authorSuggestions = document.getElementById('authorSuggestions');
+        const selectedAuthorsContainer = document.getElementById('selectedAuthorsContainer');
+
         const showSansTagCheckbox = document.getElementById('showSansTagCheckbox'); // New checkbox for 'Sans Tag'
         const monthlyPodcastDetail = document.getElementById('monthlyPodcastDetail');
         const monthlyPodcastDetailTitle = document.getElementById('monthlyPodcastDetailTitle');
@@ -886,6 +949,11 @@
         const podcastSuggestions = document.getElementById('podcastSuggestions');
         const selectedPodcastHiddenInput = document.getElementById('selectedPodcastHiddenInput');
         const clearPodcastSelectionButton = document.getElementById('clearPodcastSelection');
+        const clearStartDateBtn = document.getElementById('clearStartDateBtn');
+        const clearEndDateBtn = document.getElementById('clearEndDateBtn');
+        const clearTagsSelection = document.getElementById('clearTagsSelection');
+        const clearAuthorsSelection = document.getElementById('clearAuthorsSelection');
+        const clearAllFiltersBtn = document.getElementById('clearAllFiltersBtn');
         const selectedPodcastStatsDiv = document.getElementById('selectedPodcastStats');
         const selectedPodcastTitleDisplay = document.getElementById('selectedPodcastTitleDisplay');
         const selectedPodcastTimeSpan = document.getElementById('selectedPodcastTime');
@@ -893,11 +961,9 @@
 
         const podcastDisplayLimitInput = document.getElementById('podcastDisplayLimitInput'); // New input for limit
 
-        const copyWrappedButton = document.getElementById('copyWrapped');
-        const wrappedPeriodInfo = document.getElementById('wrappedPeriodInfo');
-        const exportWrappedImageButton = document.getElementById('exportWrappedImage');
-        const wrappedContentDiv = document.getElementById('wrappedContent');
-        const wrappedTextContentDiv = document.getElementById('wrappedTextContent'); // New div for wrapped text
+        const showSansAuthorCheckbox = document.getElementById('showSansAuthorCheckbox');
+        const authorTimeDistributionChartPeriodInfo = document.getElementById('authorTimeDistributionChartPeriodInfo');
+        const authorTimeDistributionCtx = document.getElementById('authorTimeDistributionChart').getContext('2d');
 
         const exportAllChartsButton = document.getElementById('exportAllCharts'); // New button for all charts export
         const exportCsvButton = document.getElementById('exportCsvButton'); // New button for CSV export
@@ -1071,2221 +1137,61 @@
          * @param {string} tagString The raw tags string from the database.
          * @returns {string[]} An array of extracted tag strings, all normalized to lowercase, trimmed, and NFC.
          */
-        function extractTagsFromString(tagString) {
-            if (!tagString || typeof tagString !== 'string' || tagString.trim() === '' || tagString.trim() === '#root') {
-                return [];
-            }
-            let cleanedString = tagString.replace('#root', '').trim();
-            cleanedString = cleanedString.replace(/[\x00-\x1F\x7F]/g, '').replace(/\s+/g, ' ').trim(); // Normalize spaces
-
-            const tags = new Set();
-
-            // Step 1: Split by explicit delimiters (comma, slash)
-            const primarySegments = cleanedString.split(/[,/]/).map(s => s.trim()).filter(s => s.length > 0);
-
-            primarySegments.forEach(segment => {
-                // Check for PascalCase word at the end of a segment that might be a phrase
-                // This regex captures a potential phrase part (group 1) and a trailing PascalCase word (group 2)
-                const pascalCaseEndMatch = segment.match(/([a-z0-9\s]+)([A-Z][a-z0-9]*)$/);
-
-                if (pascalCaseEndMatch && pascalCaseEndMatch[2]) {
-                    // Case: "Enquêtes et true crimesArchives"
-                    const phrasePart = pascalCaseEndMatch[1].trim();
-                    const pascalWordPart = pascalCaseEndMatch[2].trim();
-
-                    if (phrasePart.length > 0) {
-                        tags.add(phrasePart); // Add the phrase as one tag
-                    }
-                    tags.add(pascalWordPart); // Add the separated PascalCase word as another tag
-
-                } else if (!segment.includes(' ')) {
-                    // Case: "ScienceFiction" or "CultureGénérale" (single word, but PascalCased)
-                    // Apply PascalCase splitting and add each resulting part as a separate tag.
-                    // This regex inserts a space before an uppercase letter that is not at the start,
-                    // and is either preceded by a lowercase letter OR a sequence of uppercase letters
-                    // followed by a lowercase letter (to handle cases like "HTMLTag" -> "HTML Tag").
-                    let splitPascalWord = segment
-                        .replace(/([a-z0-9])([A-Z])/g, '$1 $2') // Splits camelCase/PascalCase (e.g., scienceFiction -> science Fiction)
-                        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2'); // Splits consecutive capitals followed by lowercase (e.g., HTMLTag -> HTML Tag)
-                    
-                    // After inserting spaces for PascalCase, split by these new spaces
-                    splitPascalWord.split(' ').forEach(part => {
-                        if (part.length > 0) {
-                            tags.add(part);
-                        }
-                    });
-                } else {
-                    // Case: "Enquêtes et true crimes" (multi-word phrase, no trailing PascalCase word)
-                    // Add the entire segment as a single tag. Spaces within this segment are preserved.
-                    tags.add(segment);
-                }
-            });
-
-            // Final normalization (lowercase, trim, NFC)
-            return Array.from(tags).map(tag => tag.toLowerCase().trim().normalize('NFC'));
-        }
-
-        /**
-         * Formats a date range into a human-readable string (e.g., "Février 2025", "De Février 2025 à Juin 2025", "2025").
-         * @param {number} startTimestamp User-provided start date in milliseconds (or 0 if empty).
-         * @param {number} endTimestamp User-provided end date in milliseconds (or Infinity if empty).
-         * @param {Array} allHistoryData The full dataset to determine min/max dates if filters are empty.
-         * @returns {string} Formatted period text.
-         */
-        function formatPeriodText(userStartTimestamp, userEndTimestamp, allHistoryData) {
-            const optionsMonthYear = { year: 'numeric', month: 'long' };
-            const optionsYear = { year: 'numeric' };
-            const optionsDate = { year: 'numeric', month: '2-digit', day: '2-digit' };
-
-            let actualStartTimestamp = userStartTimestamp;
-            let actualEndTimestamp = userEndTimestamp;
-
-            // Determine overall min/max dates from data if filters are not set
-            if (allHistoryData && allHistoryData.length > 0) {
-                const allDates = allHistoryData
-                    .filter(item => item.last_played_time > 0)
-                    .map(item => item.last_played_time);
-                
-                if (allDates.length > 0) {
-                    const minDataDate = Math.min(...allDates);
-                    const maxDataDate = Math.max(...allDates);
-
-                    if (userStartTimestamp === 0) {
-                        actualStartTimestamp = minDataDate;
-                    }
-                    if (userEndTimestamp === Infinity) {
-                        actualEndTimestamp = maxDataDate;
-                    }
-                }
-            }
-
-            const startDate = actualStartTimestamp ? new Date(actualStartTimestamp) : null;
-            const endDate = actualEndTimestamp !== Infinity ? new Date(actualEndTimestamp) : null;
-
-            if (!startDate && !endDate) {
-                return "toutes les périodes";
-            }
-
-            // Case 1: Full year (e.g., 2025)
-            if (startDate && endDate &&
-                startDate.getMonth() === 0 && startDate.getDate() === 1 &&
-                endDate.getMonth() === 11 && endDate.getDate() === 31 &&
-                startDate.getFullYear() === endDate.getFullYear()) {
-                return `${startDate.toLocaleDateString('fr-FR', optionsYear)}`;
-            }
-
-            // Case 2: Single full month (e.g., Février 2025)
-            if (startDate && endDate &&
-                startDate.getDate() === 1 &&
-                endDate.getDate() === new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0).getDate() &&
-                startDate.getFullYear() === endDate.getFullYear() &&
-                startDate.getMonth() === endDate.getMonth()) {
-                return `${startDate.toLocaleDateString('fr-FR', optionsMonthYear)}`;
-            }
-
-            // Case 3: Period between two full months (e.g., entre Février 2025 et Juin 2025)
-            if (startDate && endDate &&
-                startDate.getDate() === 1 &&
-                endDate.getDate() === new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0).getDate() &&
-                (startDate.getFullYear() !== endDate.getFullYear() || startDate.getMonth() !== endDate.getMonth())) {
-                const startMonthYear = startDate.toLocaleDateString('fr-FR', optionsMonthYear);
-                const endMonthYear = endDate.toLocaleDateString('fr-FR', optionsMonthYear);
-                return `entre ${startMonthYear} et ${endMonthYear}`;
-            }
-
-            // Case 4: Only start date provided
-            if (startDate && !endDate) {
-                return `entre le ${startDate.toLocaleDateString('fr-FR', optionsDate)} et la fin des données`;
-            }
-
-            // Case 5: Only end date provided
-            if (!startDate && endDate) {
-                return `entre le début des données et le ${endDate.toLocaleDateString('fr-FR', optionsDate)}`;
-            }
-            
-            // Case 6: Arbitrary date range (e.g., entre le 01/02/2025 et le 15/03/2025)
-            if (startDate && endDate) {
-                return `entre le ${startDate.toLocaleDateString('fr-FR', optionsDate)} et le ${endDate.toLocaleDateString('fr-FR', optionsDate)}`;
-            }
-
-            return "période indéfinie"; // Should not be reached
-        }
-
-
-        // --- Event Listeners ---
-        dbFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            handleFile(file);
-        });
-
-        // Drag and Drop Event Listeners
-        fileInputWrapper.addEventListener('dragover', (event) => {
-            event.preventDefault(); // Prevent default to allow drop
-            fileInputWrapper.classList.add('dragover');
-        });
-
-        fileInputWrapper.addEventListener('dragleave', (event) => {
-            fileInputWrapper.classList.remove('dragover');
-        });
-
-        fileInputWrapper.addEventListener('drop', (event) => {
-            event.preventDefault(); // Prevent default to allow drop
-            fileInputWrapper.classList.remove('dragover');
-            const file = event.dataTransfer.files[0];
-            if (file && file.name.endsWith('.db')) {
-                dbFileInput.files = event.dataTransfer.files; // Set the file to the input element
-                handleFile(file);
-            } else {
-                showMessage('error', 'Veuillez déposer un fichier .db valide.');
-            }
-        });
-
-        function handleFile(file) {
-            if (file) {
-                fileNameSpan.textContent = file.name;
-                analyzeButton.disabled = false;
-                showMessage('info', `Fichier sélectionné : ${file.name}`);
-            } else {
-                fileNameSpan.textContent = 'Aucun fichier sélectionné';
-                analyzeButton.disabled = true;
-            }
-        }
-
-        analyzeButton.addEventListener('click', async () => {
-            const file = dbFileInput.files[0];
-            if (!file) {
-                showMessage('error', 'Veuillez sélectionner un fichier .db d\'abord.');
-                return;
-            }
-
-            setLoadingState(true);
-            showMessage('info', 'Analyse en cours, cela peut peut prendre quelques instants...');
-
-            try {
-                // Read the file as an array buffer
-                const arrayBuffer = await file.arrayBuffer();
-                const uint8Array = new Uint8Array(arrayBuffer);
-                
-                const processedData = await processAntennaPodDb(uint8Array);
-
-                if (processedData) {
-                    globalDfHistory = processedData.allHistoryData; // Store raw data for filters
-                    currentProcessedData = processedData; // Store processed data for CSV export
-                    updateUIWithStats(processedData);
-                    populateFilters(processedData.allHistoryData);
-                    updateCharts(); // Call updateCharts to draw with initial (all data) filters
-                    statsSection.classList.remove('hidden');
-                    showMessage('success', 'Analyse terminée avec succès !');
-                } else {
-                    showMessage('error', 'Échec de l\'analyse du fichier. Le format pourrait être invalide ou les données manquantes.');
-                    statsSection.classList.add('hidden');
-                }
-
-            } catch (error) {
-                console.error('Erreur lors de l\'analyse du fichier :', error);
-                showMessage('error', `Une erreur est survenue lors de l'analyse : ${error.message}.`);
-                statsSection.classList.add('hidden');
-            } finally {
-                setLoadingState(false);
-            }
-        });
-
-        copyWrappedButton.addEventListener('click', async () => {
-            const textToCopy = wrappedTextContentDiv.textContent;
-            try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(textToCopy);
-                    showMessage('success', 'Rapport copié dans le presse-papiers !');
-                } else {
-                    // Fallback for older browsers or environments without navigator.clipboard
-                    const tempTextArea = document.createElement('textarea');
-                    tempTextArea.value = textToCopy;
-                    document.body.appendChild(tempTextArea); 
-                    tempTextArea.select();
-                    document.body.removeChild(tempTextArea); 
-                    showMessage('success', 'Rapport copié dans le presse-papiers (via fallback) !');
-                }
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-                showMessage('error', 'Échec de la copie du rapport.');
-            }
-        });
-
-        exportWrappedImageButton.addEventListener('click', async () => {
-            if (!currentProcessedData) {
-                showMessage('error', 'Aucune donnée à exporter. Veuillez d\'abord analyser un fichier.');
-                return;
-            }
-            showMessage('info', 'Génération de l\'image de bilan en cours...');
-            try {
-                const startDateTime = startDateFilter.value ? new Date(startDateFilter.value).getTime() : 0;
-                const endDateTime = endDateFilter.value ? new Date(endDateFilter.value).setHours(23, 59, 59, 999) : Infinity;
-                
-                const svgString = await generateWrappedSvgString(currentProcessedData, startDateTime, endDateTime);
-                
-                // Convert SVG string to a Base64 Data URL directly
-                // Use encodeURIComponent and unescape for proper handling of non-ASCII characters
-                const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
-
-                const img = new Image();
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    // Set canvas dimensions for 1080p height (maintaining 9:16 aspect ratio)
-                    const targetHeight = 1080;
-                    const targetWidth = (9 / 16) * targetHeight; // 607.5, round to 608
-                    canvas.width = targetWidth;
-                    canvas.height = targetHeight;
-                    const ctx = canvas.getContext('2d');
-
-                    // Fill with white background before drawing SVG
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                    // Draw image scaled to fill the canvas
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    // No need to revokeObjectURL since we are not using blob: URL
-                    const imageDataURL = canvas.toDataURL('image/png');
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = imageDataURL;
-                    downloadLink.download = 'AntennaPod_Bilan.png';
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    showMessage('success', 'Image de bilan exportée avec succès !');
-                };
-                img.onerror = (e) => {
-                    console.error('Erreur lors du chargement de l\'image SVG pour l\'exportation :', e);
-                    console.error('SVG Data URL qui a échoué (tronqué) :', svgDataUrl.substring(0, 200) + '...'); // Log a truncated URL
-                    showMessage('error', 'Erreur lors de la génération de l\'image de bilan.');
-                };
-                img.src = svgDataUrl; // Assign the data URL directly
-
-            } catch (error) {
-                console.error('Erreur lors de l\'exportation de l\'image de bilan :', error);
-                showMessage('error', `Erreur lors de l'exportation de l'image de bilan : ${error.message}.`);
-            }
-        });
-
-        // New: Export all charts as PNGs in a ZIP file
-        exportAllChartsButton.addEventListener('click', async () => {
-            showMessage('info', 'Préparation de l\'exportation de tous les graphiques...');
-            const zip = new JSZip();
-            const chartsToExport = [
-                { id: 'monthlyChart', name: 'Ecoutes_Mensuelles' },
-                { id: 'podcastTimeDistributionChart', name: 'Distribution_Temps_Ecoute_Podcast' },
-                { id: 'tagTimeDistributionChart', name: 'Distribution_Temps_Ecoute_Tag' }, // Added for tags chart
-                { id: 'podcastEpisodeCountChart', name: 'Episodes_Ecoutes_Podcast' },
-                { id: 'hourlyChart', name: 'Habitudes_Ecoute_Heure' },
-                { id: 'dailyChart', name: 'Habitudes_Ecoute_Jour' }
-            ];
-
-            // Define padding for exported images
-            const exportPadding = 20; // pixels
-
-            for (const chartInfo of chartsToExport) {
-                const canvasElement = document.getElementById(chartInfo.id); 
-                if (canvasElement) {
-                    try {
-                        // Get the data URL directly from the Chart.js rendered canvas
-                        const chartDataURL = canvasElement.toDataURL('image/png');
-
-                        // Create a new canvas to draw the chart with padding
-                        const tempCanvas = document.createElement('canvas');
-                        const ctx = tempCanvas.getContext('2d');
-
-                        const img = new Image();
-                        img.src = chartDataURL;
-
-                        // Wait for the image to load before drawing
-                        await new Promise(resolve => {
-                            img.onload = () => {
-                                tempCanvas.width = img.width + 2 * exportPadding;
-                                tempCanvas.height = img.height + 2 * exportPadding;
-                                ctx.fillStyle = '#ffffff'; // White background for padding area
-                                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                                ctx.drawImage(img, exportPadding, exportPadding);
-                                resolve();
-                            };
-                            img.onerror = (e) => {
-                                console.error("Error loading image for padding:", e);
-                                resolve(); // Resolve even on error to not block the loop
-                            };
-                        });
-
-                        const paddedImageData = tempCanvas.toDataURL('image/png').split(',')[1];
-                        zip.file(`${chartInfo.name}.png`, paddedImageData, { base64: true });
-
-                    } catch (error) {
-                        console.error(`Erreur lors de l'exportation du graphique ${chartInfo.name}:`, error);
-                        showMessage('error', `Erreur lors de l'exportation du graphique ${chartInfo.name}.`);
-                    }
-                }
-            }
-
-            if (Object.keys(zip.files).length > 0) {
-                zip.generateAsync({ type: "blob" })
-                    .then(function (content) {
-                        saveAs(content, "AntennaPod_Charts.zip");
-                        showMessage('success', 'Tous les graphiques ont été exportés dans un fichier ZIP !');
-                    })
-                    .catch(error => {
-                        console.error('Erreur lors de la création du fichier ZIP:', error);
-                        showMessage('error', 'Erreur lors de la création du fichier ZIP.');
-                    });
-            } else {
-                showMessage('info', 'Aucun graphique à exporter.');
-            }
-        });
-
-        // New: Export statistics to CSV
-        exportCsvButton.addEventListener('click', () => {
-            if (!currentProcessedData) {
-                showMessage('error', 'Aucune donnée à exporter. Veuillez d\'abord analyser un fichier.');
-                return;
-            }
-            exportStatsToCsv(currentProcessedData);
-        });
-
-        // New: Export raw data to CSV
-        exportRawDataCsvButton.addEventListener('click', () => {
-            if (!currentProcessedData || !currentProcessedData.allHistoryData || currentProcessedData.allHistoryData.length === 0) {
-                showMessage('error', 'Aucune donnée brute à exporter.');
-                return;
-            }
-            exportRawDataToCsv(currentProcessedData.allHistoryData);
-        });
-
-
-        startDateFilter.addEventListener('change', updateCharts); // New event listener
-        endDateFilter.addEventListener('change', updateCharts);   // New event listener
-        showSansTagCheckbox.addEventListener('change', updateCharts); // New event listener for 'Sans Tag' checkbox
         
-        // Podcast search input event listeners
-        podcastSearchInput.addEventListener('input', filterPodcastSuggestions);
-        podcastSearchInput.addEventListener('focus', () => {
-            // Show all suggestions when input is focused and empty
-            if (podcastSearchInput.value.length === 0) {
-                filterPodcastSuggestions(); // This will now show all if search term is empty
+                // --- Author Aliases & Grouping State ---
+        let authorAliases = {}; // Map: originalAuthor -> canonicalAuthor
+        let allDetectedAuthors = []; // List of all detected raw author strings
+        let aliasAuthorSelectedIndex = -1;
+
+        // Load author aliases from localStorage
+        try {
+            const savedAliases = localStorage.getItem('antennapod_author_aliases');
+            if (savedAliases) {
+                authorAliases = JSON.parse(savedAliases);
             }
-            podcastSuggestions.classList.remove('hidden');
-        });
-        podcastSearchInput.addEventListener('blur', () => {
-             // Hide suggestions after a short delay to allow click events on suggestions to fire
-            setTimeout(() => {
-                podcastSuggestions.classList.add('hidden');
-            }, 100);
-        });
-
-        // Keyboard navigation for podcast search suggestions
-        podcastSearchInput.addEventListener('keydown', (event) => {
-            const suggestions = Array.from(podcastSuggestions.children);
-            if (suggestions.length === 0) return;
-
-            if (event.key === 'ArrowDown') {
-                event.preventDefault(); // Prevent cursor movement in input
-                podcastSearchSelectedIndex = (podcastSearchSelectedIndex + 1) % suggestions.length;
-                highlightSuggestion(suggestions, podcastSuggestions);
-            } else if (event.key === 'ArrowUp') {
-                event.preventDefault(); // Prevent cursor movement in input
-                podcastSearchSelectedIndex = (podcastSearchSelectedIndex - 1 + suggestions.length) % suggestions.length;
-                highlightSuggestion(suggestions, podcastSuggestions);
-            } else if (event.key === 'Enter') {
-                event.preventDefault(); // Prevent form submission
-                if (podcastSearchSelectedIndex !== -1) {
-                    const selectedPodcast = suggestions[podcastSearchSelectedIndex].textContent;
-                    podcastSearchInput.value = selectedPodcast;
-                    selectedPodcastHiddenInput.value = selectedPodcast;
-                    podcastSuggestions.classList.add('hidden');
-                    podcastSearchSelectedIndex = -1; // Reset index
-                    updateCharts();
-                }
-            }
-        });
-
-        function highlightSuggestion(suggestions, container) {
-            suggestions.forEach((item, index) => {
-                if (index === podcastSearchSelectedIndex || index === tagSearchSelectedIndex) { // Use correct index
-                    item.classList.add('highlighted');
-                    item.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); // Scroll to highlighted item smoothly
-                } else {
-                    item.classList.remove('highlighted');
-                }
-            });
+        } catch (e) {
+            console.warn("Could not load author aliases from localStorage:", e);
         }
 
-
-        clearPodcastSelectionButton.addEventListener('click', () => {
-            podcastSearchInput.value = '';
-            selectedPodcastHiddenInput.value = '';
-            selectedPodcastStatsDiv.classList.add('hidden'); // Hide specific podcast stats
-            updateCharts(); // Re-render charts with no podcast filter
-        });
-
-        // Add a click listener to the document to hide suggestions when clicking outside
-        document.addEventListener('click', (event) => { 
-            if (!podcastSuggestions.contains(event.target) && event.target !== podcastSearchInput) {
-                podcastSuggestions.classList.add('hidden');
-            }
-            if (!tagSuggestions.contains(event.target) && event.target !== tagSearchInput && !selectedTagsContainer.contains(event.target)) {
-                tagSuggestions.classList.add('hidden');
-            }
-        });
-
-        // Toggle Top Podcasts Drawer (Global)
-        toggleTopPodcastsButton.addEventListener('click', () => {
-            const isExpanded = topPodcastsTimeListFull.classList.contains('expanded');
-            // Toggle the expanded state
-            if (isExpanded) {
-                topPodcastsTimeListFull.classList.remove('expanded');
-                topPodcastsTimeListFull.classList.add('hidden');
-                topPodcastsTimeListShort.classList.remove('hidden'); // Show short list again
-                toggleTopPodcastsButton.textContent = 'Afficher plus';
-            } else {
-                topPodcastsTimeListFull.classList.remove('hidden');
-                topPodcastsTimeListFull.classList.add('expanded');
-                topPodcastsTimeListShort.classList.add('hidden'); // Hide short list
-                toggleTopPodcastsButton.textContent = 'Afficher moins';
-            }
-            // Re-render the short list based on the new expanded state
-            renderTopPodcastsTimeList(currentProcessedData.topPodcastsByTime, !isExpanded);
-        });
-
-        // Toggle Monthly Podcasts Drawer
-        toggleMonthlyPodcastsButton.addEventListener('click', () => {
-            const isExpanded = monthlyPodcastListFull.classList.contains('expanded');
-            if (isExpanded) {
-                monthlyPodcastListFull.classList.remove('expanded');
-                monthlyPodcastListFull.classList.add('hidden');
-                monthlyPodcastListShort.classList.remove('hidden'); // Show short list again
-                toggleMonthlyPodcastsButton.textContent = 'Afficher plus';
-            } else {
-                monthlyPodcastListFull.classList.remove('hidden');
-                monthlyPodcastListFull.classList.add('expanded');
-                monthlyPodcastListShort.classList.add('hidden'); // Hide short list
-                toggleMonthlyPodcastsButton.textContent = 'Afficher moins';
-            }
-            // Re-render the short list based on the new expanded state
-            updateMonthlyPodcastList(currentProcessedData.topPodcastsByTime, !isExpanded);
-        });
-
-        // Toggle Podcast Stats Drawer (New)
-        togglePodcastStatsButton.addEventListener('click', () => {
-            const isExpanded = podcastStatsListFull.classList.contains('expanded');
-            // Toggle the expanded state
-            if (isExpanded) {
-                podcastStatsListFull.classList.remove('expanded');
-                podcastStatsListFull.classList.add('hidden');
-                podcastStatsListShort.classList.remove('hidden'); // Show short list again
-                togglePodcastStatsButton.textContent = 'Afficher plus';
-            } else {
-                podcastStatsListFull.classList.remove('hidden');
-                podcastStatsListFull.classList.add('expanded');
-                podcastStatsListShort.classList.add('hidden'); // Hide short list
-                togglePodcastStatsButton.textContent = 'Afficher moins';
-            }
-            // Re-render the short list based on the new expanded state
-            renderPodcastStatsList(currentProcessedData.topPodcastsByEpisodeCount, !isExpanded);
-        });
-
-
-        // Update podcastDisplayLimit when input changes
-        podcastDisplayLimitInput.addEventListener('change', () => {
-            const newValue = parseInt(podcastDisplayLimitInput.value, 10);
-            if (!isNaN(newValue) && newValue > 0) {
-                podcastDisplayLimit = newValue;
-                updateCharts(); // Re-render charts with the new limit
-            } else {
-                showMessage('error', 'Veuillez entrer un nombre valide (>0) pour la limite d\'affichage.');
-                podcastDisplayLimitInput.value = podcastDisplayLimit; // Revert to last valid value
-            }
-        });
-
-        // New: Event listeners for period navigation buttons
-        viewMonthlyButton.addEventListener('click', () => {
-            currentPeriodView = 'month';
-            updatePeriodNavButtons();
-            updateCharts();
-        });
-        viewWeeklyButton.addEventListener('click', () => {
-            currentPeriodView = 'week';
-            updatePeriodNavButtons();
-            updateCharts();
-        });
-        viewDailyButton.addEventListener('click', () => {
-            currentPeriodView = 'day';
-            updatePeriodNavButtons();
-            updateCharts();
-        });
-
-        function updatePeriodNavButtons() {
-            viewMonthlyButton.classList.remove('active');
-            viewWeeklyButton.classList.remove('active');
-            viewDailyButton.classList.remove('active');
-
-            if (currentPeriodView === 'month') {
-                viewMonthlyButton.classList.add('active');
-            } else if (currentPeriodView === 'week') {
-                viewWeeklyButton.classList.add('active');
-            } else if (currentPeriodView === 'day') {
-                viewDailyButton.classList.add('active');
-            }
-        }
-
-
-        // --- UI Update Functions ---
-        function setLoadingState(isLoading) {
-            analyzeButton.disabled = isLoading;
-            dbFileInput.disabled = isLoading;
-            if (isLoading) {
-                analyzeButtonText.textContent = 'Analyse en cours...';
-                loadingSpinner.classList.remove('hidden');
-            } else {
-                analyzeButtonText.textContent = 'Analyser les statistiques';
-                loadingSpinner.classList.add('hidden');
-            }
-        }
-
-        function updateUIWithStats(stats) {
-            totalListeningTimeSpan.textContent = `${stats.totalListeningTimeHours.toFixed(1)} heures (${stats.totalListeningTimeDays.toFixed(1)} jours)`;
-            episodesListenedSpan.textContent = stats.episodesListened;
-            episodesCompletedSpan.textContent = `${stats.episodesCompleted} (${stats.completionRate.toFixed(1)}%)`;
-            avgListenDurationSpan.textContent = `${stats.avgListenDurationMinutes.toFixed(1)} minutes`;
-            avgProgressSpan.textContent = `${stats.avgProgressPercent.toFixed(1)}%`;
-
-            // Initial render of Top Podcasts by Time (collapsed state)
-            renderTopPodcastsTimeList(stats.topPodcastsByTime, false);
-            updateMonthlyPodcastList(stats.topPodcastsByTime, false); // Initial render for monthly list
-        }
-
-        /**
-         * Renders the Top Podcasts by Time list, handling "Autres" based on expanded state.
-         * @param {Array} topPodcasts The full sorted list of top podcasts by time.
-         * @param {boolean} isExpanded Whether the full list is currently expanded.
-         */
-        function renderTopPodcastsTimeList(topPodcasts, isExpanded) {
-            topPodcastsTimeListShort.innerHTML = '';
-            topPodcastsTimeListAll.innerHTML = '';
-
-            const displayLimit = podcastDisplayLimit;
-
-            if (isExpanded) {
-                // If expanded, populate full list and hide short list
-                topPodcasts.forEach((p, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'podcast-item';
-                    const img = document.createElement('img');
-                    const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
-                    if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
-                        img.src = p.imageUrl;
-                        img.onerror = () => {
-                            img.src = defaultPlaceholder;
-                        };
-                    } else {
-                        img.src = defaultPlaceholder;
-                    }
-                    img.alt = `Couverture de ${p.podcast}`;
-                    li.appendChild(img);
-                    
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
-                    li.appendChild(textSpan);
-                    topPodcastsTimeListAll.appendChild(li);
-                });
-                topPodcastsTimeListShort.classList.add('hidden');
-                topPodcastsTimeListFull.classList.remove('hidden');
-            } else {
-                // If collapsed, populate short list (with "Autres" if needed) and hide full list
-                topPodcasts.slice(0, displayLimit).forEach((p, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'podcast-item';
-                    const img = document.createElement('img');
-                    const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
-                    if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
-                        img.src = p.imageUrl;
-                        img.onerror = () => {
-                            img.src = defaultPlaceholder;
-                        };
-                    } else {
-                        img.src = defaultPlaceholder;
-                    }
-                    img.alt = `Couverture de ${p.podcast}`;
-                    li.appendChild(img);
-                    
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
-                    li.appendChild(textSpan);
-                    topPodcastsTimeListShort.appendChild(li);
-                });
-
-                if (topPodcasts.length > displayLimit) {
-                    const otherHours = topPodcasts.slice(displayLimit).reduce((sum, p) => sum + p.hours, 0);
-                    const liAutres = document.createElement('li');
-                    liAutres.className = 'podcast-item';
-                    const imgAutres = document.createElement('img');
-                    imgAutres.src = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
-                    imgAutres.alt = `Autres podcasts`;
-                    liAutres.appendChild(imgAutres);
-                    const textSpanAutres = document.createElement('span');
-                    textSpanAutres.textContent = `... Autres : ${otherHours.toFixed(1)}h`;
-                    liAutres.appendChild(textSpanAutres);
-                    topPodcastsTimeListShort.appendChild(liAutres);
-                }
-                topPodcastsTimeListShort.classList.remove('hidden');
-                topPodcastsTimeListFull.classList.add('hidden');
-            }
-
-            // Show/hide toggle button
-            if (topPodcasts.length <= displayLimit) {
-                toggleTopPodcastsButton.classList.add('hidden');
-            } else {
-                toggleTopPodcastsButton.classList.remove('hidden');
-                toggleTopPodcastsButton.textContent = isExpanded ? 'Afficher moins' : 'Afficher plus';
-            }
-        }
-
-
-        // --- Filtering and Charting Functions ---
-        function populateFilters(data) {
-            // Populate Tag Filter
-            const tags = new Set();
-            let hasUntaggedEpisodes = false; // Flag to check for episodes without tags
-
-            data.forEach(item => {
-                let extractedTags = extractTagsFromString(item.tags_column); // This now returns normalized tags
-                if (extractedTags.length === 0) {
-                    hasUntaggedEpisodes = true;
-                }
-                extractedTags.forEach(tag => tags.add(tag)); // Add directly, as they are already normalized
-            });
-
-            // If there are episodes without tags, add 'sans tag' as a selectable option
-            if (hasUntaggedEpisodes) {
-                tags.add('sans tag');
-            }
-
-            allTags = Array.from(tags).sort();
-            renderSelectedTagChips();
-
-            // Populate allPodcastsTitles for search suggestions
-            allPodcastsTitles = Array.from(new Set(data.map(item => item.podcast_title))).sort();
-        }
-
-        function filterPodcastSuggestions() {
-            const searchTerm = podcastSearchInput.value.toLowerCase();
-            podcastSuggestions.innerHTML = '';
-            podcastSearchSelectedIndex = -1; // Reset highlight index
-
-            let filtered;
-            if (searchTerm.length === 0) {
-                filtered = allPodcastsTitles; // Show all if search term is empty
-            } else {
-                filtered = allPodcastsTitles.filter(podcast =>
-                    podcast.toLowerCase().includes(searchTerm)
-                );
-            }
-
-            if (filtered.length > 0) {
-                podcastSuggestions.classList.remove('hidden');
-                filtered.forEach(podcast => {
-                    const div = document.createElement('div');
-                    div.textContent = podcast;
-                    div.className = 'podcast-suggestion-item';
-                    div.addEventListener('mousedown', (event) => { // Use mousedown to prevent blur before click
-                        event.preventDefault(); // Prevent input from losing focus immediately
-                        podcastSearchInput.value = podcast;
-                        selectedPodcastHiddenInput.value = podcast; // Store the exact selected value
-                        podcastSuggestions.classList.add('hidden');
-                        podcastSearchSelectedIndex = -1; // Reset index after selection
-                        updateCharts();
-                    });
-                    podcastSuggestions.appendChild(div);
-                });
-            } else {
-                podcastSuggestions.classList.add('hidden');
-            }
-        }
-
-        // Tag search input event listeners
-        tagSearchInput.addEventListener('input', filterTagSuggestions);
-        tagSearchInput.addEventListener('focus', () => {
-            if (tagSearchInput.value.length === 0) {
-                filterTagSuggestions();
-            }
-            tagSuggestions.classList.remove('hidden');
-        });
-        tagSearchInput.addEventListener('blur', () => {
-            setTimeout(() => {
-                tagSuggestions.classList.add('hidden');
-            }, 100);
-        });
-
-        // Keyboard navigation for tag search suggestions
-        tagSearchInput.addEventListener('keydown', (event) => {
-            const suggestions = Array.from(tagSuggestions.children);
-            if (suggestions.length === 0) return;
-
-            if (event.key === 'ArrowDown') {
-                event.preventDefault();
-                tagSearchSelectedIndex = (tagSearchSelectedIndex + 1) % suggestions.length;
-                highlightSuggestion(suggestions, tagSuggestions);
-            } else if (event.key === 'ArrowUp') {
-                event.preventDefault();
-                tagSearchSelectedIndex = (tagSearchSelectedIndex - 1 + suggestions.length) % suggestions.length;
-                highlightSuggestion(suggestions, tagSuggestions);
-            } else if (event.key === 'Enter') {
-                event.preventDefault();
-                if (tagSearchSelectedIndex !== -1) {
-                    const selectedTag = suggestions[tagSearchSelectedIndex].textContent;
-                    addTagChip(selectedTag);
-                    tagSearchInput.value = '';
-                    tagSuggestions.classList.add('hidden');
-                    tagSearchSelectedIndex = -1;
-                    updateCharts();
-                }
-            }
-        });
-
-        function filterTagSuggestions() {
-            const searchTerm = tagSearchInput.value.toLowerCase();
-            tagSuggestions.innerHTML = '';
-            tagSearchSelectedIndex = -1;
-
-            let filtered = allTags.filter(tag =>
-                tag.toLowerCase().includes(searchTerm) && !selectedTags.includes(tag)
-            );
-
-            if (filtered.length > 0) {
-                tagSuggestions.classList.remove('hidden');
-                filtered.forEach(tag => {
-                    const div = document.createElement('div');
-                    // Display the tag with first letter capitalized for suggestions
-                    // Special handling for 'sans tag' display
-                    div.textContent = tag === 'sans tag' ? 'Sans Tag' : tag.charAt(0).toUpperCase() + tag.slice(1);
-                    div.className = 'podcast-suggestion-item';
-                    div.addEventListener('mousedown', (event) => {
-                        event.preventDefault();
-                        addTagChip(tag); // Add the normalized (lowercase) tag
-                        tagSearchInput.value = '';
-                        tagSuggestions.classList.add('hidden');
-                        tagSearchSelectedIndex = -1;
-                        updateCharts();
-                    });
-                    tagSuggestions.appendChild(div);
-                });
-            } else {
-                tagSuggestions.classList.add('hidden');
-            }
-        }
-
-        function addTagChip(tag) {
-            // Ensure tag is normalized before adding to selectedTags
-            const normalizedTag = tag.toLowerCase().trim().normalize('NFC'); // Add NFC normalization here too
-            if (!selectedTags.includes(normalizedTag)) {
-                selectedTags.push(normalizedTag);
-                renderSelectedTagChips();
-            }
-        }
-
-        function removeTagChip(tagToRemove) {
-            selectedTags = selectedTags.filter(tag => tag !== tagToRemove);
-            renderSelectedTagChips();
-            updateCharts(); // Re-apply filters after removing a tag
-        }
-
-        function renderSelectedTagChips() {
-            selectedTagsContainer.innerHTML = '';
-            selectedTags.forEach(tag => { // 'tag' here will be lowercase
-                // Special handling for 'sans tag' display
-                const displayTag = tag === 'sans tag' ? 'Sans Tag' : tag.charAt(0).toUpperCase() + tag.slice(1);
-                const chip = document.createElement('div');
-                chip.className = 'tag-chip';
-                chip.innerHTML = `<span>${displayTag}</span><span class="remove-tag" data-tag="${tag}">&times;</span>`; // data-tag stores original lowercase
-                chip.querySelector('.remove-tag').addEventListener('click', (event) => {
-                    removeTagChip(event.target.dataset.tag);
-                });
-                selectedTagsContainer.appendChild(chip);
-            });
-        }
-
-
-        function updateCharts() {
-            if (!globalDfHistory) return;
-
-            let filteredData = globalDfHistory;
-            const startDateTime = startDateFilter.value ? new Date(startDateFilter.value).getTime() : 0; // Convert to timestamp
-            const endDateTime = endDateFilter.value ? new Date(endDateFilter.value).setHours(23, 59, 59, 999) : Infinity; // End of day
-            const selectedPodcast = selectedPodcastHiddenInput.value; // Use the value from the hidden input
-            // Use the global selectedTags array for filtering
-            const currentSelectedTags = selectedTags;
-            const showSansTag = showSansTagCheckbox.checked; // Get state of 'Sans Tag' checkbox
-
-            // Apply date range filter
-            if (startDateTime || endDateTime !== Infinity) {
-                filteredData = filteredData.filter(item => {
-                    if (item.last_played_time > 0) {
-                        const itemTime = item.last_played_time;
-                        return itemTime >= startDateTime && itemTime <= endDateTime;
-                    }
-                    return false;
-                });
-            }
-
-            // Apply podcast filter
-            if (selectedPodcast) {
-                filteredData = filteredData.filter(item => item.podcast_title === selectedPodcast);
-                // Update selected podcast stats display
-                const podcastStats = processRawData(filteredData);
-                selectedPodcastTitleDisplay.textContent = selectedPodcast;
-                selectedPodcastTimeSpan.textContent = `${podcastStats.totalListeningTimeHours.toFixed(1)} heures`;
-                selectedPodcastEpisodesSpan.textContent = podcastStats.episodesListened;
-                selectedPodcastStatsDiv.classList.remove('hidden');
-            } else {
-                selectedPodcastStatsDiv.classList.add('hidden');
-            }
-
-            // Apply tag filter (multi-select logic)
-            if (currentSelectedTags.length > 0) {
-                filteredData = filteredData.filter(item => {
-                    let itemTags = extractTagsFromString(item.tags_column); // Already normalized
-                    let matches = false;
-
-                    // If 'sans tag' is selected, include items that have no extracted tags
-                    if (currentSelectedTags.includes('sans tag')) { // Check for normalized 'sans tag'
-                        if (itemTags.length === 0) {
-                            matches = true;
-                        }
-                    }
-                    
-                    // Check for other selected tags (excluding 'sans tag' from the comparison)
-                    const otherSelectedTags = currentSelectedTags.filter(tag => tag !== 'sans tag');
-                    if (otherSelectedTags.length > 0) {
-                        if (itemTags.some(itemTag => otherSelectedTags.includes(itemTag))) {
-                            matches = true;
-                        }
-                    }
-                    return matches;
-                });
-            }
-
-
-            currentProcessedData = processRawData(filteredData); // Update global variable
-            updateUIWithStats(currentProcessedData);
-            // Re-render both top podcast lists based on the current filter
-            renderTopPodcastsTimeList(currentProcessedData.topPodcastsByTime, topPodcastsTimeListFull.classList.contains('expanded'));
-            updateMonthlyPodcastList(currentProcessedData.topPodcastsByTime, monthlyPodcastListFull.classList.contains('expanded'));
-            renderPodcastStatsList(currentProcessedData.topPodcastsByEpisodeCount, false); // Initial render for podcast stats
-            drawCharts(currentProcessedData, startDateTime, endDateTime, selectedPodcast, showSansTag); // Pass showSansTag
-            generateWrappedReport(currentProcessedData, startDateTime, endDateTime); // Keep for text report
-        }
-
-        // Updated function signature and logic
-        function updateMonthlyPodcastList(topPodcastsForPeriod, isExpanded) {
-            monthlyPodcastListShort.innerHTML = '';
-            monthlyPodcastListAll.innerHTML = '';
-            
-            const start = startDateFilter.value ? new Date(startDateFilter.value).getTime() : null;
-            const end = endDateFilter.value ? new Date(endDateFilter.value).setHours(23, 59, 59, 999) : Infinity;
-            let periodDescription = formatPeriodText(start, end, globalDfHistory); // Pass globalDfHistory
-            
-            monthlyPodcastDetailTitle.textContent = `Top Podcasts pour la période : ${periodDescription}`;
-
-            if (topPodcastsForPeriod.length === 0) {
-                const li = document.createElement('li');
-                li.textContent = "Aucun podcast écouté sur cette période.";
-                monthlyPodcastListShort.appendChild(li);
-                toggleMonthlyPodcastsButton.classList.add('hidden');
-                monthlyPodcastListFull.classList.add('hidden');
-                return;
-            }
-
-            const displayLimit = podcastDisplayLimit;
-
-            if (isExpanded) {
-                // If expanded, populate full list and hide short list
-                topPodcastsForPeriod.forEach((p, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'podcast-item';
-                    const img = document.createElement('img');
-                    const defaultPlaceholder = `https://placehold.co/50x50/ADD8E6/000000?text=${p.podcast.substring(0,2).toUpperCase()}`;
-                    if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
-                        img.src = p.imageUrl;
-                        img.onerror = () => { // Fallback if the external image fails to load
-                            img.src = defaultPlaceholder;
-                        };
-                    } else {
-                        img.src = defaultPlaceholder;
-                    }
-                    img.alt = `Couverture de ${p.podcast}`;
-                    li.appendChild(img);
-                    
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
-                    li.appendChild(textSpan);
-                    monthlyPodcastListAll.appendChild(li);
-                });
-                monthlyPodcastListShort.classList.add('hidden');
-                monthlyPodcastListFull.classList.remove('hidden');
-            } else {
-                // If collapsed, populate short list (with "Autres" if needed) and hide full list
-                topPodcastsForPeriod.slice(0, displayLimit).forEach((p, index) => {
-                    const li = document.createElement('li');
-                    li.className = 'podcast-item';
-                    const img = document.createElement('img');
-                    const defaultPlaceholder = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
-                    if (p.imageUrl && (p.imageUrl.startsWith('http://') || p.imageUrl.startsWith('https://'))) {
-                        img.src = p.imageUrl;
-                        img.onerror = () => { // Fallback if the external image fails to load
-                            img.src = defaultPlaceholder;
-                        };
-                    } else {
-                        img.src = defaultPlaceholder;
-                    }
-                    img.alt = `Couverture de ${p.podcast}`;
-                    li.appendChild(img);
-                    
-                    const textSpan = document.createElement('span');
-                    textSpan.textContent = `${index + 1}. ${p.podcast}: ${p.hours.toFixed(1)}h`;
-                    li.appendChild(textSpan);
-                    monthlyPodcastListShort.appendChild(li);
-                });
-
-                if (topPodcastsForPeriod.length > displayLimit) {
-                    const otherHours = topPodcastsForPeriod.slice(displayLimit).reduce((sum, p) => sum + p.hours, 0);
-                    const liAutres = document.createElement('li');
-                    liAutres.className = 'podcast-item';
-                    const imgAutres = document.createElement('img');
-                    imgAutres.src = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
-                    imgAutres.alt = `Autres podcasts`;
-                    liAutres.appendChild(imgAutres);
-                    const textSpanAutres = document.createElement('span');
-                    textSpanAutres.textContent = `... Autres : ${otherHours.toFixed(1)}h`;
-                    liAutres.appendChild(textSpanAutres);
-                    monthlyPodcastListShort.appendChild(liAutres);
-                }
-                monthlyPodcastListShort.classList.remove('hidden');
-                monthlyPodcastListFull.classList.add('hidden');
-            }
-
-            // Show/hide toggle button for monthly list
-            if (topPodcastsForPeriod.length <= displayLimit) {
-                toggleMonthlyPodcastsButton.classList.add('hidden');
-            } else {
-                toggleMonthlyPodcastsButton.classList.remove('hidden');
-                toggleMonthlyPodcastsButton.textContent = isExpanded ? 'Afficher moins' : 'Afficher plus';
-            }
-        }
-
-        /**
-         * Renders the Podcast Stats list, handling "Autres" based on expanded state.
-         * @param {Array} topPodcastsByEpisodeCount The full sorted list of top podcasts by episode count.
-         * @param {boolean} isExpanded Whether the full list is currently expanded.
-         */
-        function renderPodcastStatsList(topPodcastsByEpisodeCount, isExpanded) {
-            podcastStatsListShort.innerHTML = '';
-            podcastStatsListAll.innerHTML = '';
-
-            const displayLimit = podcastDisplayLimit;
-
-            if (isExpanded) {
-                // If expanded, populate full list and hide short list
-                topPodcastsByEpisodeCount.forEach((p, index) => {
-                    const li = document.createElement('li');
-                    li.textContent = `${index + 1}. ${p.podcast}: ${p.count} épisodes`;
-                    podcastStatsListAll.appendChild(li);
-                });
-                podcastStatsListShort.classList.add('hidden');
-                podcastStatsListFull.classList.remove('hidden');
-            } else {
-                // If collapsed, populate short list (with "Autres" if needed) and hide full list
-                topPodcastsByEpisodeCount.slice(0, displayLimit).forEach((p, index) => {
-                    const li = document.createElement('li');
-                    li.textContent = `${index + 1}. ${p.podcast}: ${p.count} épisodes`;
-                    podcastStatsListShort.appendChild(li);
-                });
-
-                if (topPodcastsByEpisodeCount.length > displayLimit) {
-                    const otherEpisodesCount = topPodcastsByEpisodeCount.slice(displayLimit).reduce((sum, p) => sum + p.count, 0);
-                    const liAutres = document.createElement('li');
-                    liAutres.className = 'podcast-item';
-                    const imgAutres = document.createElement('img');
-                    imgAutres.src = `https://placehold.co/50x50/cccccc/000000?text=Autre`;
-                    imgAutres.alt = `Autres podcasts`;
-                    liAutres.appendChild(imgAutres);
-                    const textSpanAutres = document.createElement('span');
-                    textSpanAutres.textContent = `... Autres : ${otherEpisodesCount} épisodes`;
-                    liAutres.appendChild(textSpanAutres);
-                    podcastStatsListShort.appendChild(liAutres);
-                }
-                podcastStatsListShort.classList.remove('hidden');
-                podcastStatsListFull.classList.add('hidden');
-            }
-
-            // Show/hide toggle button
-            if (topPodcastsByEpisodeCount.length <= displayLimit) {
-                togglePodcastStatsButton.classList.add('hidden');
-            } else {
-                togglePodcastStatsButton.classList.remove('hidden');
-                togglePodcastStatsButton.textContent = isExpanded ? 'Afficher moins' : 'Afficher plus';
-            }
-        }
-
-
-        function drawCharts(stats, startDateTime, endDateTime, selectedPodcast, showSansTag) {
-            // Destroy existing chart instances to avoid memory leaks and conflicts
-            if (monthlyChartInstance) monthlyChartInstance.destroy();
-            if (podcastEpisodeCountChartInstance) podcastEpisodeCountChartInstance.destroy();
-            if (hourlyChartInstance) hourlyChartInstance.destroy();
-            if (dailyChartInstance) dailyChartInstance.destroy();
-            if (podcastTimeDistributionChartInstance) podcastTimeDistributionChartInstance.destroy();
-            if (tagTimeDistributionChartInstance) tagTimeDistributionChartInstance.destroy(); // Destroy tags chart
-
-            // Determine period info text
-            let periodInfoText;
-            if (selectedPodcast) {
-                periodInfoText = `Données pour "${selectedPodcast}" `;
-            } else {
-                periodInfoText = `Données `;
-            }
-
-            // Pass globalDfHistory to formatPeriodText
-            periodInfoText += `pour ${formatPeriodText(startDateTime, endDateTime, globalDfHistory)}`;
-
-            // Update chart period info
-            monthlyChartPeriodInfo.textContent = periodInfoText;
-            podcastTimeDistributionChartPeriodInfo.textContent = periodInfoText;
-            tagTimeDistributionChartPeriodInfo.textContent = periodInfoText; // Update for tags chart
-            podcastEpisodeCountChartPeriodInfo.textContent = periodInfoText;
-            hourlyChartPeriodInfo.textContent = periodInfoText;
-            dailyChartPeriodInfo.textContent = periodInfoText;
-
-
-            // Monthly/Daily/Weekly Chart (Time instead of Count) based on currentPeriodView
-            let chartLabels;
-            let chartValues;
-            let chartTitle;
-
-            if (currentPeriodView === 'month') {
-                const monthlyTotalTimeMap = {};
-                stats.allHistoryData.forEach(item => {
-                    if (item.last_played_time > 0) {
-                        const date = new Date(item.last_played_time);
-                        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                        monthlyTotalTimeMap[monthKey] = (monthlyTotalTimeMap[monthKey] || 0) + (item.played_duration || 0);
-                    }
-                });
-                const sortedMonthlyTime = Object.entries(monthlyTotalTimeMap)
-                    .sort(([monthA], [monthB]) => monthA.localeCompare(monthB));
-
-                chartLabels = sortedMonthlyTime.map(([month]) => month);
-                chartValues = sortedMonthlyTime.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
-                chartTitle = 'Temps d\'écoute mensuel (heures)';
-
-            } else if (currentPeriodView === 'week') {
-                const weeklyListeningTimeMap = {};
-                stats.allHistoryData.forEach(item => {
-                    if (item.last_played_time > 0 && item.played_duration > 0) {
-                        const date = new Date(item.last_played_time);
-                        const weekKey = getISOWeek(date); // Get ISO week (YYYY-WW)
-                        weeklyListeningTimeMap[weekKey] = (weeklyListeningTimeMap[weekKey] || 0) + (item.played_duration || 0);
-                    }
-                });
-
-                const sortedWeeklyData = Object.entries(weeklyListeningTimeMap)
-                    .sort(([weekA], [weekB]) => weekA.localeCompare(weekB));
-
-                chartLabels = sortedWeeklyData.map(([week]) => week);
-                chartValues = sortedWeeklyData.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
-                chartTitle = 'Temps d\'écoute par semaine (heures)';
-
-            } else if (currentPeriodView === 'day') {
-                const dailyListeningTimeForPeriod = {};
-                stats.allHistoryData.forEach(item => {
-                    if (item.last_played_time > 0) {
-                        const date = new Date(item.last_played_time);
-                        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                        dailyListeningTimeForPeriod[dateKey] = (dailyListeningTimeForPeriod[dateKey] || 0) + (item.played_duration || 0);
-                    }
-                });
-
-                const sortedDailyData = Object.entries(dailyListeningTimeForPeriod).sort(([dateA], [dateB]) => dateA.localeCompare(dateB));
-
-                chartLabels = sortedDailyData.map(([date]) => date);
-                chartValues = sortedDailyData.map(([, ms]) => ms / (1000 * 3600)); // Convert ms to hours
-                chartTitle = `Temps d'écoute quotidien sur la période (heures)`;
-            }
-
-
-            monthlyChartInstance = new Chart(monthlyCtx, {
-                type: 'bar', // Always bar chart for this now
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        label: 'Heures écoutées',
-                        data: chartValues,
-                        backgroundColor: '#0e6270', /* New color */
-                        borderColor: '#0e6270', /* New color */
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Heures' } }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: chartTitle
-                        }
-                    }
-                }
-            });
-
-            // Podcast Episode Count Chart (Horizontal Bar Chart)
-            const podcastCounts = {};
-            stats.allHistoryData.forEach(item => { // Use allHistoryData from the processed (filtered) data
-                if (item.podcast_title && item.played_duration > 0) {
-                    podcastCounts[item.podcast_title] = (podcastCounts[item.podcast_title] || 0) + 1;
-                }
-            });
-            const sortedPodcastCounts = Object.entries(podcastCounts).sort(([, a], [, b]) => b - a);
-            // Apply podcastDisplayLimit here for the chart
-            const limitedPodcastCounts = sortedPodcastCounts.slice(0, podcastDisplayLimit);
-
-            const podcastEpisodeLabels = limitedPodcastCounts.map(([title]) => title);
-            const podcastEpisodeValues = limitedPodcastCounts.map(([, count]) => count);
-
-            // Dynamically adjust height for horizontal bar chart
-            const barHeight = 40; // Approximate height per bar including padding
-            const minChartHeight = 300; // Minimum height for the chart area
-            const calculatedHeight = Math.max(minChartHeight, podcastEpisodeLabels.length * barHeight + 100); // +100 for title/padding
-            podcastEpisodeCountChartContainer.style.height = `${calculatedHeight}px`;
-
-            podcastEpisodeCountChartInstance = new Chart(podcastEpisodeCountCtx, {
-                type: 'bar',
-                data: {
-                    labels: podcastEpisodeLabels,
-                    datasets: [{
-                        label: 'Épisodes écoutés',
-                        data: podcastEpisodeValues,
-                        backgroundColor: '#0e6270', /* New color */
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y', // Make it horizontal
-                    scales: {
-                        x: { beginAtZero: true, title: { display: true, text: 'Nombre d\'épisodes' } },
-                        y: { // Ensure labels are fully visible and wrap
-                            ticks: {
-                                autoSkip: false, // Prevent Chart.js from skipping labels
-                                font: {
-                                    size: 12 // Keep standard font size
-                                },
-                                callback: function(value, index, values) {
-                                    const label = this.getLabelForValue(value);
-                                    // Wrap text for labels on Y-axis
-                                    // Adjust maxCharsPerLine based on expected label length and screen size
-                                    const maxChars = window.innerWidth < 768 ? 20 : 30; // Shorter lines on mobile
-                                    return wrapText(label, maxChars);
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false // No legend needed for single dataset horizontal bar chart
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed.x !== null) {
-                                        label += context.parsed.x;
-                                    }
-                                    return label;
-                                },
-                                title: function(context) {
-                                    // Show full podcast title in tooltip
-                                    return context[0].label;
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Podcast Time Distribution Chart (Doughnut Chart)
-            const podcastTimeDistributionData = {};
-            stats.allHistoryData.forEach(item => {
-                if (item.podcast_title && item.played_duration > 0) {
-                    podcastTimeDistributionData[item.podcast_title] = (podcastTimeDistributionData[item.podcast_title] || 0) + item.played_duration;
-                }
-            });
-
-            const sortedPodcastTimeDistribution = Object.entries(podcastTimeDistributionData)
-                .sort(([, a], [, b]) => b - a); // Sort by duration in milliseconds
-
-            const timeDistributionLabels = [];
-            const timeDistributionValues = [];
-            let otherHours = 0;
-            // Use podcastDisplayLimit for the doughnut chart as well
-            const displayLimitForDoughnut = podcastDisplayLimit; 
-
-            for (let i = 0; i < sortedPodcastTimeDistribution.length; i++) {
-                const [podcast, durationMs] = sortedPodcastTimeDistribution[i];
-                const hours = durationMs / (1000 * 3600);
-                if (i < displayLimitForDoughnut) {
-                    timeDistributionLabels.push(podcast);
-                    timeDistributionValues.push(hours);
-                } else {
-                    otherHours += hours;
-                }
-            }
-
-            if (otherHours > 0) {
-                timeDistributionLabels.push('Autres');
-                timeDistributionValues.push(otherHours);
-            }
-
-            const backgroundColors = [
-                '#0e6270', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9933', '#C9CBCE', '#A3CB38', '#5D4037', '#F44336', '#8e44ad', '#27ae60'
-            ]; // More colors for variety if many podcasts
-            
-            podcastTimeDistributionChartInstance = new Chart(podcastTimeDistributionCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: timeDistributionLabels,
-                    datasets: [{
-                        data: timeDistributionValues,
-                        backgroundColor: backgroundColors.slice(0, timeDistributionLabels.length),
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            // Position legend at bottom on small screens, right on larger screens
-                            position: window.innerWidth < 768 ? 'bottom' : 'right',
-                            labels: {
-                                boxWidth: 20, // Smaller color box to give more space for text
-                                font: {
-                                    size: window.innerWidth < 768 ? 10 : 12 // Slightly smaller font for legend on mobile
-                                },
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    if (data.labels.length && data.datasets.length) {
-                                        return data.labels.map((label, i) => {
-                                            const meta = chart.getDatasetMeta(0);
-                                            // Safely access options and provide fallback
-                                            const style = (meta.data[i] && meta.data[i].options) ? meta.data[i].options : {};
-                                            const fillStyle = style.backgroundColor || '#cccccc'; // Default grey
-                                            const strokeStyle = style.borderColor || '#cccccc'; // Default grey
-
-                                            const value = data.datasets[0].data[i];
-                                            return {
-                                                text: `${label}: ${value.toFixed(1)}h`, // Include value in legend
-                                                fillStyle: fillStyle,
-                                                strokeStyle: strokeStyle,
-                                                lineWidth: style.borderWidth || 1, // Default border width
-                                                hidden: isNaN(data.datasets[0].data[i]) || (meta.data[i] ? meta.data[i].hidden : false),
-                                                index: i
-                                            };
-                                        });
-                                    }
-                                    return [];
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.parsed || 0;
-                                    return `${label}: ${value.toFixed(1)} heures`;
-                                }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribution du Temps d\'Écoute par Podcast (en heures)'
-                        }
-                    }
-                }
-            });
-
-            // New: Tag Time Distribution Chart (Doughnut Chart)
-            const tagDistributionLabels = [];
-            const tagDistributionValues = [];
-            let otherTagHours = 0;
-            const displayLimitForTagDoughnut = podcastDisplayLimit;
-
-            // Iterate directly over the pre-processed stats.tagsListening
-            // Filter out 'Sans Tag' if the checkbox is unchecked
-            const filteredTags = stats.tagsListening.filter(([tag]) => !(tag === 'Sans Tag' && !showSansTag)); // Use capitalized 'Sans Tag' for comparison
-
-            for (let i = 0; i < filteredTags.length; i++) {
-                const [tag, durationMs] = filteredTags[i];
-                const hours = durationMs / (1000 * 3600);
-                
-                if (i < displayLimitForTagDoughnut) {
-                    tagDistributionLabels.push(tag);
-                    tagDistributionValues.push(hours);
-                } else {
-                    otherTagHours += hours;
-                }
-            }
-
-            // Only add 'Autres Tags' if there's actual duration for them AND it's not already in the labels
-            if (otherTagHours > 0 && !tagDistributionLabels.includes('Autres Tags')) {
-                tagDistributionLabels.push('Autres Tags');
-                tagDistributionValues.push(otherTagHours);
-            }
-            
-            // Reusing backgroundColors, can add more if needed
-            tagTimeDistributionChartInstance = new Chart(tagTimeDistributionCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: tagDistributionLabels,
-                    datasets: [{
-                        data: tagDistributionValues,
-                        backgroundColor: backgroundColors.slice(0, tagDistributionLabels.length),
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: window.innerWidth < 768 ? 'bottom' : 'right', // Position legend at bottom on mobile
-                            labels: {
-                                boxWidth: 20,
-                                font: {
-                                    size: window.innerWidth < 768 ? 10 : 12 // Smaller font on mobile
-                                },
-                                generateLabels: function(chart) {
-                                    const data = chart.data;
-                                    if (data.labels.length && data.datasets.length) {
-                                        return data.labels.map((label, i) => {
-                                            const meta = chart.getDatasetMeta(0);
-                                            const style = (meta.data[i] && meta.data[i].options) ? meta.data[i].options : {};
-                                            const fillStyle = style.backgroundColor || '#cccccc';
-                                            const strokeStyle = style.borderColor || '#cccccc';
-
-                                            const value = data.datasets[0].data[i];
-                                            // The label is already capitalized from processRawData
-                                            return {
-                                                text: `${label}: ${value.toFixed(1)}h`,
-                                                fillStyle: fillStyle,
-                                                strokeStyle: strokeStyle,
-                                                lineWidth: style.borderWidth || 1,
-                                                hidden: isNaN(data.datasets[0].data[i]) || (meta.data[i] ? meta.data[i].hidden : false),
-                                                index: i
-                                            };
-                                        });
-                                    }
-                                    return [];
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || ''; // This label is already capitalized
-                                    const value = context.parsed || 0;
-                                    return `${label}: ${value.toFixed(1)} heures`;
-                                }
-                            }
-                        },
-                        title: {
-                            display: true,
-                            text: 'Distribution du Temps d\'Écoute par Tag (en heures)'
-                        }
-                    }
-                }
-            });
-
-
-            // Hourly Chart
-            const hourlyLabels = stats.hourlyListening.map(item => `${item.hour}h`);
-            const hourlyValues = stats.hourlyListening.map(item => item.count); // Already in hours
-
-            hourlyChartInstance = new Chart(hourlyCtx, {
-                type: 'bar',
-                data: {
-                    labels: hourlyLabels,
-                    datasets: [{
-                        label: 'Heures écoutées',
-                        data: hourlyValues,
-                        backgroundColor: '#f6ad55',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Heures' } }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Temps d\'écoute par heure de la journée'
-                        }
-                    }
-                }
-            });
-
-            // Daily Chart (Starts Monday)
-            const dayNames = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']; // Order starts Monday
-            const dailyValues = stats.dailyListening.map(item => item.count); // Get counts in correct order and convert to hours
-
-            dailyChartInstance = new Chart(dailyCtx, {
-                type: 'bar',
-                data: {
-                    labels: dayNames, // Use the ordered day names
-                    datasets: [{
-                        label: 'Heures écoutées',
-                        data: dailyValues,
-                        backgroundColor: '#fc8181',
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true, title: { display: true, text: 'Heures' } }
-                    },
-                    plugins: {
-                        title: {
-                            display: true,
-                            text: 'Temps d\'écoute par jour de la semaine'
-                        }
-                    }
-                }
-            });
-        }
-
-        /**
-         * Generates the text content for the Spotify Wrapped inspired report.
-         * @param {object} stats The processed statistics data.
-         * @param {number} startDateTime Filter start date timestamp.
-         * @param {number} endDateTime Filter end date timestamp.
-         */
-        function generateWrappedReport(stats, startDateTime, endDateTime) {
-            const totalHours = stats.totalListeningTimeHours.toFixed(1);
-            let formattedPeriod = formatPeriodText(startDateTime, endDateTime, globalDfHistory);
-
-            let periodConnector = '';
-            // Determine if "en" is needed for the main sentence
-            // Matches "2025" or "Février 2025" (single year or single month-year)
-            if (formattedPeriod.match(/^\d{4}$/) || formattedPeriod.match(/^[A-Za-zÀ-ÿ]+ \d{4}$/)) { 
-                periodConnector = 'en ';
-            }
-
-            const top5Podcasts = stats.topPodcastsByTime.slice(0, 5); // Get top 5 from filtered data
-
-            let message = `🎉 Mon Bilan AntennaPod ${formattedPeriod} !\n\n`; // This line is fine as is
-            message += `J'ai écouté des podcasts pendant ${totalHours} heures ${periodConnector}${formattedPeriod} ! C'est l'équivalent de ${stats.totalListeningTimeDays.toFixed(1)} jours complets 🎧.\n\n`;
-            
-            if (top5Podcasts.length > 0) {
-                message += `Mes top 5 podcasts ${formattedPeriod} :\n`; // This line is fine as is
-                top5Podcasts.forEach((p, index) => {
-                    // Using a simple emoji for podcast image representation in text export
-                    message += `${index + 1}. 🎙️ "${p.podcast}" : ${p.hours.toFixed(1)} heures\n`;
-                });
-            } else {
-                message += `Aucun podcast écouté ${formattedPeriod}.\n`; // This line is fine as is
-            }
-
-            message += `\nJ'ai découvert et écouté ${stats.episodesListened} épisodes différents 📚, avec une durée moyenne d'un épisode de ${stats.avgListenDurationMinutes.toFixed(1)} minutes.\n\n`;
-            message += `Quelles sont vos stats ? Partagez les vôtre ! #AntennaPodStats #PodcastAddict`;
-
-            // Update the div for html2canvas
-            wrappedTextContentDiv.textContent = message; 
-        }
-
-        // --- CSV Export Function ---
-        function exportStatsToCsv(stats) {
-            let csvContent = "Statistique,Valeur\n";
-
-            // Overall Stats
-            csvContent += `Temps total d'écoute (heures),${stats.totalListeningTimeHours.toFixed(1)}\n`;
-            csvContent += `Temps total d'écoute (jours),${stats.totalListeningTimeDays.toFixed(1)}\n`;
-            csvContent += `Épisodes écoutés,${stats.episodesListened}\n`;
-            csvContent += `Épisodes terminés (>90%),${stats.episodesCompleted}\n`;
-            csvContent += `Taux de complétion (%),${stats.completionRate.toFixed(1)}\n`;
-            csvContent += `Durée moyenne d'un épisode (minutes),${stats.avgListenDurationMinutes.toFixed(1)}\n`;
-            csvContent += `Progression moyenne (%),${stats.avgProgressPercent.toFixed(1)}\n`;
-            csvContent += "\n";
-
-            // Top Podcasts by Time
-            csvContent += "Top Podcasts par temps d'écoute\n";
-            csvContent += "Rang,Podcast,Heures\n";
-            stats.topPodcastsByTime.forEach((p, index) => {
-                csvContent += `${index + 1},"${p.podcast.replace(/"/g, '""')}",${p.hours.toFixed(1)}\n`;
-            });
-            csvContent += "\n";
-
-            // Top Podcasts by Episode Count
-            csvContent += "Top Podcasts par épisodes écoutés\n";
-            csvContent += "Rang,Podcast,Épisodes\n";
-            stats.topPodcastsByEpisodeCount.forEach((p, index) => {
-                csvContent += `${index + 1},"${p.podcast.replace(/"/g, '""')}",${p.count}\n`;
-            });
-            csvContent += "\n";
-
-            // Monthly Listening (if applicable, otherwise daily for period)
-            csvContent += "Écoutes par période\n";
-            if (startDateFilter.value || endDateFilter.value) { // Daily data if a period is selected
-                csvContent += "Date,Heures\n";
-                const dailyData = {};
-                stats.allHistoryData.forEach(item => {
-                    if (item.last_played_time > 0) {
-                        const date = new Date(item.last_played_time);
-                        const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-                        dailyData[dateKey] = (dailyData[dateKey] || 0) + (item.played_duration || 0);
-                    }
-                });
-                Object.entries(dailyData).sort(([dateA], [dateB]) => dateA.localeCompare(dateB)).forEach(([date, ms]) => {
-                    csvContent += `${date},${(ms / (1000 * 3600)).toFixed(1)}\n`;
-                });
-            } else { // Monthly data if no period selected
-                csvContent += "Mois,Heures\n";
-                stats.monthlyListening.forEach(m => {
-                    csvContent += `${m.month},${m.count.toFixed(1)}\n`;
-                });
-            }
-            csvContent += "\n";
-
-            // Hourly Listening
-            csvContent += "Temps d'écoute par heure de la journée\n";
-            csvContent += "Heure,Heures\n";
-            stats.hourlyListening.forEach(h => {
-                csvContent += `${h.hour},${h.count.toFixed(1)}\n`;
-            });
-            csvContent += "\n";
-
-            // Daily Listening
-            csvContent += "Temps d'écoute par jour de la semaine\n";
-            csvContent += "Jour,Heures\n";
-            stats.dailyListening.forEach(d => {
-                csvContent += `${d.day},${d.count.toFixed(1)}\n`;
-            });
-            csvContent += "\n";
-
-            // Tags Listening
-            csvContent += "Distribution du temps d'écoute par Tag\n";
-            csvContent += "Tag,Heures\n";
-            // For CSV, display the capitalized version of the tag
-            stats.tagsListening.forEach(([tag, durationMs]) => {
-                // The tag is already capitalized from processRawData for display
-                csvContent += `"${tag.replace(/"/g, '""')}",${(durationMs / (1000 * 3600)).toFixed(1)}\n`;
-            });
-            csvContent += "\n";
-
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, 'AntennaPod_Stats.csv');
-            showMessage('success', 'Statistiques exportées au format CSV !');
-        }
-
-        // --- Raw Data CSV Export Function ---
-        function exportRawDataToCsv(data) {
-            if (!data || data.length === 0) {
-                showMessage('error', 'Aucune donnée brute à exporter.');
-                return;
-            }
-
-            const headers = [
-                "media_id", "episode_title", "podcast_title", "played_duration_ms", "duration_ms",
-                "position_ms", "last_played_time_timestamp", "last_played_time_date", "pubDate_timestamp", "pubDate_date",
-                "podcast_image_url", "tags_column"
-            ];
-            let csvContent = headers.map(header => `"${header}"`).join(',') + "\n";
-
-            data.forEach(row => {
-                const rowData = [
-                    row.media_id,
-                    `"${(row.episode_title || '').replace(/"/g, '""')}"`,
-                    row.podcast_title ? `"${row.podcast_title.replace(/"/g, '""')}"` : '""', // Ensure podcast_title is quoted and escaped
-                    row.played_duration,
-                    row.duration,
-                    row.position,
-                    row.last_played_time,
-                    row.last_played_time ? new Date(row.last_played_time).toISOString() : '',
-                    row.pubDate,
-                    row.pubDate ? new Date(row.pubDate).toISOString() : '',
-                    row.podcast_image_url ? `"${row.podcast_image_url.replace(/"/g, '""')}"` : '""', // Ensure image URL is quoted and escaped
-                    row.tags_column ? `"${row.tags_column.replace(/"/g, '""')}"` : '""' // Ensure tags are quoted and escaped
-                ];
-                csvContent += rowData.join(',') + "\n";
-            });
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            saveAs(blob, 'AntennaPod_Raw_Data.CVS');
-            showMessage('success', 'Données brutes exportées au format CSV !');
-        }
-
-
-        // --- Simulate Python Script Logic with sql.js ---
-        // This part requires sql.js library to be loaded.
-        // It's a client-side database engine.
-        let SQL;
-        async function loadSqlJs() {
+        function saveAuthorAliases() {
             try {
-                // Ensure Chart.js, JSZip, FileSaver.js, html2canvas are loaded before proceeding
-                // These are loaded in the <head> so they should be available.
-                // No explicit check needed here for them, but good to be aware.
-
-                const SQL_wasm = await initSqlJs({
-                    locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
-                });
-                SQL = SQL_wasm;
-                console.log("sql.js chargé avec succès.");
-            } catch (err) { 
-                console.error("Erreur lors du chargement de sql.js:", err);
-                showMessage('error', 'Impossible de charger la bibliothèque de base de données. Veuillez patienter et réessayer.');
-            }
-        };
-
-        // Load sql.js as soon as possible
-        loadSqlJs();
-
-        async function processAntennaPodDb(uint8Array) {
-            if (!SQL) {
-                showMessage('error', 'La bibliothèque sql.js n\'est pas encore chargée. Veuillez patienter et réessayer.');
-                return null;
-            }
-
-            try {
-                const db = new SQL.Database(uint8Array);
-
-                // Replicate the SQL query from the Python script
-                // Added f.image_url and f.tags to the query
-                const query = `
-                    SELECT
-                        fm.id as media_id,
-                        fm.duration,
-                        fm.position,
-                        fm.played_duration,
-                        fm.last_played_time,
-                        fm.playback_completion_date,
-                        fi.title as episode_title,
-                        fi.pubDate,
-                        fi.feed as feed_id,
-                        f.title as podcast_title,
-                        f.author,
-                        f.image_url as podcast_image_url,
-                        f.tags as tags_column -- Added tags column
-                    FROM FeedMedia fm
-                    JOIN FeedItems fi ON fm.feeditem = fi.id
-                    JOIN Feeds f ON fi.feed = f.id
-                    WHERE fm.played_duration > 0 OR fm.last_played_time > 0
-                    ORDER BY fm.last_played_time DESC
-                `;
-
-                const res = db.exec(query);
-                db.close();
-
-                if (res.length === 0) {
-                    console.warn("Aucun résultat trouvé dans la base de données AntennaPod.");
-                    showMessage('info', 'Aucune donnée d\'écoute trouvée dans le fichier fourni.');
-                    return null;
-                }
-
-                const columns = res[0].columns;
-                const values = res[0].values;
-
-                // Transform into array of objects (similar to DataFrame rows)
-                const dfHistory = values.map(row => {
-                    const rowObject = {};
-                    columns.forEach((col, index) => {
-                        rowObject[col] = row[index];
-                    });
-                    // Apply encoding fix to relevant string columns
-                    if (rowObject.podcast_title) {
-                        rowObject.podcast_title = fixEncoding(rowObject.podcast_title);
-                    }
-                    if (rowObject.episode_title) {
-                        rowObject.episode_title = fixEncoding(rowObject.episode_title);
-                    }
-                    if (rowObject.tags_column) {
-                        // console.log("Raw tags_column before fixEncoding:", rowObject.tags_column); // Debugging log
-                        rowObject.tags_column = fixEncoding(rowObject.tags_column);
-                        // console.log("Fixed tags_column after fixEncoding:", rowObject.tags_column); // Debugging log
-                    }
-                    return rowObject;
-                });
-
-                return processRawData(dfHistory);
-
-            } catch (error) {
-                console.error('Erreur lors du traitement de la base de données SQLite avec sql.js:', error);
-                showMessage('error', `Erreur lors de la lecture du fichier .db : ${error.message}. Assurez-vous que c'est un fichier AntennaPod.db valide.`);
-                return null;
+                localStorage.setItem('antennapod_author_aliases', JSON.stringify(authorAliases));
+            } catch (e) {
+                console.warn("Could not save author aliases to localStorage:", e);
             }
         }
 
-        // Helper function to process raw data (from sql.js or backend) into desired stats structure
-        function processRawData(data) {
-            const listenedEpisodes = data.filter(item => item.last_played_time > 0 && item.played_duration > 0);
+        function resolveAuthorName(rawAuthor) {
+            if (!rawAuthor || typeof rawAuthor !== 'string') return 'Sans Auteur';
+            const trimmed = rawAuthor.trim();
+            if (!trimmed) return 'Sans Auteur';
 
-            if (listenedEpisodes.length === 0) {
-                 return {
-                    totalListeningTimeHours: 0,
-                    totalListeningTimeDays: 0,
-                    episodesListened: 0,
-                    episodesCompleted: 0,
-                    completionRate: 0,
-                    avgListenDurationMinutes: 0,
-                    avgProgressPercent: 0,
-                    topPodcastsByTime: [],
-                    topPodcastsByEpisodeCount: [], // Added for new drawer
-                    monthlyListening: [],
-                    hourlyListening: [],
-                    dailyListening: [],
-                    tagsListening: [], // New for tags
-                    allHistoryData: [] // Return the filtered data as allHistoryData
-                };
+            // Direct exact match
+            if (authorAliases[trimmed]) {
+                return authorAliases[trimmed];
             }
 
-            // Calculate overall stats
-            const totalMs = listenedEpisodes.reduce((sum, item) => sum + (item.played_duration || 0), 0);
-            const totalHours = totalMs / (1000 * 3600);
-            const totalDays = totalHours / 24;
-
-            const episodesListenedCount = listenedEpisodes.length;
-
-            const completedEpisodes = listenedEpisodes.filter(
-                item => item.played_duration > 0 && item.duration > 0 && item.played_duration >= item.duration * 0.9
-            );
-            const completionRate = episodesListenedCount > 0 ? (completedEpisodes.length / episodesListenedCount) * 100 : 0;
-
-            const activeEpisodesWithDuration = listenedEpisodes.filter(item => item.played_duration > 0);
-            const avgDurationMs = activeEpisodesWithDuration.length > 0 ? activeEpisodesWithDuration.reduce((sum, item) => sum + item.played_duration, 0) / activeEpisodesWithDuration.length : 0;
-            const avgDurationMinutes = avgDurationMs / (1000 * 60);
-
-            const progressData = listenedEpisodes.filter(item => item.duration > 0 && item.position >= 0);
-            const avgProgress = progressData.length > 0 ? progressData.reduce((sum, item) => sum + ((item.position / item.duration) * 100), 0) / progressData.length : 0;
-
-            // Top Podcasts by Time (for the current filtered data)
-            const timeByPodcast = {};
-            const podcastImageUrls = {}; // New map to store image URLs
-            listenedEpisodes.forEach(item => {
-                if (item.podcast_title) {
-                    timeByPodcast[item.podcast_title] = (timeByPodcast[item.podcast_title] || 0) + (item.played_duration || 0);
-                    if (item.podcast_image_url) { // Store image URL if available
-                        podcastImageUrls[item.podcast_title] = item.podcast_image_url;
-                    }
+            // Case-insensitive & normalized match
+            const lower = trimmed.toLowerCase();
+            for (const [key, val] of Object.entries(authorAliases)) {
+                if (key.trim().toLowerCase() === lower) {
+                    return val;
                 }
-            });
-            const topPodcastsByTime = Object.entries(timeByPodcast)
-                .sort(([, a], [, b]) => b - a)
-                .map(([podcast, ms]) => ({
-                    podcast,
-                    hours: ms / (1000 * 3600),
-                    imageUrl: podcastImageUrls[podcast] || null // Store the actual image URL
-                }));
+            }
 
-            // Top Podcasts by Episode Count (for the current filtered data)
-            const countByPodcast = {};
-            listenedEpisodes.forEach(item => {
-                if (item.podcast_title) {
-                    countByPodcast[item.podcast_title] = (countByPodcast[item.podcast_title] || 0) + 1;
-                    // Image URL is already captured in podcastImageUrls map
-                }
-            });
-            const topPodcastsByEpisodeCount = Object.entries(countByPodcast)
-                .sort(([, a], [, b]) => b - a)
-                .map(([podcast, count]) => ({
-                    podcast,
-                    count,
-                    imageUrl: podcastImageUrls[podcast] || null // Store the actual image URL
-                }));
-
-
-            // Monthly Listening (now calculates time, not count)
-            const monthlyListeningMap = {};
-            listenedEpisodes.forEach(item => {
-                if (item.last_played_time > 0) {
-                    const date = new Date(item.last_played_time);
-                    const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-                    monthlyListeningMap[monthKey] = (monthlyListeningMap[monthKey] || 0) + (item.played_duration || 0);
-                }
-            });
-            const monthlyListening = Object.entries(monthlyListeningMap)
-                .sort(([monthA], [monthB]) => monthA.localeCompare(monthB))
-                .map(([month, ms]) => ({ month, count: ms / (1000 * 3600) })); // Convert ms to hours for 'count'
-
-
-            // Hourly Listening (now calculates time)
-            const hourlyListeningMap = {};
-            for (let i = 0; i < 24; i++) hourlyListeningMap[i] = 0; // Initialize all hours
-            listenedEpisodes.forEach(item => {
-                if (item.last_played_time > 0 && item.played_duration > 0) {
-                    const date = new Date(item.last_played_time);
-                    const hour = date.getHours();
-                    hourlyListeningMap[hour] = (hourlyListeningMap[hour] || 0) + (item.played_duration || 0); // Sum played duration
-                }
-            });
-            const hourlyListening = Object.entries(hourlyListeningMap).map(([hour, durationMs]) => ({ hour: parseInt(hour), count: durationMs / (1000 * 3600) })).sort((a, b) => a.hour - b.hour); // Convert to hours
-
-
-            // Daily Listening (Monday as first day) (now calculates time)
-            const dayNamesOrdered = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-            const dailyListeningMap = new Map(); 
-            dayNamesOrdered.forEach(day => dailyListeningMap.set(day, 0)); 
-
-            listenedEpisodes.forEach(item => {
-                if (item.last_played_time > 0 && item.played_duration > 0) {
-                    const date = new Date(item.last_played_time);
-                    let dayOfWeekIndex = date.getDay(); 
-                    dayOfWeekIndex = (dayOfWeekIndex === 0) ? 6 : dayOfWeekIndex - 1;
-                    const dayOfWeekName = dayNamesOrdered[dayOfWeekIndex]; 
-                    dailyListeningMap.set(dayOfWeekName, (dailyListeningMap.get(dayOfWeekName) || 0) + (item.played_duration || 0)); 
-                }
-            });
-            const dailyListening = Array.from(dailyListeningMap.entries()).map(([day, durationMs]) => ({ day, count: durationMs / (1000 * 3600) })); 
-
-            // NEW: Tags Listening for Tag Distribution Chart (Revised Logic)
-            const tagChartData = {};
-            const activeSelectedTagsSet = new Set(selectedTags.filter(tag => tag !== 'sans tag'));
-            const isTagFilterActive = selectedTags.length > 0;
-            const isSansTagSelectedInFilter = selectedTags.includes('sans tag');
-
-            listenedEpisodes.forEach(item => {
-                let itemTags = extractTagsFromString(item.tags_column); // Already normalized (lowercase, trimmed, NFC)
-                const duration = item.played_duration || 0;
-
-                if (!isTagFilterActive) {
-                    // If no specific tags are selected (filter is empty), show all actual tags or 'sans tag'
-                    if (itemTags.length === 0) {
-                        tagChartData['sans tag'] = (tagChartData['sans tag'] || 0) + duration;
-                    } else {
-                        itemTags.forEach(tag => {
-                            tagChartData[tag] = (tagChartData[tag] || 0) + duration;
-                        });
-                    }
-                } else {
-                    // If specific tags are selected, apply the previous logic
-                    let assignedToChart = false; // Flag to ensure each episode's duration is assigned only once
-
-                    if (itemTags.length === 0) {
-                        // Episode has no tags
-                        if (isSansTagSelectedInFilter) {
-                            tagChartData['sans tag'] = (tagChartData['sans tag'] || 0) + duration;
-                        } else {
-                            // If 'sans tag' is not selected, but episode has no tags, its duration goes to 'autres tags'
-                            tagChartData['autres tags'] = (tagChartData['autres tags'] || 0) + duration;
-                        }
-                        assignedToChart = true;
-                    }
-
-                    if (!assignedToChart && itemTags.length > 0) {
-                        let foundMatchingSelectedTag = false;
-                        // Prioritize selected tags: iterate through episode's tags to find a match in selectedTags
-                        for (const tag of itemTags) {
-                            if (activeSelectedTagsSet.has(tag)) {
-                                tagChartData[tag] = (tagChartData[tag] || 0) + duration;
-                                foundMatchingSelectedTag = true;
-                                assignedToChart = true;
-                                break; // Assign duration to the first matching selected tag and stop for this episode
-                            }
-                        }
-
-                        if (!foundMatchingSelectedTag) {
-                            // Episode has tags, but none of them are among the explicitly selected tags.
-                            // Its duration goes to 'autres tags'.
-                            tagChartData['autres tags'] = (tagChartData['autres tags'] || 0) + duration;
-                            assignedToChart = true;
-                        }
-                    }
-                }
-            });
-
-            const tagsListening = Object.entries(tagChartData)
-                .sort(([, a], [, b]) => b - a)
-                .filter(([, duration]) => duration > 0); // Filter out tags with 0 duration
-
-            // Ensure 'Sans Tag' and 'Autres Tags' are capitalized for display
-            tagsListening.forEach(entry => {
-                if (entry[0] === 'sans tag') {
-                    entry[0] = 'Sans Tag'; // Capitalize for display in the stats object
-                } else if (entry[0] === 'autres tags') {
-                    entry[0] = 'Autres Tags'; // Capitalize for display
-                } else {
-                    // Capitalize first letter for other tags, as they are already normalized (lowercase)
-                    entry[0] = entry[0].charAt(0).toUpperCase() + entry[0].slice(1);
-                }
-            });
-
-
-            return {
-                totalListeningTimeHours: totalHours,
-                totalListeningTimeDays: totalDays,
-                episodesListened: episodesListenedCount,
-                episodesCompleted: completedEpisodes.length,
-                completionRate: completionRate,
-                avgListenDurationMinutes: avgDurationMinutes,
-                avgProgressPercent: avgProgress,
-                topPodcastsByTime: topPodcastsByTime, // This now contains all sorted podcasts for the current filter
-                topPodcastsByEpisodeCount: topPodcastsByEpisodeCount, // Added for new drawer
-                monthlyListening: monthlyListening, // Now contains hours
-                hourlyListening: hourlyListening,
-                dailyListening: dailyListening,
-                tagsListening: tagsListening, // New for tags
-                allHistoryData: listenedEpisodes // Return the filtered data as allHistoryData
-            };
+            return trimmed;
         }
 
         /**
-         * Downloads a Chart.js canvas as a PNG image with a white background.
-         * @param {string} chartId The ID of the canvas element.
-         * @param {string} filename The desired filename for the downloaded image.
+         * Extracts authors from a raw author string, splitting by commas or slashes if multiple authors are present,
+         * and resolving aliases/groupings.
+         * @param {string} authorString The raw author string from the database.
+         * @returns {string[]} An array of author names, trimmed, resolved and cleaned.
          */
-        window.downloadChartAsPng = function(chartId, filename) {
-            const canvas = document.getElementById(chartId);
-            if (canvas) {
-                try {
-                    // Create a new canvas to draw the chart with a white background
-                    const tempCanvas = document.createElement('canvas');
-                    const ctx = tempCanvas.getContext('2d');
-
-                    // Set dimensions of the temporary canvas to match the chart canvas
-                    tempCanvas.width = canvas.width;
-                    tempCanvas.height = canvas.height;
-
-                    // Fill the background with white
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-
-                    // Draw the chart onto the temporary canvas
-                    ctx.drawImage(canvas, 0, 0);
-
-                    // Get the image data URL from the temporary canvas
-                    const imageDataURL = tempCanvas.toDataURL('image/png');
-                    
-                    // Create a temporary link element to trigger download
-                    const downloadLink = document.createElement('a');
-                    downloadLink.href = imageDataURL;
-                    downloadLink.download = filename;
-                    document.body.appendChild(downloadLink);
-                    downloadLink.click();
-                    document.body.removeChild(downloadLink);
-                    showMessage('success', `Graphique "${filename}" téléchargé !`);
-                } catch (error) {
-                    console.error(`Erreur lors du téléchargement du graphique ${chartId}:`, error);
-                    showMessage('error', `Erreur lors du téléchargement du graphique "${filename}".`);
-                }
-            } else {
-                showMessage('error', `Graphique avec l'ID "${chartId}" introuvable.`);
+        function extractAuthorsFromString(authorString) {
+            if (!authorString || typeof authorString !== 'string' || authorString.trim() === '') {
+                const resSans = resolveAuthorName('Sans Auteur');
+                return resSans !== 'Sans Auteur' ? [resSans] : [];
             }
-        };
-
-        /**
-         * Generates a simple SVG placeholder image as a data URL.
-         * @param {string} text The text to display in the placeholder.
-         * @param {number} width The width of the placeholder.
-         * @param {number} height The height of the placeholder.
-         * @param {string} bgColor Background color (hex).
-         * @param {string} textColor Text color (hex).
-         * @returns {string} The SVG data URL.
-         */
-        function generateSvgPlaceholder(text, width, height, bgColor, textColor) {
-            const encodedText = encodeURIComponent(text);
-            const svgString = `
-                <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="${width}" height="${height}" fill="${bgColor}" rx="5" ry="5"/>
-                    <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="${textColor}" font-family="sans-serif" font-size="${Math.min(width, height) / 3}" font-weight="bold">${encodedText}</text>
-                </svg>
-            `;
-            return `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`;
-        }
-
-        /**
-         * Converts an image URL to a Base64 Data URL.
-         * Handles CORS by using a temporary canvas.
-         * @param {string} url The URL of the image.
-         * @param {string} podcastTitle The title of the podcast, used for fallback text.
-         * @returns {Promise<string>} A promise that resolves with the Base64 Data URL.
-         */
-        async function imageToDataURL(url, podcastTitle) {
-            return new Promise((resolve) => {
-                const img = new Image();
-                img.crossOrigin = 'Anonymous'; // Crucial for CORS
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    resolve(canvas.toDataURL('image/png'));
-                };
-                img.onerror = () => {
-                    // Fallback to a locally generated SVG placeholder
-                    const fallbackText = podcastTitle ? podcastTitle.substring(0, 2).toUpperCase() : 'AP';
-                    const placeholderDataUrl = generateSvgPlaceholder(fallbackText, 80, 80, '#ADD8E6', '#000000');
-                    resolve(placeholderDataUrl);
-                };
-                img.src = url;
-            });
-        }
-
-        /**
-         * Generates the SVG string for the Wrapped report.
-         * @param {object} stats The processed statistics data.
-         * @param {number} startDateTime Filter start date timestamp.
-         * @param {number} endDateTime Filter end date timestamp.
-         * @returns {Promise<string>} A promise that resolves with the SVG string.
-         */
-        async function generateWrappedSvgString(stats, startDateTime, endDateTime) {
-            const totalHours = stats.totalListeningTimeHours.toFixed(1);
-            let formattedPeriod = formatPeriodText(startDateTime, endDateTime, globalDfHistory);
-
-            let periodConnector = '';
-            // Determine if "en" is needed for the main sentence
-            // Matches "2025" or "Février 2025" (single year or single month-year)
-            if (formattedPeriod.match(/^\d{4}$/) || formattedPeriod.match(/^[A-Za-zÀ-ÿ]+ \d{4}$/)) { 
-                periodConnector = 'en ';
-            }
-
-            const top5Podcasts = stats.topPodcastsByTime.slice(0, 5);
-
-            // Pre-fetch and convert all necessary images to data URLs
-            const podcastImagePromises = top5Podcasts.map((p) => 
-                imageToDataURL(p.imageUrl, p.podcast) // Pass podcast title for fallback text
-            );
-            const antennapodLogoUrl = 'https://raw.githubusercontent.com/AntennaPod/Branding/master/Logo/logo-full-horizontal-light.svg';
-            const antennapodLogoPromise = imageToDataURL(antennapodLogoUrl, 'AntennaPod'); // Pass fallback text for logo
-
-            const [podcastImageDataUrls, antennapodLogoDataUrl] = await Promise.all([
-                Promise.all(podcastImagePromises),
-                antennapodLogoPromise
-            ]);
-
-            let podcastSvgGroups = '';
-            const startY = 110; // Initial Y position for the first podcast group
-            const groupHeight = 100; // Height of each podcast group
-
-            top5Podcasts.forEach((p, index) => {
-                const yOffset = startY + (index * groupHeight);
-                const podcastImage = podcastImageDataUrls[index];
-                const podcastNameLines = wrapText(p.podcast, 20); // Max 20 chars per line for podcast name
-                
-                let tspanElements = '';
-                podcastNameLines.forEach((line, lineIndex) => {
-                    tspanElements += `<tspan x="130" dy="${lineIndex === 0 ? 0 : 20}">${escapeHtml(line)}</tspan>`;
-                });
-
-                podcastSvgGroups += `
-                    <g transform="translate(50, ${yOffset})">
-                        <defs>
-                            <clipPath id="clipRect${index}">
-                                <rect x="0" y="0" width="80" height="80" rx="5" ry="5"/>
-                            </clipPath>
-                        </defs>
-                        <rect x="0" y="0" width="80" height="80" fill="#282828" rx="5" ry="5"/>
-                        <image href="${podcastImage}" x="0" y="0" width="80" height="80" clip-path="url(#clipRect${index})" preserveAspectRatio="xMidYMid slice"/>
-                        <text x="100" y="25" class="svg-wrapped-rank" style="font-family: 'Inter', sans-serif; fill: #1b8bf6; font-weight: bold; font-size: 24px;">${index + 1}.</text>
-                        <text x="130" y="25" class="svg-wrapped-podcast-name" style="font-family: 'Inter', sans-serif; fill: #ffffff; font-size: 18px;">
-                            ${tspanElements}
-                        </text>
-                        <text x="400" y="70" text-anchor="end" class="svg-wrapped-podcast-hours" style="font-family: 'Inter', sans-serif; fill: #b3b3b3; font-size: 16px;">${p.hours.toFixed(1)} heures</text>
-                    </g>
-                `;
-            });
-
-            // Helper to escape HTML entities for SVG text
-            function escapeHtml(unsafe) {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-
-            const svgContent = `
-                <svg viewBox="0 0 450 800" xmlns="http://www.w3.org/2000/svg" width="450" height="800">
-                    <style>
-                        /* Removed @import url(...) to prevent security errors when drawing to canvas */
-                        .svg-wrapped-title {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 32px;
-                            font-weight: bold;
-                            fill: #1b8bf6;
-                        }
-                        .svg-wrapped-subtitle {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 24px;
-                            font-weight: bold;
-                            fill: #ffffff;
-                        }
-                        .svg-wrapped-podcast-name {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 18px;
-                            fill: #ffffff;
-                        }
-                        .svg-wrapped-podcast-hours {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 16px;
-                            fill: #b3b3b3;
-                        }
-                        .svg-wrapped-rank {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 24px;
-                            font-weight: bold;
-                            fill: #1b8bf6;
-                        }
-                        .svg-wrapped-total-time-label {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 20px;
-                            fill: #b3b3b3;
-                        }
-                        .svg-wrapped-total-time {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 26px;
-                            fill: #ffffff;
-                            font-weight: bold;
-                        }
-                        .svg-wrapped-other-stats {
-                            font-family: 'Inter', sans-serif;
-                            font-size: 18px;
-                            fill: #ffffff;
-                        }
-                    </style>
-                    <rect x="0" y="0" width="450" height="800" fill="#1a1a1a" rx="10" ry="10"/>
-
-                    <text x="225" y="50" text-anchor="middle" class="svg-wrapped-title">Votre Bilan AntennaPod</text>
-                    <text x="225" y="90" text-anchor="middle" class="svg-wrapped-subtitle">Mon Top 5 Podcasts ${formattedPeriod}</text>
-
-                    ${podcastSvgGroups}
-
-                    <text x="225" y="630" text-anchor="middle" class="svg-wrapped-total-time-label">Durée totale d'écoute</text>
-                    <text x="225" y="665" text-anchor="middle" class="svg-wrapped-total-time">${totalHours} heures (${stats.totalListeningTimeDays.toFixed(1)} jours)</text>
-
-                    <text x="225" y="690" text-anchor="middle" class="svg-wrapped-other-stats">${stats.episodesListened} épisodes écoutés</text>
-
-                    <image href="${antennapodLogoDataUrl}" x="150" y="720" width="150" height="30"/>
-                </svg>
-            `;
-            return svgContent;
-        }
-    </script>
-    <!-- Chart.js for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- JSZip for creating zip files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <!-- FileSaver.js for saving files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <!-- html2canvas for image export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+            let cleanedString = authorString.trim();
+            cleanedString = cleanedString.replace(/[
