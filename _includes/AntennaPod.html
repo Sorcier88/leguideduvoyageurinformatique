@@ -4,8 +4,9 @@
     <title>Analyseur AntennaPod</title>
     <!-- Tailwind CSS is loaded globally -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- sql.js library for client-side SQLite processing - Moved to head for earlier loading -->
+    <!-- sql.js library for client-side SQLite processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+
     <style>
         /* Base styles for the app container */
         #antennapod-analyzer-app-container {
@@ -520,16 +521,15 @@
                     </div>
                     <span class="text-sm text-red-500">Remarque : Les couvertures de vos podcasts seront affichées si elles sont accessibles en ligne. En cas d’échec de chargement, une illustration générique de remplacement sera utilisée.</span>
                 </p>
-                <div id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-gray-400 rounded-lg p-6 text-center bg-white hover:border-blue-400 transition-colors duration-200">
-                    <label for="db-file-input" class="cursor-pointer">
-                        <div class="flex flex-col items-center">
-                            <svg class="w-12 h-12 text-gray-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                            <span class="text-lg text-gray-700 font-medium">Déposez votre fichier ici ou cliquez pour uploader</span>
-                            <span id="fileName" class="text-sm text-gray-500 mt-1">Aucun fichier sélectionné</span>
-                        </div>
-                    </label>
-                    <input type="file" id="db-file-input" accept=".db" class="hidden" />
-                </div>
+                <label for="db-file-input" id="fileInputWrapper" class="flex flex-col items-center justify-center border-2 border-dashed border-[#0e6270] rounded-xl p-8 text-center bg-[#f0f4f8] hover:bg-[#e6f2f3] cursor-pointer transition-all duration-200 shadow-sm block w-full">
+                    <input type="file" id="db-file-input" accept=".db,.sqlite,.sqlite3" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;" />
+                    <svg class="w-14 h-14 text-[#0e6270] mb-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <span class="text-lg text-gray-800 font-semibold mb-1 pointer-events-none">Déposez votre sauvegarde AntennaPod (.db) ici ou cliquez pour choisir</span>
+                    <span class="text-xs text-gray-500 mb-3 pointer-events-none">Prend en charge les fichiers AntennaPod.db et AntennaPodBackup-*.db</span>
+                    <span id="fileName" class="text-sm font-medium text-[#0e6270] bg-white px-4 py-1.5 rounded-full border border-gray-300 shadow-sm pointer-events-none">Aucun fichier sélectionné</span>
+                </label>
                 <button id="analyzeButton" class="button w-full mt-6 flex items-center justify-center" disabled>
                     <span id="analyzeButtonText">Analyser les statistiques</span>
                     <div id="loadingSpinner" class="spinner ml-3 hidden"></div>
@@ -1431,85 +1431,118 @@
 
 
         // --- Event Listeners ---
-        dbFileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            handleFile(file);
-        });
+        // --- Event Listeners for File Selection and Analysis ---
+        if (fileInputWrapper) {
+            fileInputWrapper.addEventListener('dragover', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                fileInputWrapper.classList.add('dragover', 'border-blue-500', 'bg-blue-50');
+            });
 
-        // Drag and Drop Event Listeners
-        fileInputWrapper.addEventListener('dragover', (event) => {
-            event.preventDefault(); // Prevent default to allow drop
-            fileInputWrapper.classList.add('dragover');
-        });
+            fileInputWrapper.addEventListener('dragleave', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                fileInputWrapper.classList.remove('dragover', 'border-blue-500', 'bg-blue-50');
+            });
 
-        fileInputWrapper.addEventListener('dragleave', (event) => {
-            fileInputWrapper.classList.remove('dragover');
-        });
-
-        fileInputWrapper.addEventListener('drop', (event) => {
-            event.preventDefault(); // Prevent default to allow drop
-            fileInputWrapper.classList.remove('dragover');
-            const file = event.dataTransfer.files[0];
-            if (file && file.name.endsWith('.db')) {
-                dbFileInput.files = event.dataTransfer.files; // Set the file to the input element
-                handleFile(file);
-            } else {
-                showMessage('error', 'Veuillez déposer un fichier .db valide.');
-            }
-        });
-
-        function handleFile(file) {
-            if (file) {
-                fileNameSpan.textContent = file.name;
-                analyzeButton.disabled = false;
-                showMessage('info', `Fichier sélectionné : ${file.name}`);
-            } else {
-                fileNameSpan.textContent = 'Aucun fichier sélectionné';
-                analyzeButton.disabled = true;
-            }
+            fileInputWrapper.addEventListener('drop', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                fileInputWrapper.classList.remove('dragover', 'border-blue-500', 'bg-blue-50');
+                const file = event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0];
+                if (file) {
+                    handleFile(file);
+                } else {
+                    showMessage('error', 'Aucun fichier détecté lors du glisser-déposer.');
+                }
+            });
         }
 
-        analyzeButton.addEventListener('click', async () => {
-            const file = dbFileInput.files[0];
+        if (dbFileInput) {
+            dbFileInput.addEventListener('click', () => {
+                dbFileInput.value = ''; // Reset value to allow selecting same file again
+            });
+
+            dbFileInput.addEventListener('change', (event) => {
+                const file = event.target.files && event.target.files[0];
+                if (file) {
+                    handleFile(file);
+                }
+            });
+        }
+
+        function handleFile(file) {
             if (!file) {
-                showMessage('error', 'Veuillez sélectionner un fichier .db d\'abord.');
+                fileNameSpan.textContent = 'Aucun fichier sélectionné';
+                analyzeButton.disabled = true;
                 return;
             }
+            const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+            fileNameSpan.textContent = `📁 ${file.name} (${sizeMb} Mo)`;
+            analyzeButton.disabled = false;
+            analyzeButton.classList.remove('opacity-50', 'cursor-not-allowed');
+            
+            if (fileInputWrapper) {
+                fileInputWrapper.classList.add('border-green-500', 'bg-green-50');
+            }
+
+            showMessage('info', `Fichier "${file.name}" chargé (${sizeMb} Mo). Lancement de l'analyse...`);
+            
+            // Auto-trigger analysis immediately on file selection
+            startAnalysis(file);
+        }
+
+        if (analyzeButton) {
+            analyzeButton.addEventListener('click', () => {
+                const file = dbFileInput && dbFileInput.files && dbFileInput.files[0];
+                if (file) {
+                    startAnalysis(file);
+                } else {
+                    showMessage('error', 'Veuillez sélectionner un fichier de sauvegarde (.db).');
+                }
+            });
+        }
+
+        async function startAnalysis(file) {
+            if (!file) return;
 
             setLoadingState(true);
-            showMessage('info', 'Analyse en cours, cela peut peut prendre quelques instants...');
+            showMessage('info', `Analyse en cours de ${file.name}...`);
 
             try {
-                // Read the file as an array buffer
                 const arrayBuffer = await file.arrayBuffer();
                 const uint8Array = new Uint8Array(arrayBuffer);
                 
                 const processedData = await processAntennaPodDb(uint8Array);
 
                 if (processedData) {
-                    globalDfHistory = processedData.allHistoryData; // Store raw data for filters
-                    currentProcessedData = processedData; // Store processed data for CSV export
+                    globalDfHistory = processedData.allHistoryData;
+                    currentProcessedData = processedData;
                     updateUIWithStats(processedData);
                     populateFilters(processedData.allHistoryData);
-                    updateCharts(); // Call updateCharts to draw with initial (all data) filters
+                    updateCharts();
                     statsSection.classList.remove('hidden');
-                    showMessage('success', 'Analyse terminée avec succès !');
+                    
+                    // Smooth scroll to the stats section
+                    setTimeout(() => {
+                        statsSection.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+
+                    showMessage('success', `Analyse de ${file.name} terminée avec succès !`);
                 } else {
-                    showMessage('error', 'Échec de l\'analyse du fichier. Le format pourrait être invalide ou les données manquantes.');
+                    showMessage('error', "Échec de l'analyse du fichier. Aucune donnée d'écoute trouvée.");
                     statsSection.classList.add('hidden');
                 }
 
             } catch (error) {
-                console.error('Erreur lors de l\'analyse du fichier :', error);
-                showMessage('error', `Une erreur est survenue lors de l'analyse : ${error.message}.`);
+                console.error("Erreur lors de l'analyse du fichier :", error);
+                showMessage('error', `Une erreur est survenue lors de l'analyse : ${error.message}`);
                 statsSection.classList.add('hidden');
             } finally {
                 setLoadingState(false);
             }
-        });
+        }
 
-
-        // New: Export all charts as PNGs in a ZIP file
         exportAllChartsButton.addEventListener('click', async () => {
             showMessage('info', 'Préparation de l\'exportation de tous les graphiques...');
             const zip = new JSZip();
@@ -3278,40 +3311,57 @@
         }
 
 
-        // --- Simulate Python Script Logic with sql.js ---
-        // This part requires sql.js library to be loaded.
-        // It's a client-side database engine.
-        let SQL;
-        async function loadSqlJs() {
-            try {
-                // Ensure Chart.js, JSZip, FileSaver.js, html2canvas are loaded before proceeding
-                // These are loaded in the <head> so they should be available.
-                // No explicit check needed here for them, but good to be aware.
+        // --- SQLite Database Processing via sql.js ---
+        let SQL = null;
+        let sqlLoadingPromise = null;
 
-                const SQL_wasm = await initSqlJs({
+        function loadSqlJs() {
+            if (SQL) return Promise.resolve(SQL);
+            if (sqlLoadingPromise) return sqlLoadingPromise;
+
+            sqlLoadingPromise = (async () => {
+                let initFn = window.initSqlJs || (typeof initSqlJs !== 'undefined' ? initSqlJs : null);
+                if (!initFn) {
+                    // Wait up to 8 seconds for sql-wasm.js script to execute
+                    for (let i = 0; i < 80; i++) {
+                        await new Promise(r => setTimeout(r, 100));
+                        initFn = window.initSqlJs || (typeof initSqlJs !== 'undefined' ? initSqlJs : null);
+                        if (initFn) break;
+                    }
+                }
+
+                if (!initFn) {
+                    throw new Error("Bibliothèque sql.js introuvable. Vérifiez que votre connexion internet permet de charger sql-wasm.js.");
+                }
+
+                const SQL_wasm = await initFn({
                     locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/${file}`
                 });
                 SQL = SQL_wasm;
-                console.log("sql.js chargé avec succès.");
-            } catch (err) { 
+                console.log("sql.js chargé et initialisé avec succès.");
+                return SQL;
+            })().catch(err => {
                 console.error("Erreur lors du chargement de sql.js:", err);
-                showMessage('error', 'Impossible de charger la bibliothèque de base de données. Veuillez patienter et réessayer.');
-            }
-        };
+                sqlLoadingPromise = null;
+                throw err;
+            });
 
-        // Load sql.js as soon as possible
-        loadSqlJs();
+            return sqlLoadingPromise;
+        }
+
+        // Start loading sql.js immediately in the background
+        loadSqlJs().catch(() => {});
 
         async function processAntennaPodDb(uint8Array) {
             if (!SQL) {
                 try {
                     await loadSqlJs();
                 } catch (e) {
-                    console.error("Erreur chargement sql.js:", e);
+                    console.error("Échec du chargement de sql.js:", e);
                 }
             }
             if (!SQL) {
-                showMessage('error', 'La bibliothèque sql.js n\'est pas encore chargée. Veuillez patienter et réessayer.');
+                showMessage('error', "La bibliothèque sql.js n'a pas pu être initialisée. Vérifiez votre connexion internet.");
                 return null;
             }
 
@@ -3673,11 +3723,4 @@
          * @returns {string} The SVG data URL.
          */
     </script>
-    <!-- Chart.js for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- JSZip for creating zip files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <!-- FileSaver.js for saving files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <!-- html2canvas for image export -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
