@@ -1,5 +1,5 @@
 ---
-title: "Stremio: L'App idéale pour profiter de films en streaming"
+title: "Stremio : l'app idéale pour profiter de films en streaming"
 ---
 {% include toc.html %}
 {% include ia.html %} 
@@ -8,10 +8,9 @@ Imaginez un seul endroit où vous pouvez accéder à tous vos films et séries p
 
 ## L'installation en quelques étapes simples
 
-1. L'installation de Stremio est un jeu d'enfant. Suivez ces étapes pour y parvenir :
-Téléchargez Stremio : Rendez-vous sur le site officiel de Stremio ([www.stremio.com](http://stremio.com)) et choisissez la version correspondant à votre système d'exploitation ([Windows](https://www.strem.io/download?platform=windows&four=true), [macOS](https://www.strem.io/download?platform=mac&four=true), Linux, [Android](https://play.google.com/store/apps/details?id=com.stremio.one), [iOS](https://www.notion.so/Fiche-8-Faites-vous-plaisir-b6428869d9704e0f8914f9218e786465?pvs=21)). Cliquez sur "Télécharger" et suivez les instructions.
-2. Installez Stremio : Ouvrez le fichier téléchargé et suivez les instructions à l'écran pour l'installation. Pas besoin d'être un expert en informatique pour cela ! 
-3. Lancez Stremio : Après l'installation, double-cliquez sur l'icône de Stremio pour le lancer. Vous serez rapidement prêt à découvrir un monde de divertissement.
+1. Téléchargez Stremio : Rendez-vous sur le site officiel de Stremio ([www.stremio.com](http://stremio.com)) et choisissez la version correspondant à votre système d'exploitation ([Windows](https://www.strem.io/download?platform=windows&four=true), [macOS](https://www.strem.io/download?platform=mac&four=true), Linux, [Android](https://play.google.com/store/apps/details?id=com.stremio.one), [iOS](https://www.notion.so/Fiche-8-Faites-vous-plaisir-b6428869d9704e0f8914f9218e786465?pvs=21)). 
+2. Installez Stremio : Ouvrez le fichier téléchargé et suivez les instructions à l'écran pour l'installation. 
+3. Lancez Stremio : Après l'installation, double-cliquez sur l'icône de Stremio pour le lancer. 
 
 ## Personnalisez Stremio avec des addons
 
