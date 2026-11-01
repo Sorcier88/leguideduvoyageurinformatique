@@ -6,6 +6,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- sql.js library for client-side SQLite processing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- JSZip for creating zip files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <!-- FileSaver.js for saving files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
     <style>
         /* Base styles for the app container */
@@ -1029,7 +1035,7 @@
                 .replace(/Ã¤/g, 'ä') // a tréma
                 .replace(/â€™/g, '’') // apostrophe curly
                 .replace(/â€œ/g, '“') // left double quote
-                .replace(/â€/g, '”') // right double quote
+                .replace(/â€ /g, '”') // right double quote
                 .replace(/â€¦/g, '…') // ellipsis
                 .replace(/â€“/g, '–') // en dash
                 .replace(/â€”/g, '—') // em dash
@@ -1086,15 +1092,7 @@
             return lines;
         }
 
-        /**
-         * Extracts tags from a raw tags string, handling various formats.
-         * This version specifically addresses the "phraseTagConcatenatedWithPascalCaseWord" issue
-         * and respects the rule that spaces are NOT separators for new tags, only uppercase letters are.
-         * @param {string} tagString The raw tags string from the database.
-         * @returns {string[]} An array of extracted tag strings, all normalized to lowercase, trimmed, and NFC.
-         */
-        
-                // --- Author Aliases & Grouping State ---
+        // --- Author Aliases & Grouping State ---
         let authorAliases = {}; // Map: originalAuthor -> canonicalAuthor
         let allDetectedAuthors = []; // List of all detected raw author strings
         let aliasAuthorSelectedIndex = -1;
@@ -1150,7 +1148,7 @@
                 return resSans !== 'Sans Auteur' ? [resSans] : [];
             }
             let cleanedString = authorString.trim();
-            cleanedString = cleanedString.replace(/[ -]/g, '').replace(/\s+/g, ' ').trim();
+            cleanedString = cleanedString.replace(/[ -  ]/g, '').replace(/\s+/g, ' ').trim();
 
             const authors = new Set();
 
@@ -3698,15 +3696,4 @@
                 showMessage('error', `Graphique avec l'ID "${chartId}" introuvable.`);
             }
         };
-
-        /**
-         * Generates a simple SVG placeholder image as a data URL.
-         * @param {string} text The text to display in the placeholder.
-         * @param {number} width The width of the placeholder.
-         * @param {number} height The height of the placeholder.
-         * @param {string} bgColor Background color (hex).
-         * @param {string} textColor Text color (hex).
-         * @returns {string} The SVG data URL.
-         */
     </script>
-
