@@ -720,13 +720,14 @@
                         <div id="authorAliasesPanel" class="hidden mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
                             <p class="text-xs text-gray-600 mb-3">
                                 Associez des variations de noms d'auteurs (ou co-auteurs) à un nom unique pour regrouper leurs statistiques d'écoute (ex: <em>"BLAST, Le souffle de l'info"</em> &rarr; <em>"Blast"</em>).
+                                <br>Vous pouvez également définir l'auteur d'un podcast n'en ayant pas en recherchant <em>"[Podcast] Nom du podcast"</em>.
                             </p>
                             
                             <!-- Add Rule Form -->
                             <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end mb-4">
                                 <div class="md:col-span-5 relative">
-                                    <label for="aliasOriginalAuthorInput" class="block text-xs font-semibold text-gray-600 mb-1">Auteur original / variation :</label>
-                                    <input type="text" id="aliasOriginalAuthorInput" placeholder="Rechercher ou saisir un auteur..." class="w-full text-sm border rounded px-3 py-2 bg-white focus:outline-none focus:border-[#0e6270]" autocomplete="off">
+                                    <label for="aliasOriginalAuthorInput" class="block text-xs font-semibold text-gray-600 mb-1">Auteur original / Podcast sans auteur :</label>
+                                    <input type="text" id="aliasOriginalAuthorInput" placeholder="Rechercher un auteur ou [Podcast]..." class="w-full text-sm border rounded px-3 py-2 bg-white focus:outline-none focus:border-[#0e6270]" autocomplete="off">
                                     <div id="aliasAuthorSuggestions" class="podcast-suggestions hidden"></div>
                                 </div>
                                 <div class="md:col-span-5">
@@ -1140,37 +1141,46 @@
          * Extracts authors from a raw author string, splitting by commas or slashes if multiple authors are present,
          * and resolving aliases/groupings.
          * @param {string} authorString The raw author string from the database.
+         * @param {string} podcastTitle The podcast title, used as fallback if author is missing.
          * @returns {string[]} An array of author names, trimmed, resolved and cleaned.
          */
-        function extractAuthorsFromString(authorString) {
-            if (!authorString || typeof authorString !== 'string' || authorString.trim() === '') {
-                const resSans = resolveAuthorName('Sans Auteur');
-                return resSans !== 'Sans Auteur' ? [resSans] : [];
-            }
-            let cleanedString = authorString.trim();
-            cleanedString = cleanedString.replace(/[ -  ]/g, '').replace(/\s+/g, ' ').trim();
-
+        function extractAuthorsFromString(authorString, podcastTitle) {
             const authors = new Set();
 
-            // First check if the entire un-split string matches an alias (e.g. "Salomé Saqué, Blast le souffle de l’info" -> "Blast")
-            const resolvedEntire = resolveAuthorName(cleanedString);
-            if (resolvedEntire !== cleanedString) {
-                authors.add(resolvedEntire);
-                return Array.from(authors);
+            if (authorString && typeof authorString === 'string' && authorString.trim() !== '') {
+                let cleanedString = authorString.trim();
+                cleanedString = cleanedString.replace(/[ -  ]/g, '').replace(/\s+/g, ' ').trim();
+
+                // First check if the entire un-split string matches an alias (e.g. "Salomé Saqué, Blast le souffle de l’info" -> "Blast")
+                const resolvedEntire = resolveAuthorName(cleanedString);
+                if (resolvedEntire !== cleanedString) {
+                    authors.add(resolvedEntire);
+                    return Array.from(authors);
+                }
+
+                // Otherwise split by delimiters
+                const primarySegments = cleanedString.split(/[,/]/).map(s => s.trim()).filter(s => s.length > 0);
+
+                primarySegments.forEach(segment => {
+                    if (segment.toLowerCase() !== 'none' && segment.toLowerCase() !== 'null') {
+                        authors.add(resolveAuthorName(segment));
+                    }
+                });
             }
 
-            // Otherwise split by delimiters
-            const primarySegments = cleanedString.split(/[,/]/).map(s => s.trim()).filter(s => s.length > 0);
-
-            primarySegments.forEach(segment => {
-                if (segment.toLowerCase() !== 'none' && segment.toLowerCase() !== 'null') {
-                    authors.add(resolveAuthorName(segment));
-                }
-            });
-
             if (authors.size === 0) {
-                const resSans = resolveAuthorName('Sans Auteur');
-                if (resSans !== 'Sans Auteur') authors.add(resSans);
+                if (podcastTitle) {
+                    const podcastKey = `[Podcast] ${podcastTitle.trim()}`;
+                    const resolved = resolveAuthorName(podcastKey);
+                    if (resolved !== podcastKey) {
+                        authors.add(resolved);
+                    }
+                }
+                
+                if (authors.size === 0) {
+                    const resSans = resolveAuthorName('Sans Auteur');
+                    if (resSans !== 'Sans Auteur') authors.add(resSans);
+                }
             }
 
             return Array.from(authors);
@@ -2109,7 +2119,7 @@
             let hasUntaggedAuthors = false;
 
             data.forEach(item => {
-                let extractedAuthors = extractAuthorsFromString(item.author);
+                let extractedAuthors = extractAuthorsFromString(item.author, item.podcast_title);
                 if (extractedAuthors.length === 0 || extractedAuthors.includes('Sans Auteur')) {
                     hasUntaggedAuthors = true;
                 }
@@ -2127,6 +2137,7 @@
 
             // Populate allDetectedAuthors for author alias suggestions
             const detectedAuthorsSet = new Set();
+            detectedAuthorsSet.add('Sans Auteur'); // Explicitly add for global rule
             data.forEach(item => {
                 if (item.author && typeof item.author === 'string' && item.author.trim() !== '') {
                     const rawAuthor = item.author.trim();
@@ -2138,6 +2149,8 @@
                             detectedAuthorsSet.add(p);
                         }
                     });
+                } else if (item.podcast_title) {
+                    detectedAuthorsSet.add(`[Podcast] ${item.podcast_title.trim()}`);
                 }
             });
             allDetectedAuthors = Array.from(detectedAuthorsSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'accent' }));
@@ -2448,7 +2461,7 @@
             // Apply author filter (multi-select logic)
             if (selectedAuthors.length > 0) {
                 filteredData = filteredData.filter(item => {
-                    let itemAuthors = extractAuthorsFromString(item.author);
+                    let itemAuthors = extractAuthorsFromString(item.author, item.podcast_title);
                     let matches = false;
 
                     if (selectedAuthors.includes('sans auteur')) {
@@ -3617,7 +3630,7 @@
             // Authors Listening for Author Distribution Chart
             const authorChartData = {};
             listenedEpisodes.forEach(item => {
-                let itemAuthors = extractAuthorsFromString(item.author);
+                let itemAuthors = extractAuthorsFromString(item.author, item.podcast_title);
                 const duration = item.played_duration || 0;
 
                 if (itemAuthors.length === 0) {
